@@ -1,15 +1,20 @@
 package com.example.queimacaloria.negocio;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import java.util.*;
 
+@Getter
+@ToString
 public class Meta {
-    private UUID id;
-    private String descricao;
-    private Tipo tipo;
-    private double valorAlvo;
-    private double progressoAtual;
-    private Date dataCriacao;
-    private Date dataConclusao;
+    private final UUID id;
+    @Setter String descricao;
+    @Setter private Tipo tipo;
+    @Setter private double valorAlvo;
+    @Setter private double progressoAtual;
+    @Setter private Date dataCriacao;
+    @Setter private Date dataConclusao;
 
     // Enum para representar os tipos de meta
     public enum Tipo {
@@ -22,9 +27,9 @@ public class Meta {
         this.dataCriacao = new Date();
     }
 
-    public Meta(UUID id, String descricao, Tipo tipo, double valorAlvo, double progressoAtual, Date dataCriacao,
+    public Meta(String descricao, Tipo tipo, double valorAlvo, double progressoAtual, Date dataCriacao,
             Date dataConclusao) {
-        this.id = id;
+        this.id = UUID.randomUUID();
         this.descricao = descricao;
         this.tipo = tipo;
         this.valorAlvo = valorAlvo;
@@ -32,64 +37,4 @@ public class Meta {
         this.dataCriacao = dataCriacao;
         this.dataConclusao = dataConclusao;
     }
-
-    // Getters
-    public UUID getId() {
-        return id;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public Tipo getTipo() {
-        return tipo;
-    }
-
-    public Date getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public Date getDataConclusao() {
-        return dataConclusao;
-    }
-
-    public double getValorAlvo() {
-        return valorAlvo;
-    }
-
-    public double getProgressoAtual() {
-        return progressoAtual;
-    }
-
-    // Setters
-
-    public void setValorAlvo(double valorAlvo) {
-        this.valorAlvo = valorAlvo;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public void setProgressoAtual(double progressoAtual) {
-        this.progressoAtual = progressoAtual;
-    }
-
-    public void setDataConclusao(Date dataConclusao) {
-        this.dataConclusao = dataConclusao;
-    }
-
-    public void setTipo(Tipo tipo) {
-        this.tipo = tipo;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setDataCriacao(Date dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-
 }

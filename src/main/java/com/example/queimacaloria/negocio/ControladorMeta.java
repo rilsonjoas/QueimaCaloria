@@ -1,8 +1,17 @@
 package com.example.queimacaloria.negocio;
 
+import com.example.queimacaloria.dados.RepositorioMetasArray;
+import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
+
 import java.util.*;
 
 public class ControladorMeta {
+
+    RepositorioMetasArray repositorio;
+
+    public ControladorMeta() {
+        repositorio = RepositorioMetasArray.getInstanciaUnica();
+    }
 
     // Construtor com parâmetros
     public void inicializar(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,

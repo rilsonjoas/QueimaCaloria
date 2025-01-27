@@ -1,7 +1,13 @@
 package com.example.queimacaloria.dados;
 
+import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
+import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
+import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.interfaces.IRepositorioUsuarios;
+import com.example.queimacaloria.negocio.Dieta;
+import com.example.queimacaloria.negocio.Meta;
+import com.example.queimacaloria.negocio.Treino;
 import com.example.queimacaloria.negocio.Usuario;
 
 import java.util.UUID;
@@ -40,7 +46,7 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
     }
 
     @Override
-    public void adicionar(Usuario usuario) {
+    public void adicionar(Usuario usuario) throws UsuarioNaoEncontradoException {
         if(proximoIndice > usuarios.length - 1) {
           int novoTam = proximoIndice + 10;
           Usuario[] arrayTemporario = new Usuario[novoTam];
@@ -57,7 +63,23 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
     }
 
     @Override
-    public void atualizar(Usuario usuario) throws UsuarioNaoEncontradoException {
+    public void adicionarMetas(Meta meta) throws MetaNaoEncontradaException {
+
+    }
+
+    @Override
+    public void adicionarTreinos(Treino treino) throws TreinoNaoEncontradoException {
+
+    }
+
+    @Override
+    public void adicionarDietas(Dieta dieta) throws DietaNaoEncontradaException {
+
+    }
+
+    @Override
+    public void atualizar(UUID id) throws UsuarioNaoEncontradoException {
+        Usuario usuario = buscar(id);
        if(usuario != null) {
            int indice = this.procurarIndice(usuario.getId());
            if (indice != proximoIndice) {

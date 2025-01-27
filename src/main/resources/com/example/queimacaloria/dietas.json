@@ -1,0 +1,52 @@
+[
+  {
+    "nome": "Dieta para Emagrecimento Rápido",
+    "objetivo": "PERDA_DE_PESO",
+    "caloriasDiarias": 1200
+  },
+  {
+    "nome": "Dieta Low Carb Moderada",
+    "objetivo": "PERDA_DE_PESO",
+    "caloriasDiarias": 1600
+  },
+  {
+    "nome": "Dieta da Proteína",
+    "objetivo": "GANHO_DE_MASSA",
+    "caloriasDiarias": 2500
+  },
+  {
+    "nome": "Dieta Vegana para Atletas",
+    "objetivo": "GANHO_DE_MASSA",
+    "caloriasDiarias": 2700
+  },
+  {
+    "nome": "Dieta Mediterrânea",
+    "objetivo": "MANUTENCAO",
+    "caloriasDiarias": 2000
+  },
+  {
+    "nome": "Dieta sem Glúten e Lactose",
+    "objetivo": "MANUTENCAO",
+    "caloriasDiarias": 2200
+  },
+  {
+    "nome": "Dieta para Ganho de Massa Muscular",
+    "objetivo": "GANHO_DE_MASSA",
+    "caloriasDiarias": 3000
+  },
+  {
+    "nome": "Dieta Flexível para Definição",
+    "objetivo": "PERDA_DE_PESO",
+    "caloriasDiarias": 1700
+  },
+  {
+    "nome": "Dieta para Iniciantes",
+    "objetivo": "MANUTENCAO",
+    "caloriasDiarias": 1900
+  },
+  {
+    "nome": "Dieta Personalizada do Cliente",
+    "objetivo":"OUTRO",
+    "caloriasDiarias": 2400
+  }
+]

@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public interface IRepositorioDietas {
 
-    void adicionar(Dieta dieta);
+    void adicionar(Dieta dieta) throws DietaNaoEncontradaException;
 
-    void atualizar(Dieta dieta) throws DietaNaoEncontradaException;
+    void atualizar(UUID id) throws DietaNaoEncontradaException;
 
     void remover(UUID id) throws DietaNaoEncontradaException;
 

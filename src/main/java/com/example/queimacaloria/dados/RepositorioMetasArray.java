@@ -40,7 +40,7 @@ public class RepositorioMetasArray implements IRepositorioMetas {
 
 
     @Override
-    public void adicionar(Meta meta) {
+    public void adicionar(Meta meta) throws MetaNaoEncontradaException {
         if (proximoIndice >= metas.length) {
             int novoTam = metas.length + 10;
             Meta[] arrayTemporario = new Meta[novoTam];
@@ -52,7 +52,8 @@ public class RepositorioMetasArray implements IRepositorioMetas {
     }
 
     @Override
-    public void atualizar(Meta meta) throws MetaNaoEncontradaException {
+    public void atualizar(UUID id) throws MetaNaoEncontradaException {
+        Meta meta = buscar(id);
         if (meta != null) {
             int indice = this.procurarIndice(meta.getId());
             if (indice != proximoIndice) {
@@ -64,7 +65,6 @@ public class RepositorioMetasArray implements IRepositorioMetas {
             throw new IllegalArgumentException("Meta inválida.");
         }
     }
-
 
     @Override
     public void remover(UUID id) throws MetaNaoEncontradaException {

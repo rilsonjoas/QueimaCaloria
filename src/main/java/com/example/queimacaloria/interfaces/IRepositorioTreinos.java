@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public interface IRepositorioTreinos {
 
-    public void adicionar(Treino treino);
+    public void adicionar(Treino treino) throws TreinoNaoEncontradoException;
 
-    public void atualizar(Treino treino)throws TreinoNaoEncontradoException;
+    public void atualizar(UUID id)throws TreinoNaoEncontradoException;
 
     public void remover(UUID id)throws TreinoNaoEncontradoException;
 

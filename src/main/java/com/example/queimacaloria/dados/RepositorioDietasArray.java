@@ -39,7 +39,7 @@ public class RepositorioDietasArray implements IRepositorioDietas {
 
 
     @Override
-    public void adicionar(Dieta dieta) {
+    public void adicionar(Dieta dieta) throws DietaNaoEncontradaException {
         if (proximoIndice >= dietas.length) {
             int novoTam = dietas.length + 10;
             Dieta[] arrayTemporario = new Dieta[novoTam];
@@ -51,7 +51,8 @@ public class RepositorioDietasArray implements IRepositorioDietas {
     }
 
     @Override
-    public void atualizar(Dieta dieta) throws DietaNaoEncontradaException {
+    public void atualizar(UUID id) throws DietaNaoEncontradaException {
+        Dieta dieta = buscar(id);
         if (dieta != null) {
             int indice = this.procurarIndice(dieta.getId());
             if (indice != proximoIndice) {

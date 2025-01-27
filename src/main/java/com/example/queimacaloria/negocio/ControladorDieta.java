@@ -1,8 +1,17 @@
 package com.example.queimacaloria.negocio;
 
+import com.example.queimacaloria.dados.RepositorioDietasArray;
+import com.example.queimacaloria.dados.RepositorioExerciciosArray;
+
 import java.util.*;
 
 public class ControladorDieta {
+
+    RepositorioDietasArray repositorio;
+
+    public ControladorDieta() {
+        repositorio = RepositorioDietasArray.getInstanciaUnica();
+    }
 
     // Construtor com parâmetros
     public void inicializar(Dieta dieta, String nome, Dieta.Objetivo objetivo, int caloriasDiarias, Usuario usuario) {

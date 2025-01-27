@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.queimacaloria.controllers.ExerciseController">
+    <Label text="Exercícios"/>
+    <TableView fx:id="exerciseTable">
+        <columns>
+            <TableColumn text="Nome" fx:id="nameColumn" />
+            <TableColumn text="Tipo" fx:id="typeColumn" />
+            <TableColumn text="Tempo" fx:id="timeColumn" />
+            <TableColumn text="Calorias Queimadas" fx:id="caloriesBurnedColumn" />
+        </columns>
+    </TableView>
+    <Button text="Criar Novo Exercício" onAction="#openCreateExerciseScreen"/>
+    <HBox spacing="10">
+        <Button text="Atualizar Exercício" onAction="#updateExercise"/>
+        <Button text="Remover Exercício" onAction="#removeExercise"/>
+    </HBox>
+    <Label fx:id="exerciseMessage" text=""/>
+</VBox>

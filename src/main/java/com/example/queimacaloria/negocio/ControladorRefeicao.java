@@ -1,8 +1,17 @@
 package com.example.queimacaloria.negocio;
 
+import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
+import com.example.queimacaloria.dados.RepositorioUsuariosArray;
+
 import java.util.*;
 
 public class ControladorRefeicao {
+
+    RepositorioRefeicoesArray repositorio;
+
+    public ControladorRefeicao() {
+        repositorio = RepositorioRefeicoesArray.getInstanciaUnica();
+    }
 
     // Construtor com parâmetros
     public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes) {

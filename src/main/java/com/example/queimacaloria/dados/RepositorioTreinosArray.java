@@ -40,7 +40,7 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
     }
 
     @Override
-    public void adicionar(Treino treino) {
+    public void adicionar(Treino treino) throws TreinoNaoEncontradoException {
         if(proximoIndice > treinos.length - 1) {
             int novoTam = proximoIndice + 10;
             Treino[] arrayTemporario = new Treino[novoTam];
@@ -57,7 +57,8 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
     }
 
     @Override
-    public void atualizar(Treino treino) throws TreinoNaoEncontradoException {
+    public void atualizar(UUID id) throws TreinoNaoEncontradoException {
+        Treino treino = buscar(id);
         if(treino != null) {
             int indice = this.procurarIndice(treino.getId());
             if (indice != proximoIndice) {

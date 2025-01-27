@@ -1,11 +1,19 @@
 package com.example.queimacaloria.negocio;
 
+import com.example.queimacaloria.dados.RepositorioUsuariosArray;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
 
 // ControladorUsuário
 public class ControladorUsuario {
+
+    RepositorioUsuariosArray repositorio;
+
+    public ControladorUsuario() {
+        repositorio = RepositorioUsuariosArray.getInstanciaUnica();
+    }
 
     // Método para atualizar os dados do usuário, ele testa com um if se os dados
     // fornecidos mudaram

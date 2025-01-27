@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public interface IRepositorioExercicios {
 
-    void adicionar(Exercicio exercicio);
+    void adicionar(Exercicio exercicio) throws ExercicioNaoEncontradoException;
 
-    void atualizar(Exercicio exercicio) throws ExercicioNaoEncontradoException;
+    void atualizar(UUID id) throws ExercicioNaoEncontradoException;
 
     void remover(UUID id) throws ExercicioNaoEncontradoException;
 

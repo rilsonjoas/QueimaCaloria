@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.queimacaloria.controllers.LoginController">
+    <Label text="Login"/>
+    <TextField fx:id="emailField" promptText="Email"/>
+    <PasswordField fx:id="passwordField" promptText="Senha"/>
+    <Button text="Entrar" onAction="#login"/>
+    <Label fx:id="loginMessage" text=""/>
+</VBox>

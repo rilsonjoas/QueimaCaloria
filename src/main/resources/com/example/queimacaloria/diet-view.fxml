@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.queimacaloria.controllers.DietController">
+    <Label text="Dietas"/>
+    <TableView fx:id="dietTable">
+        <columns>
+            <TableColumn text="Nome" fx:id="nameColumn" />
+            <TableColumn text="Objetivo" fx:id="goalColumn" />
+            <TableColumn text="Calorias Diarias" fx:id="caloriesColumn" />
+            <TableColumn text="Progresso" fx:id="progressColumn" />
+        </columns>
+    </TableView>
+    <Button text="Criar Nova Dieta" onAction="#openCreateDietScreen"/>
+    <HBox spacing="10">
+        <Button text="Atualizar Dieta" onAction="#updateDiet"/>
+        <Button text="Remover Dieta" onAction="#removeDiet"/>
+    </HBox>
+    <Label fx:id="dietMessage" text=""/>
+</VBox>

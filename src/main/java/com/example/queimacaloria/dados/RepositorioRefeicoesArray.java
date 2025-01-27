@@ -53,7 +53,8 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
 
 
     @Override
-    public void atualizar(Refeicao refeicao) throws RefeicaoNaoEncontradaException {
+    public void atualizar(UUID id) throws RefeicaoNaoEncontradaException {
+        Refeicao refeicao = buscar(id);
         if(refeicao != null) {
             int indice = this.procurarIndice(refeicao.getId());
             if (indice != proximoIndice) {

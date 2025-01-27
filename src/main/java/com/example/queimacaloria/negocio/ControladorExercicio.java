@@ -1,8 +1,16 @@
 package com.example.queimacaloria.negocio;
 
+import com.example.queimacaloria.dados.RepositorioExerciciosArray;
+
 import java.util.*;
 
 public class ControladorExercicio {
+
+    RepositorioExerciciosArray repositorio;
+
+    public ControladorExercicio() {
+        repositorio = RepositorioExerciciosArray.getInstanciaUnica();
+    }
 
     // Construtor com parâmetros
     public void inicializar(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,

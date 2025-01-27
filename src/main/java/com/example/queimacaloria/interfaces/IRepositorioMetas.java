@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public interface IRepositorioMetas {
 
-    void adicionar(Meta meta);
+    void adicionar(Meta meta) throws MetaNaoEncontradaException;
 
-    void atualizar(Meta meta) throws MetaNaoEncontradaException;
+    void atualizar(UUID id) throws MetaNaoEncontradaException;
 
     void remover(UUID id) throws MetaNaoEncontradaException;
 

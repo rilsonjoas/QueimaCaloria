@@ -1,0 +1,77 @@
+[
+  {
+    "descricao": "Perder 5kg de gordura corporal em 2 meses",
+    "tipo": "PESO",
+    "valorAlvo": 5.0
+  },
+  {
+    "descricao": "Ganhar 4kg de massa muscular em 3 meses",
+    "tipo": "PESO",
+    "valorAlvo": 4.0
+  },
+  {
+    "descricao": "Reduzir medidas da cintura em 4cm em 1 mês",
+    "tipo": "MEDIDAS",
+    "valorAlvo": 4.0
+  },
+  {
+    "descricao": "Aumentar carga no agachamento em 10kg em 2 meses",
+    "tipo": "OUTROS",
+    "valorAlvo": 10.0
+  },
+  {
+    "descricao": "Correr 5km em 25 minutos em 3 meses",
+    "tipo":"OUTROS",
+    "valorAlvo": 5.0
+  },
+  {
+    "descricao": "Melhorar a flexibilidade das pernas em 2 meses",
+    "tipo":"OUTROS",
+    "valorAlvo": 2.0
+  },
+  {
+    "descricao": "Aumentar a resistência física em 1 mês",
+    "tipo": "OUTROS",
+    "valorAlvo": 1.0
+  },
+  {
+    "descricao":"Concluir 10 treinos por semana",
+    "tipo":"OUTROS",
+    "valorAlvo": 10.0
+  },
+  {
+    "descricao": "Controlar as calorias diarias em 2 meses",
+    "tipo": "OUTROS",
+    "valorAlvo": 1.0
+  },
+  {
+    "descricao": "Melhorar a ingestão de líquidos em 3 meses",
+    "tipo": "OUTROS",
+    "valorAlvo": 1.0
+  },
+  {
+    "descricao":"Dormir 8h por dia por 2 meses",
+    "tipo": "OUTROS",
+    "valorAlvo": 1.0
+  },
+  {
+    "descricao":"Ingerir uma quantidade certa de proteínas em 3 meses",
+    "tipo": "OUTROS",
+    "valorAlvo": 1.0
+  },
+  {
+    "descricao": "Ter uma alimentação balanceada em 2 meses",
+    "tipo": "OUTROS",
+    "valorAlvo": 1.0
+  },
+  {
+    "descricao":"Controlar os níveis de açúcar em 1 mês",
+    "tipo":"OUTROS",
+    "valorAlvo": 1.0
+  },
+  {
+    "descricao": "Aumentar a massa muscular em 2 meses",
+    "tipo":"PESO",
+    "valorAlvo": 2.0
+  }
+]

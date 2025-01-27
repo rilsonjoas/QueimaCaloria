@@ -5,12 +5,12 @@ import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Refeicao;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
+import java.util.List;
 import java.util.Map;
 
 public class MealController {
@@ -76,16 +76,7 @@ public class MealController {
     }
 
     private void atualizarTabelaRefeicoes() {
-        ObservableList<Refeicao> listaRefeicoes = FXCollections.observableArrayList();
-        try {
-            for (int i = 0; i < repositorioRefeicoes.getRefeicoes().length; i++){
-                if(repositorioRefeicoes.getRefeicoes()[i] != null){
-                    listaRefeicoes.add(repositorioRefeicoes.getRefeicoes()[i]);
-                }
-            }
-            mealTable.setItems(listaRefeicoes);
-        } catch (Exception e) {
-            mealMessage.setText("Erro ao carregar lista de refeições");
-        }
+        List<Refeicao> listaRefeicoes = repositorioRefeicoes.getAll();
+        mealTable.setItems(FXCollections.observableArrayList(listaRefeicoes));
     }
 }

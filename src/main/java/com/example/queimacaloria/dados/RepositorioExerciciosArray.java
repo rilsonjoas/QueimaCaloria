@@ -4,6 +4,8 @@ import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
 import com.example.queimacaloria.interfaces.IRepositorioExercicios;
 import com.example.queimacaloria.negocio.Exercicio;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class RepositorioExerciciosArray implements IRepositorioExercicios {
@@ -87,5 +89,14 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
         } else {
             throw new ExercicioNaoEncontradoException("Exercício não encontrado para buscar.");
         }
+    }
+    public List<Exercicio> getAll() {
+        List<Exercicio> lista = new ArrayList<>();
+        for (int i = 0; i < proximoIndice; i++) {
+            if (exercicios[i] != null) {
+                lista.add(exercicios[i]);
+            }
+        }
+        return lista;
     }
 }

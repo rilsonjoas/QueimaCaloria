@@ -4,7 +4,9 @@ import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
 import com.example.queimacaloria.interfaces.IRepositorioDietas;
 import com.example.queimacaloria.negocio.Dieta;
 
-import java.util.UUID; 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class RepositorioDietasArray implements IRepositorioDietas {
     private Dieta[] dietas;
@@ -36,7 +38,6 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         }
         return achou ? i : proximoIndice;
     }
-
 
     @Override
     public void adicionar(Dieta dieta) throws DietaNaoEncontradaException {
@@ -87,4 +88,15 @@ public class RepositorioDietasArray implements IRepositorioDietas {
             throw new DietaNaoEncontradaException("Dieta não encontrada para buscar.");
         }
     }
+
+    public List<Dieta> getAll() {
+        List<Dieta> lista = new ArrayList<>();
+        for (int i = 0; i < proximoIndice; i++) {
+            if (dietas[i] != null) {
+                lista.add(dietas[i]);
+            }
+        }
+        return lista;
+    }
+
 }

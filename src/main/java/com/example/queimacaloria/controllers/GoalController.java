@@ -5,13 +5,12 @@ import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Meta;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-
 import java.util.Date;
+import java.util.List;
 
 public class GoalController {
 
@@ -19,7 +18,6 @@ public class GoalController {
     @FXML private TableColumn<Meta, String> descriptionColumn;
     @FXML private TableColumn<Meta, Meta.Tipo> typeColumn;
     @FXML private TableColumn<Meta, Double> progressColumn;
-
     @FXML private TableColumn<Meta, Date> conclusionDateColumn;
 
     @FXML
@@ -79,18 +77,7 @@ public class GoalController {
     }
 
     private void atualizarTabelaMetas() {
-        ObservableList<Meta> listaMetas = FXCollections.observableArrayList();
-        try {
-            for(int i = 0; i < repositorioMetas.getMetas().length; i++){
-                if(repositorioMetas.getMetas()[i] != null){
-                    listaMetas.add(repositorioMetas.getMetas()[i]);
-                }
-
-            }
-
-            goalTable.setItems(listaMetas);
-        } catch (Exception e) {
-            goalMessage.setText("Erro ao carregar lista de metas");
-        }
+        List<Meta> listaMetas = repositorioMetas.getAll();
+        goalTable.setItems(FXCollections.observableArrayList(listaMetas));
     }
 }

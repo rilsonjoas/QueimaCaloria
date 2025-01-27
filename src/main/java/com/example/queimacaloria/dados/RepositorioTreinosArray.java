@@ -4,6 +4,8 @@ import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.interfaces.IRepositorioTreinos;
 import com.example.queimacaloria.negocio.Treino;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class RepositorioTreinosArray implements IRepositorioTreinos {
@@ -93,5 +95,14 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
             throw new TreinoNaoEncontradoException("Treino Não encontrado");
         }
 
+    }
+    public List<Treino> getAll() {
+        List<Treino> lista = new ArrayList<>();
+        for (int i = 0; i < proximoIndice; i++) {
+            if (treinos[i] != null) {
+                lista.add(treinos[i]);
+            }
+        }
+        return lista;
     }
 }

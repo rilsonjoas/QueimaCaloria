@@ -11,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
+import java.util.List;
+
 public class ExerciseController {
 
     @FXML private TableView<Exercicio> exerciseTable;
@@ -77,17 +79,7 @@ public class ExerciseController {
     }
 
     private void atualizarTabelaExercicios() {
-        ObservableList<Exercicio> listaExercicios = FXCollections.observableArrayList();
-        try {
-            for (int i = 0; i < repositorioExercicios.getExercicios().length; i++) {
-                if (repositorioExercicios.getExercicios()[i] != null) {
-                    listaExercicios.add(repositorioExercicios.getExercicios()[i]);
-                }
-            }
-
-            exerciseTable.setItems(listaExercicios);
-        } catch (Exception e) {
-            exerciseMessage.setText("Erro ao carregar lista de exercícios");
-        }
+        List<Exercicio> listaExercicios = repositorioExercicios.getAll();
+        exerciseTable.setItems(FXCollections.observableArrayList(listaExercicios));
     }
 }

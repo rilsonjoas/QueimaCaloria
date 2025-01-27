@@ -4,6 +4,8 @@ import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 import com.example.queimacaloria.interfaces.IRepositorioMetas;
 import com.example.queimacaloria.negocio.Meta;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class RepositorioMetasArray implements IRepositorioMetas {
@@ -87,5 +89,15 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         } else {
             throw new MetaNaoEncontradaException("Meta não encontrada.");
         }
+    }
+
+    public List<Meta> getAll() {
+        List<Meta> lista = new ArrayList<>();
+        for (int i = 0; i < proximoIndice; i++) {
+            if (metas[i] != null) {
+                lista.add(metas[i]);
+            }
+        }
+        return lista;
     }
 }

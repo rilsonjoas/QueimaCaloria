@@ -5,11 +5,11 @@ import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Treino;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import java.util.List;
 
 public class WorkoutController {
 
@@ -75,18 +75,8 @@ public class WorkoutController {
         }
     }
 
-
     private void atualizarTabelaTreinos() {
-        ObservableList<Treino> listaTreinos = FXCollections.observableArrayList();
-        try {
-            for (int i = 0; i < repositorioTreinos.getTreinos().length; i++) {
-                if (repositorioTreinos.getTreinos()[i] != null) {
-                    listaTreinos.add(repositorioTreinos.getTreinos()[i]);
-                }
-            }
-            workoutTable.setItems(listaTreinos);
-        } catch (Exception e) {
-            workoutMessage.setText("Erro ao carregar lista de treinos");
-        }
+        List<Treino> listaTreinos = repositorioTreinos.getAll();
+        workoutTable.setItems(FXCollections.observableArrayList(listaTreinos));
     }
 }

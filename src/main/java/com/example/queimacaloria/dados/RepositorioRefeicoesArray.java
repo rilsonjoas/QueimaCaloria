@@ -4,6 +4,8 @@ import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
 import com.example.queimacaloria.interfaces.IRepositorioRefeicoes;
 import com.example.queimacaloria.negocio.Refeicao;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
@@ -88,5 +90,14 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
         } else {
             throw new RefeicaoNaoEncontradaException("Refeição não encontrada.");
         }
+    }
+    public List<Refeicao> getAll() {
+        List<Refeicao> lista = new ArrayList<>();
+        for (int i = 0; i < proximoIndice; i++) {
+            if (refeicoes[i] != null) {
+                lista.add(refeicoes[i]);
+            }
+        }
+        return lista;
     }
 }

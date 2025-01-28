@@ -1,5 +1,7 @@
 package com.example.queimacaloria.negocio;
 
+import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
+
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
@@ -147,22 +149,22 @@ public class Fachada {
     // Métodos de Treino
     public void inicializarTreino(Treino treino, String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade,
             Usuario usuario) {
-        controladorTreino.inicializar(treino, nome, tipoDeTreino, duracao, nivelDeDificuldade, usuario);
+        controladorTreino.inicializar(treino, nome, tipoDeTreino, duracao, nivelDeDificuldade);
     }
 
-    public void adicionarExercicioTreino(Treino treino, Exercicio exercicio) {
+    public void adicionarExercicioTreino(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException {
         controladorTreino.adicionarExercicio(treino, exercicio);
     }
 
-    public void removerExercicioTreino(Treino treino, Exercicio exercicio) {
+    public void removerExercicioTreino(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException {
         controladorTreino.removerExercicio(treino, exercicio);
     }
 
-    public double calcularCaloriasQueimadasTreino(Treino treino) {
+    public double calcularCaloriasQueimadasTreino(Treino treino) throws TreinoNaoEncontradoException {
         return controladorTreino.calcularCaloriasQueimadas(treino);
     }
 
-    public void atualizarProgressoTreino(Treino treino) {
+    public void atualizarProgressoTreino(Treino treino) throws TreinoNaoEncontradoException {
         controladorTreino.atualizarProgresso(treino);
     }
 

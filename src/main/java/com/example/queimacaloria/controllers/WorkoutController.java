@@ -45,7 +45,7 @@ public class WorkoutController {
         Treino treinoSelecionado = workoutTable.getSelectionModel().getSelectedItem();
         if(treinoSelecionado != null){
             try{
-                repositorioTreinos.atualizar(treinoSelecionado.getId());
+                repositorioTreinos.salvar(treinoSelecionado);
                 atualizarTabelaTreinos();
                 workoutMessage.setText("Treino atualizado com sucesso!");
 

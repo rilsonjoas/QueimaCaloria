@@ -2,6 +2,7 @@ package com.example.queimacaloria.dados;
 
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.interfaces.IRepositorioTreinos;
+import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Treino;
 
 import java.util.ArrayList;
@@ -59,8 +60,7 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
     }
 
     @Override
-    public void atualizar(UUID id) throws TreinoNaoEncontradoException {
-        Treino treino = buscar(id);
+    public void salvar(Treino treino) throws TreinoNaoEncontradoException {
         if(treino != null) {
             int indice = this.procurarIndice(treino.getId());
             if (indice != proximoIndice) {

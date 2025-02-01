@@ -1,6 +1,7 @@
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -18,6 +19,13 @@ public class Fachada {
     private ControladorTreino controladorTreino;
 
     private Fachada() {
+        this.controladorUsuario = new ControladorUsuario();
+        this.controladorDieta = new ControladorDieta();
+        this.controladorExercicio = new ControladorExercicio();
+        this.controladorMeta = new ControladorMeta();
+        this.controladorRefeicao = new ControladorRefeicao();
+        this.controladorTreino = new ControladorTreino();
+
 
     }
 
@@ -29,24 +37,24 @@ public class Fachada {
     }
 
     // Métodos de Usuário
-    public void atualizarDadosUsuario(Usuario usuario, String nome, String email, LocalDate dataNascimento,
-            Usuario.Sexo sexo, float peso, float altura) {
-        controladorUsuario.atualizarDados(usuario, nome, email, dataNascimento, sexo, peso, altura);
+    public void atualizarDadosUsuario(Usuario usuario, String nome, String email,String senha, LocalDate dataNascimento,
+            Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
+        controladorUsuario.atualizarDados(usuario, nome, email,senha, dataNascimento, sexo, peso, altura);
     }
 
-    public float calcularIMCUsuario(Usuario usuario) {
+    public float calcularIMCUsuario(Usuario usuario) throws UsuarioNaoEncontradoException {
         return controladorUsuario.calcularIMC(usuario);
     }
 
-    public void cadastrarMetaUsuario(Usuario usuario, Meta meta) {
+    public void cadastrarMetaUsuario(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
         controladorUsuario.cadastrarMeta(usuario, meta);
     }
 
-    public void adicionarTreinoUsuario(Usuario usuario, Treino treino) {
+    public void adicionarTreinoUsuario(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {
         controladorUsuario.adicionarTreino(usuario, treino);
     }
 
-    public void adicionarDietaUsuario(Usuario usuario, Dieta dieta) {
+    public void adicionarDietaUsuario(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException {
         controladorUsuario.adicionarDieta(usuario, dieta);
     }
 

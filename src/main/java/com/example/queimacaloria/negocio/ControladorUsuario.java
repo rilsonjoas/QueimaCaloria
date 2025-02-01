@@ -1,6 +1,7 @@
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioUsuariosArray;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -17,14 +18,18 @@ public class ControladorUsuario {
 
     // Método para atualizar os dados do usuário, ele testa com um if se os dados
     // fornecidos mudaram
-    public void atualizarDados(Usuario usuario, String nome, String email, LocalDate dataNascimento,
-            Usuario.Sexo sexo, float peso, float altura) {
+    public void atualizarDados(Usuario usuario, String nome, String email,String senha,LocalDate dataNascimento,
+            Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
         if (nome != null && !nome.isEmpty()) {
             usuario.setNome(nome);
         }
 
         if (email != null && !email.isEmpty()) {
             usuario.setEmail(email);
+        }
+
+        if (senha != null && !senha.isEmpty()) {
+            usuario.setSenha(senha);
         }
 
         if (dataNascimento != null) {
@@ -44,13 +49,16 @@ public class ControladorUsuario {
         }
 
         calcularIMC(usuario); // Recalcula o IMC após alterar peso e altura
+
+        repositorio.salvar(usuario);
     }
 
     // Método para calcular o IMC do usuário
-    public float calcularIMC(Usuario usuario) {
+    public float calcularIMC(Usuario usuario) throws UsuarioNaoEncontradoException {
         if (usuario.getAltura() > 0 && usuario.getPeso() > 0) {
             float imc = usuario.getPeso() / (usuario.getAltura() * usuario.getAltura()); // IMC = peso / altura²
             usuario.setImc(imc);
+            repositorio.salvar(usuario);
             return imc;
         } else {
             throw new IllegalArgumentException("Altura e peso devem ser maiores que zero.");
@@ -58,24 +66,27 @@ public class ControladorUsuario {
     }
 
     // Método para cadastrar uma meta para o usuário
-    public void cadastrarMeta(Usuario usuario, Meta meta) {
+    public void cadastrarMeta(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
         if (meta != null) {
             usuario.getMetas().add(meta);
+            repositorio.salvar(usuario);
         }
     }
 
     // Método para adicionar um treino para o usuário
-    public void adicionarTreino(Usuario usuario, Treino treino) {
+    public void adicionarTreino(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {
         // Adiciona o treino à lista se ele não for nulo e não existir na lista
         if (treino != null && !usuario.getTreinos().contains(treino)) {
             usuario.getTreinos().add(treino);
+            repositorio.salvar(usuario);
         }
     }
 
     // Método para adicionar uma dieta para o usuário
-    public void adicionarDieta(Usuario usuario, Dieta dieta) {
+    public void adicionarDieta(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException {
         if (dieta != null && !usuario.getDietas().contains(dieta)) {
             usuario.getDietas().add(dieta);
+            repositorio.salvar(usuario);
         }
     }
 

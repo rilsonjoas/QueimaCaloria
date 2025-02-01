@@ -3,6 +3,7 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.dados.RepositorioUsuariosArray;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.ControladorUsuario;
+import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -28,7 +29,15 @@ public class RegisterController {
     private Label registerMessage;
 
 
-    private ControladorUsuario controladorUsuario = new ControladorUsuario();
+   // private ControladorUsuario controladorUsuario ;
+    private Fachada fachada;
+    private RepositorioUsuariosArray repositorioUsuario;
+
+    public RegisterController() {
+        //this.controladorUsuario = new ControladorUsuario();
+        fachada = Fachada.getInstanciaUnica();
+        repositorioUsuario = RepositorioUsuariosArray.getInstanciaUnica();
+    }
 
 
     @FXML
@@ -49,9 +58,11 @@ public class RegisterController {
 
         try {
             Usuario novoUsuario = new Usuario();
-            controladorUsuario.atualizarDados(novoUsuario, nome, email, dataNascimento, sexo, peso, altura);
-            RepositorioUsuariosArray.getInstanciaUnica().adicionar(novoUsuario);
+            repositorioUsuario.adicionar(novoUsuario);
+            fachada.atualizarDadosUsuario(novoUsuario, nome,email,password, dataNascimento, sexo, peso, altura);
             registerMessage.setText("Usuário cadastrado com sucesso!");
+
+            //controladorUsuario.atualizarDados(novoUsuario, nome, email, dataNascimento, sexo, peso, altura);
 
         } catch (IllegalArgumentException e) {
             registerMessage.setText("Erro ao cadastrar usuário: " + e.getMessage());

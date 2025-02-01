@@ -63,23 +63,7 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
     }
 
     @Override
-    public void adicionarMetas(Meta meta) throws MetaNaoEncontradaException {
-
-    }
-
-    @Override
-    public void adicionarTreinos(Treino treino) throws TreinoNaoEncontradoException {
-
-    }
-
-    @Override
-    public void adicionarDietas(Dieta dieta) throws DietaNaoEncontradaException {
-
-    }
-
-    @Override
-    public void atualizar(UUID id) throws UsuarioNaoEncontradoException {
-        Usuario usuario = buscar(id);
+    public void salvar(Usuario usuario) throws UsuarioNaoEncontradoException {
        if(usuario != null) {
            int indice = this.procurarIndice(usuario.getId());
            if (indice != proximoIndice) {

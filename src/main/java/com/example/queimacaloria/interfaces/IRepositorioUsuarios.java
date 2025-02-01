@@ -15,13 +15,7 @@ public interface IRepositorioUsuarios {
 
     public void adicionar(Usuario usuario) throws UsuarioNaoEncontradoException;
 
-    public void adicionarMetas(Meta meta) throws MetaNaoEncontradaException;
-
-    public void adicionarTreinos(Treino treino) throws TreinoNaoEncontradoException;
-
-    public void adicionarDietas(Dieta dieta) throws DietaNaoEncontradaException;
-
-    public void atualizar(UUID id)throws UsuarioNaoEncontradoException;
+    public void salvar(Usuario usuario)throws UsuarioNaoEncontradoException;
 
     public void remover(UUID id)throws UsuarioNaoEncontradoException;
 

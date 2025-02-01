@@ -9,7 +9,7 @@ public interface IRepositorioExercicios {
 
     void adicionar(Exercicio exercicio) throws ExercicioNaoEncontradoException;
 
-    void atualizar(UUID id) throws ExercicioNaoEncontradoException;
+    void salvar(Exercicio exercicio) throws ExercicioNaoEncontradoException;
 
     void remover(UUID id) throws ExercicioNaoEncontradoException;
 

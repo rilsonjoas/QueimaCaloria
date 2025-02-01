@@ -5,7 +5,6 @@ import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -46,7 +45,7 @@ public class ExerciseController {
         Exercicio exercicioSelecionado = exerciseTable.getSelectionModel().getSelectedItem();
         if(exercicioSelecionado != null){
             try{
-                repositorioExercicios.atualizar(exercicioSelecionado.getId());
+                repositorioExercicios.salvar(exercicioSelecionado);
                 atualizarTabelaExercicios();
                 exerciseMessage.setText("Exercício atualizado com sucesso!");
 

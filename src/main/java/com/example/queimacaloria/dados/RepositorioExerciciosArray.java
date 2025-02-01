@@ -54,8 +54,7 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
     }
 
     @Override
-    public void atualizar(UUID id) throws ExercicioNaoEncontradoException {
-        Exercicio exercicio = buscar(id);
+    public void salvar(Exercicio exercicio) throws ExercicioNaoEncontradoException {
         if (exercicio != null) {
             int indice = this.procurarIndice(exercicio.getId());
             if (indice != proximoIndice) {

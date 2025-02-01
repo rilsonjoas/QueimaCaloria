@@ -52,8 +52,7 @@ public class RepositorioDietasArray implements IRepositorioDietas {
     }
 
     @Override
-    public void atualizar(UUID id) throws DietaNaoEncontradaException {
-        Dieta dieta = buscar(id);
+    public void salvar(Dieta dieta) throws DietaNaoEncontradaException {
         if (dieta != null) {
             int indice = this.procurarIndice(dieta.getId());
             if (indice != proximoIndice) {

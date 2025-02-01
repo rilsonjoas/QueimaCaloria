@@ -8,19 +8,33 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
+@Getter
+@ToString
 public class Exercicio {
 
     private final UUID id;
+    @Setter
     private String nome;
+    @Setter
     private String descricao;
+    @Setter
     private ArrayList<String> musculosTrabalhados;
+    @Setter
     private TipoExercicio tipo;
+    @Setter
     private int tempo;
+    @Setter
     private double caloriasQueimadasPorMinuto;
+    @Setter
     private boolean concluido;
+    @Setter
     private double caloriasQueimadas;
 
     public enum TipoExercicio {
@@ -51,74 +65,6 @@ public class Exercicio {
         this.caloriasQueimadas = caloriasQueimadas;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public ArrayList<String> getMusculosTrabalhados() {
-        return musculosTrabalhados;
-    }
-
-    public void setMusculosTrabalhados(ArrayList<String> musculosTrabalhados) {
-        this.musculosTrabalhados = musculosTrabalhados;
-    }
-
-    public TipoExercicio getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(TipoExercicio tipo) {
-        this.tipo = tipo;
-    }
-
-    public int getTempo() {
-        return tempo;
-    }
-
-    public void setTempo(int tempo) {
-        this.tempo = tempo;
-    }
-
-    public double getCaloriasQueimadasPorMinuto() {
-        return caloriasQueimadasPorMinuto;
-    }
-
-    public void setCaloriasQueimadasPorMinuto(double caloriasQueimadasPorMinuto) {
-        this.caloriasQueimadasPorMinuto = caloriasQueimadasPorMinuto;
-    }
-
-    public boolean isConcluido() {
-        return concluido;
-    }
-
-    public void setConcluido(boolean concluido) {
-        this.concluido = concluido;
-    }
-
-    public double getCaloriasQueimadas() {
-        return caloriasQueimadas;
-    }
-
-    public void setCaloriasQueimadas(double caloriasQueimadas) {
-        this.caloriasQueimadas = caloriasQueimadas;
-    }
-
     public StringProperty nomeProperty() {
         return new SimpleStringProperty(nome);
     }
@@ -135,18 +81,4 @@ public class Exercicio {
         return new SimpleDoubleProperty(caloriasQueimadas);
     }
 
-    @Override
-    public String toString() {
-        return "Exercicio{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", descricao='" + descricao + '\'' +
-                ", musculosTrabalhados=" + musculosTrabalhados +
-                ", tipo=" + tipo +
-                ", tempo=" + tempo +
-                ", caloriasQueimadasPorMinuto=" + caloriasQueimadasPorMinuto +
-                ", concluido=" + concluido +
-                ", caloriasQueimadas=" + caloriasQueimadas +
-                '}';
-    }
 }

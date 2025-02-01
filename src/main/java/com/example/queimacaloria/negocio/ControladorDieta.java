@@ -2,6 +2,7 @@ package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioDietasArray;
 import com.example.queimacaloria.dados.RepositorioExerciciosArray;
+import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
 
 import java.util.*;
 
@@ -14,23 +15,26 @@ public class ControladorDieta {
     }
 
     // Construtor com parâmetros
-    public void inicializar(Dieta dieta, String nome, Dieta.Objetivo objetivo, int caloriasDiarias, Usuario usuario) {
+    public void inicializar(Dieta dieta, String nome, Dieta.Objetivo objetivo, int caloriasDiarias, Usuario usuario) throws DietaNaoEncontradaException {
         dieta.setNome(nome);
         dieta.setObjetivo(objetivo);
         dieta.setCaloriasDiarias(caloriasDiarias);
         dieta.setUsuario(usuario);
+        repositorio.adicionar(dieta);
     }
 
     // Adiciona uma refeição à lista de refeições
-    public void adicionarRefeicao(Dieta dieta, Refeicao refeicao) {
+    public void adicionarRefeicao(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
         if (refeicao != null && !dieta.getRefeicoes().contains(refeicao)) {
             dieta.getRefeicoes().add(refeicao);
+            repositorio.salvar(dieta);
         }
     }
 
     // Remove uma refeição da lista de refeições
-    public void removerRefeicao(Dieta dieta, Refeicao refeicao) {
+    public void removerRefeicao(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
         dieta.getRefeicoes().remove(refeicao);
+        repositorio.salvar(dieta);
     }
 
     // Calcula o total de macronutrientes da dieta com base nas refeições que a compõem

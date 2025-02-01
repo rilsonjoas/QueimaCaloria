@@ -9,7 +9,7 @@ public interface IRepositorioDietas {
 
     void adicionar(Dieta dieta) throws DietaNaoEncontradaException;
 
-    void atualizar(UUID id) throws DietaNaoEncontradaException;
+    void salvar(Dieta dieta) throws DietaNaoEncontradaException;
 
     void remover(UUID id) throws DietaNaoEncontradaException;
 

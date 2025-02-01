@@ -1,8 +1,6 @@
 package com.example.queimacaloria.negocio;
 
-import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
-import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
-import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
+import com.example.queimacaloria.excecoes.*;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -69,15 +67,15 @@ public class Fachada {
 
     // Métodos de Dieta
     public void inicializarDieta(Dieta dieta, String nome, Dieta.Objetivo objetivo, int caloriasDiarias,
-            Usuario usuario) {
+            Usuario usuario) throws DietaNaoEncontradaException {
         controladorDieta.inicializar(dieta, nome, objetivo, caloriasDiarias, usuario);
     }
 
-    public void adicionarRefeicaoDieta(Dieta dieta, Refeicao refeicao) {
+    public void adicionarRefeicaoDieta(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
         controladorDieta.adicionarRefeicao(dieta, refeicao);
     }
 
-    public void removerRefeicaoDieta(Dieta dieta, Refeicao refeicao) {
+    public void removerRefeicaoDieta(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
         controladorDieta.removerRefeicao(dieta, refeicao);
     }
 
@@ -100,24 +98,24 @@ public class Fachada {
 
     // Métodos de Exercício
     public void inicializarExercicio(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
-            int tempo, double caloriasQueimadasPorMinuto) {
+            int tempo, double caloriasQueimadasPorMinuto) throws ExercicioNaoEncontradoException {
         controladorExercicio.inicializar(exercicio, nome, descricao, tipo, tempo, caloriasQueimadasPorMinuto);
     }
 
-    public void adicionarMusculoTrabalhadoExercicio(Exercicio exercicio, String musculo) {
+    public void adicionarMusculoTrabalhadoExercicio(Exercicio exercicio, String musculo) throws ExercicioNaoEncontradoException {
         controladorExercicio.adicionarMusculoTrabalhado(exercicio, musculo);
     }
 
-    public void removerMusculoTrabalhadoExercicio(Exercicio exercicio, String musculo) {
+    public void removerMusculoTrabalhadoExercicio(Exercicio exercicio, String musculo) throws ExercicioNaoEncontradoException {
         controladorExercicio.removerMusculoTrabalhado(exercicio, musculo);
 
     }
 
-    public double calcularCaloriasQueimadasExercicio(Exercicio exercicio) {
+    public double calcularCaloriasQueimadasExercicio(Exercicio exercicio) throws ExercicioNaoEncontradoException {
         return controladorExercicio.calcularCaloriasQueimadas(exercicio);
     }
 
-    public void concluirExercicio(Exercicio exercicio) {
+    public void concluirExercicio(Exercicio exercicio) throws ExercicioNaoEncontradoException {
         controladorExercicio.concluir(exercicio);
     }
 
@@ -161,15 +159,15 @@ public class Fachada {
         controladorTreino.inicializar(treino, nome, tipoDeTreino, duracao, nivelDeDificuldade);
     }
 
-    public void adicionarExercicioTreino(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException {
+    public void adicionarExercicioTreino(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         controladorTreino.adicionarExercicio(treino, exercicio);
     }
 
-    public void removerExercicioTreino(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException {
+    public void removerExercicioTreino(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         controladorTreino.removerExercicio(treino, exercicio);
     }
 
-    public double calcularCaloriasQueimadasTreino(Treino treino) throws TreinoNaoEncontradoException {
+    public double calcularCaloriasQueimadasTreino(Treino treino) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         return controladorTreino.calcularCaloriasQueimadas(treino);
     }
 

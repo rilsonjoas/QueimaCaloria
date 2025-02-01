@@ -8,19 +8,30 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Getter
+@ToString
 public class Dieta {
     private final UUID id;
+    @Setter
     private String nome;
+    @Setter
     private Objetivo objetivo;
+    @Setter
     private int caloriasDiarias;
+    @Setter
     private Map<String, Double> macronutrientes;
+    @Setter
     private ArrayList<Refeicao> refeicoes;
+    @Setter
     private Usuario usuario;
 
     public enum Objetivo {
@@ -44,58 +55,6 @@ public class Dieta {
         this.usuario = usuario;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Objetivo getObjetivo() {
-        return objetivo;
-    }
-
-    public void setObjetivo(Objetivo objetivo) {
-        this.objetivo = objetivo;
-    }
-
-    public int getCaloriasDiarias() {
-        return caloriasDiarias;
-    }
-
-    public void setCaloriasDiarias(int caloriasDiarias) {
-        this.caloriasDiarias = caloriasDiarias;
-    }
-
-    public Map<String, Double> getMacronutrientes() {
-        return macronutrientes;
-    }
-
-    public void setMacronutrientes(Map<String, Double> macronutrientes) {
-        this.macronutrientes = macronutrientes;
-    }
-
-    public ArrayList<Refeicao> getRefeicoes() {
-        return refeicoes;
-    }
-
-    public void setRefeicoes(ArrayList<Refeicao> refeicoes) {
-        this.refeicoes = refeicoes;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
     public StringProperty nomeProperty() {
         return new SimpleStringProperty(nome);
     }
@@ -111,17 +70,5 @@ public class Dieta {
     public DoubleProperty progressProperty() {
         ControladorDieta controladorDieta = new ControladorDieta();
         return new SimpleDoubleProperty(controladorDieta.getProgresso(this));
-    }
-    @Override
-    public String toString() {
-        return "Dieta{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", objetivo=" + objetivo +
-                ", caloriasDiarias=" + caloriasDiarias +
-                ", macronutrientes=" + macronutrientes +
-                ", refeicoes=" + refeicoes +
-                ", usuario=" + usuario +
-                '}';
     }
 }

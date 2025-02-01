@@ -5,7 +5,6 @@ import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
 import com.example.queimacaloria.negocio.Dieta;
 import com.example.queimacaloria.negocio.Fachada;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -45,7 +44,7 @@ public class DietController {
         Dieta dietaSelecionada = dietTable.getSelectionModel().getSelectedItem();
         if(dietaSelecionada != null){
             try{
-                repositorioDietas.atualizar(dietaSelecionada.getId());
+                repositorioDietas.salvar(dietaSelecionada);
                 atualizarTabelaDietas();
                 dietMessage.setText("Dieta atualizada com sucesso!");
 

@@ -1,6 +1,7 @@
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioTreinosArray;
+import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 
 import java.util.*;
@@ -25,7 +26,7 @@ public class ControladorTreino {
     }
 
     // Método para adicionar um exercício ao treino
-    public void adicionarExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException {
+    public void adicionarExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         if (exercicio != null && !treino.getExercicios().contains(exercicio)) {
             treino.getExercicios().add(exercicio);
             calcularCaloriasQueimadas(treino); // Recalcula as calorias queimadas
@@ -34,7 +35,7 @@ public class ControladorTreino {
     }
 
     // Método para remover um exercício do treino
-    public void removerExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException {
+    public void removerExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         if (exercicio != null && treino.getExercicios().contains(exercicio)) {
             treino.getExercicios().remove(exercicio);
             calcularCaloriasQueimadas(treino); // Recalcula as calorias queimadas
@@ -43,7 +44,7 @@ public class ControladorTreino {
     }
 
     // Método para calcular as calorias queimadas no treino
-    public double calcularCaloriasQueimadas(Treino treino) throws TreinoNaoEncontradoException {
+    public double calcularCaloriasQueimadas(Treino treino) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         double caloriasQueimadas = 0;
         for (Exercicio exercicio : treino.getExercicios()) {
             ControladorExercicio ce = new ControladorExercicio();

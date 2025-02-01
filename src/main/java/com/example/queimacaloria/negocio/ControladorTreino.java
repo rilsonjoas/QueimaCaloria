@@ -15,13 +15,13 @@ public class ControladorTreino {
 
     // Construtor com parâmetros
     public void inicializar(Treino treino, String nome, String tipoDeTreino, int duracao,
-            int nivelDeDificuldade) {
+            int nivelDeDificuldade) throws TreinoNaoEncontradoException {
 
         treino.setNome(nome);
         treino.setTipoDeTreino(tipoDeTreino);
         treino.setDuracao(duracao);
         treino.setNivelDeDificuldade(nivelDeDificuldade);
-
+        repositorio.adicionar(treino);
     }
 
     // Método para adicionar um exercício ao treino

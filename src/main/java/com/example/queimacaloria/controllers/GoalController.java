@@ -44,7 +44,7 @@ public class GoalController {
         Meta metaSelecionada = goalTable.getSelectionModel().getSelectedItem();
         if(metaSelecionada != null){
             try{
-                repositorioMetas.atualizar(metaSelecionada.getId());
+                repositorioMetas.salvar(metaSelecionada);
                 atualizarTabelaMetas();
                 goalMessage.setText("Meta atualizada com sucesso!");
 

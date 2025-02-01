@@ -6,16 +6,28 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.Date;
 import java.util.UUID;
 
+@Getter
+@ToString
 public class Meta {
     private final UUID id;
+    @Setter
     private String descricao;
+    @Setter
     private Tipo tipo;
+    @Setter
     private double valorAlvo;
+    @Setter
     private double progressoAtual;
+    @Setter
     private Date dataCriacao;
+    @Setter
     private Date dataConclusao;
 
     public enum Tipo {
@@ -38,58 +50,6 @@ public class Meta {
         this.dataConclusao = dataConclusao;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public Tipo getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(Tipo tipo) {
-        this.tipo = tipo;
-    }
-
-    public double getValorAlvo() {
-        return valorAlvo;
-    }
-
-    public void setValorAlvo(double valorAlvo) {
-        this.valorAlvo = valorAlvo;
-    }
-
-    public double getProgressoAtual() {
-        return progressoAtual;
-    }
-
-    public void setProgressoAtual(double progressoAtual) {
-        this.progressoAtual = progressoAtual;
-    }
-
-    public Date getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(Date dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-
-    public Date getDataConclusao() {
-        return dataConclusao;
-    }
-
-    public void setDataConclusao(Date dataConclusao) {
-        this.dataConclusao = dataConclusao;
-    }
-
     public StringProperty descricaoProperty() {
         return new SimpleStringProperty(descricao);
     }
@@ -108,16 +68,4 @@ public class Meta {
     }
 
 
-    @Override
-    public String toString() {
-        return "Meta{" +
-                "id=" + id +
-                ", descricao='" + descricao + '\'' +
-                ", tipo=" + tipo +
-                ", valorAlvo=" + valorAlvo +
-                ", progressoAtual=" + progressoAtual +
-                ", dataCriacao=" + dataCriacao +
-                ", dataConclusao=" + dataConclusao +
-                '}';
-    }
 }

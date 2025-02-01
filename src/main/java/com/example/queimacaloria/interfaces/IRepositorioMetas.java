@@ -9,7 +9,7 @@ public interface IRepositorioMetas {
 
     void adicionar(Meta meta) throws MetaNaoEncontradaException;
 
-    void atualizar(UUID id) throws MetaNaoEncontradaException;
+    void salvar(Meta meta) throws MetaNaoEncontradaException;
 
     void remover(UUID id) throws MetaNaoEncontradaException;
 

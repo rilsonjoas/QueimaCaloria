@@ -54,8 +54,7 @@ public class RepositorioMetasArray implements IRepositorioMetas {
     }
 
     @Override
-    public void atualizar(UUID id) throws MetaNaoEncontradaException {
-        Meta meta = buscar(id);
+    public void salvar(Meta meta) throws MetaNaoEncontradaException {
         if (meta != null) {
             int indice = this.procurarIndice(meta.getId());
             if (indice != proximoIndice) {

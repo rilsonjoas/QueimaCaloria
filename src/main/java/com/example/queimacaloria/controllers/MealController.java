@@ -23,9 +23,14 @@ public class MealController {
     @FXML
     private Label mealMessage;
 
-    private RepositorioRefeicoesArray repositorioRefeicoes = RepositorioRefeicoesArray.getInstanciaUnica();
+    private RepositorioRefeicoesArray repositorioRefeicoes ;
 
-    private Fachada fachada = Fachada.getInstanciaUnica();
+    private Fachada fachada;
+
+    public MealController(){
+        this.repositorioRefeicoes = RepositorioRefeicoesArray.getInstanciaUnica();
+        this.fachada = Fachada.getInstanciaUnica();
+    }
 
     @FXML
     public void initialize() {
@@ -44,7 +49,7 @@ public class MealController {
         Refeicao refeicaoSelecionada = mealTable.getSelectionModel().getSelectedItem();
         if(refeicaoSelecionada != null){
             try{
-                repositorioRefeicoes.atualizar(refeicaoSelecionada.getId());
+                repositorioRefeicoes.salvar(refeicaoSelecionada);
                 atualizarTabelaRefeicoes();
                 mealMessage.setText("Refeição atualizada com sucesso!");
 

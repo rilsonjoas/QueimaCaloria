@@ -1,5 +1,6 @@
 package com.example.queimacaloria.negocio;
 
+import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 
@@ -122,7 +123,7 @@ public class Fachada {
 
     // Métodos de Meta
     public void inicializarMeta(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
-            Date dataConclusao) {
+            Date dataConclusao) throws MetaNaoEncontradaException {
         controladorMeta.inicializar(meta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
     }
 
@@ -135,7 +136,7 @@ public class Fachada {
 
     }
 
-    public void concluirMeta(Meta meta) {
+    public void concluirMeta(Meta meta) throws MetaNaoEncontradaException {
         controladorMeta.concluirMeta(meta);
     }
 
@@ -156,7 +157,7 @@ public class Fachada {
 
     // Métodos de Treino
     public void inicializarTreino(Treino treino, String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade,
-            Usuario usuario) {
+            Usuario usuario) throws TreinoNaoEncontradoException {
         controladorTreino.inicializar(treino, nome, tipoDeTreino, duracao, nivelDeDificuldade);
     }
 

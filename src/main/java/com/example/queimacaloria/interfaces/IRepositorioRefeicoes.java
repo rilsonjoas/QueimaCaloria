@@ -9,7 +9,7 @@ public interface IRepositorioRefeicoes {
 
     public void adicionar(Refeicao refeicao) throws RefeicaoNaoEncontradaException;
 
-    public void atualizar(UUID id) throws RefeicaoNaoEncontradaException;
+    public void salvar(Refeicao refeicao) throws RefeicaoNaoEncontradaException;
 
     public void remover(UUID id) throws RefeicaoNaoEncontradaException;
 

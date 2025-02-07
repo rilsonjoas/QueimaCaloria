@@ -22,7 +22,13 @@ public class ControladorMeta {
         meta.setValorAlvo(valorAlvo);
         meta.setProgressoAtual(progressoAtual);
         meta.setDataConclusao(dataConclusao);
-        repositorio.adicionar(meta);
+
+        // Importante: Se a meta já existe, usa salvar. Se não existe, adiciona.
+        try {
+            repositorio.salvar(meta);
+        } catch (MetaNaoEncontradaException e) {
+            repositorio.adicionar(meta);
+        }
     }
 
     // Verifica se a meta foi concluída
@@ -42,5 +48,10 @@ public class ControladorMeta {
     public void concluirMeta(Meta meta) throws MetaNaoEncontradaException {
         meta.setDataConclusao(new Date());
         repositorio.salvar(meta);
+    }
+
+    // Método para listar todas as metas
+    public List<Meta> listarMetas() {
+        return repositorio.getAll();
     }
 }

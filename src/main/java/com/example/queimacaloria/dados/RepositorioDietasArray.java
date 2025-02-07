@@ -77,7 +77,6 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         }
     }
 
-
     @Override
     public Dieta buscar(UUID id) throws DietaNaoEncontradaException {
         int indice = procurarIndice(id);
@@ -88,6 +87,7 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         }
     }
 
+    // Método getAll() para retornar a lista de dietas
     public List<Dieta> getAll() {
         List<Dieta> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {

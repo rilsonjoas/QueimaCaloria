@@ -21,7 +21,14 @@ public class ControladorExercicio {
         exercicio.setTipo(tipo);
         exercicio.setTempo(tempo);
         exercicio.setCaloriasQueimadasPorMinuto(caloriasQueimadasPorMinuto);
-        repositorio.adicionar(exercicio);
+
+        // Importante: Se o exercício já existe, usa salvar. Se não existe, adiciona.
+        try {
+            repositorio.salvar(exercicio);
+        } catch (ExercicioNaoEncontradoException e) {
+            repositorio.adicionar(exercicio);
+        }
+
     }
 
     // Adiciona um músculo à lista de músculos trabalhados, verificando se já existe
@@ -52,4 +59,8 @@ public class ControladorExercicio {
         repositorio.salvar(exercicio);
     }
 
+    // Método para listar todos os exercícios
+    public List<Exercicio> listarExercicios() {
+        return repositorio.getAll();
+    }
 }

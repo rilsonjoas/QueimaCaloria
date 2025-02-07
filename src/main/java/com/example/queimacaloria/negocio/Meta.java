@@ -59,7 +59,7 @@ public class Meta {
     }
 
 
-    public DoubleProperty progressProperty() {
+    public DoubleProperty progressoProperty() {
         return new SimpleDoubleProperty(progressoAtual);
     }
 

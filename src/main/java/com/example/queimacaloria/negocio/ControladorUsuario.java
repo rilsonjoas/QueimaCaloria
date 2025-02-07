@@ -148,7 +148,7 @@ public class ControladorUsuario {
     // Método para calcular o progresso da dieta em relação à meta de calorias
     // diárias
     public double calcularProgressoDieta(Dieta dieta) {
-        int caloriasDiarias = dieta.getCaloriasDiarias();
+        int caloriasDiarias = dieta.getCaloriasDiarias().get();
         if (caloriasDiarias == 0) {
             return 0;
         }
@@ -158,7 +158,7 @@ public class ControladorUsuario {
     // Calcula o total de calorias da dieta com base nas refeições
     public int calcularCaloriasTotaisDieta(Dieta dieta) {
         int totalCalorias = 0;
-        for (Refeicao refeicao : dieta.getRefeicoes()) {
+        for (Refeicao refeicao : dieta.getRefeicoes().get()) {
             totalCalorias += refeicao.getCalorias();
         }
         return totalCalorias;

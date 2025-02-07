@@ -2,6 +2,7 @@ package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
 import com.example.queimacaloria.dados.RepositorioUsuariosArray;
+import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
 
 import java.util.*;
 
@@ -19,9 +20,17 @@ public class ControladorRefeicao {
         refeicao.setDescricao(descricao);
         refeicao.setMacronutrientes(macronutrientes);
         refeicao.setCalorias(calcularCalorias(refeicao));
+
+        // Importante: Se a refeicao já existe, usa salvar. Se não existe, adiciona.
+        try {
+            repositorio.salvar(refeicao);
+        } catch (RefeicaoNaoEncontradaException e) {
+            repositorio.adicionar(refeicao);
+        }
     }
 
-    // Método para calcular o total de calorias da refeição com base nos macronutrientes
+    // Método para calcular o total de calorias da refeição com base nos
+    // macronutrientes
     public int calcularCalorias(Refeicao refeicao) {
         double totalCalorias = 0;
         if (refeicao.getMacronutrientes() != null) {
@@ -44,6 +53,11 @@ public class ControladorRefeicao {
     // Refeição
     public Map<String, Double> calcularMacronutrientes(Refeicao refeicao) {
         return new HashMap<>(refeicao.getMacronutrientes()); // Retorna uma cópia
+    }
+
+    // Método para listar todas as refeições
+    public List<Refeicao> listarRefeicoes() {
+        return repositorio.getAll();
     }
 
 }

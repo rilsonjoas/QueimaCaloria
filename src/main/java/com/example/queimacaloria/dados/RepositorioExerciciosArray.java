@@ -40,7 +40,6 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
         return achou ? i : proximoIndice;
     }
 
-
     @Override
     public void adicionar(Exercicio exercicio) throws ExercicioNaoEncontradoException {
         if (proximoIndice >= exercicios.length) {
@@ -79,7 +78,6 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
         }
     }
 
-
     @Override
     public Exercicio buscar(UUID id) throws ExercicioNaoEncontradoException {
         int indice = procurarIndice(id);
@@ -89,6 +87,8 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
             throw new ExercicioNaoEncontradoException("Exercício não encontrado para buscar.");
         }
     }
+
+    // Método getAll() para retornar a lista de exercícios
     public List<Exercicio> getAll() {
         List<Exercicio> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {

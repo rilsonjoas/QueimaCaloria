@@ -1,74 +1,70 @@
 package com.example.queimacaloria.negocio;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import javafx.beans.property.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Getter
-@ToString
+@Data
+@NoArgsConstructor
 public class Dieta {
-    private final UUID id;
-    @Setter
-    private String nome;
-    @Setter
-    private Objetivo objetivo;
-    @Setter
-    private int caloriasDiarias;
-    @Setter
-    private Map<String, Double> macronutrientes;
-    @Setter
-    private ArrayList<Refeicao> refeicoes;
-    @Setter
-    private Usuario usuario;
+    private final UUID id = UUID.randomUUID();
+    private StringProperty nome = new SimpleStringProperty("");
+    private ObjectProperty<ObjetivoDieta> objetivo = new SimpleObjectProperty<>();
+    private IntegerProperty caloriasDiarias = new SimpleIntegerProperty(0);
+    private ObjectProperty<Map<String, Double>> macronutrientes = new SimpleObjectProperty<>(new HashMap<>());
+    private ObjectProperty<ArrayList<Refeicao>> refeicoes = new SimpleObjectProperty<>(new ArrayList<>());
+    private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
 
-    public enum Objetivo {
-        PERDA_DE_PESO, GANHO_DE_MASSA, MANUTENCAO;
+    public enum ObjetivoDieta {
+        PERDA_DE_PESO, GANHO_DE_MASSA, MANUTENCAO
     }
 
-    public Dieta() {
-        this.id = UUID.randomUUID();
-        this.macronutrientes = new HashMap<>();
-        this.refeicoes = new ArrayList<>();
+    public Dieta(String nome, ObjetivoDieta objetivo, int caloriasDiarias,
+            Map<String, Double> macronutrientes, ArrayList<Refeicao> refeicoes, Usuario usuario) {
+        this.nome = new SimpleStringProperty(nome);
+        this.objetivo = new SimpleObjectProperty<>(objetivo);
+        this.caloriasDiarias = new SimpleIntegerProperty(caloriasDiarias);
+        this.macronutrientes = new SimpleObjectProperty<>(macronutrientes);
+        this.refeicoes = new SimpleObjectProperty<>(refeicoes);
+        this.usuario = new SimpleObjectProperty<>(usuario);
     }
 
-    public Dieta(String nome, Objetivo objetivo, int caloriasDiarias, Map<String, Double> macronutrientes,
-                 ArrayList<Refeicao> refeicoes, Usuario usuario) {
-        this.id = UUID.randomUUID();
-        this.nome = nome;
-        this.objetivo = objetivo;
-        this.caloriasDiarias = caloriasDiarias;
-        this.macronutrientes = macronutrientes;
-        this.refeicoes = refeicoes;
-        this.usuario = usuario;
+    public double calcularProgresso() {
+        ControladorDieta controladorDieta = new ControladorDieta();
+        return controladorDieta.calcularProgresso(this);
     }
 
+    public DoubleProperty progressoDaDietaProperty() {
+        return new SimpleDoubleProperty(calcularProgresso());
+    }
+
+    // Métodos Property *DENTRO* da classe Dieta (essenciais!)
     public StringProperty nomeProperty() {
-        return new SimpleStringProperty(nome);
+        return nome;
     }
 
-    public ObjectProperty<Objetivo> objetivoProperty() {
-        return new SimpleObjectProperty<>(objetivo);
+    public ObjectProperty<ObjetivoDieta> objetivoProperty() {
+        return objetivo;
     }
 
     public IntegerProperty caloriasDiariasProperty() {
-        return new SimpleIntegerProperty(caloriasDiarias);
+        return caloriasDiarias;
     }
 
-    public DoubleProperty progressProperty() {
-        ControladorDieta controladorDieta = new ControladorDieta();
-        return new SimpleDoubleProperty(controladorDieta.getProgresso(this));
+    public ObjectProperty<Map<String, Double>> macronutrientesProperty() {
+        return macronutrientes;
+    }
+
+    public ObjectProperty<ArrayList<Refeicao>> refeicoesProperty() {
+        return refeicoes;
+    }
+
+    public ObjectProperty<Usuario> usuarioProperty() {
+        return usuario;
     }
 }

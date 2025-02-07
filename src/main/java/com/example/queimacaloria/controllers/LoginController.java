@@ -4,28 +4,30 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import com.example.queimacaloria.negocio.Usuario;
+import com.example.queimacaloria.negocio.Usuario;  // Certifique-se de que Usuario está importado
 import java.util.ArrayList;
 import java.time.LocalDate;
 
 public class LoginController {
 
-    @FXML private TextField emailField;
-
-    @FXML private PasswordField passwordField;
+    @FXML
+    private TextField campoEmail; // Alterado para português
 
     @FXML
-    private Label loginMessage;
+    private PasswordField campoSenha; // Alterado para português
+
+    @FXML
+    private Label mensagemLogin; // Alterado para português
 
     @FXML
     public void login() {
-        String email = emailField.getText();
-        String password = passwordField.getText();
+        String email = campoEmail.getText();
+        String password = campoSenha.getText();
 
         if (email.equals("admin") && password.equals("admin")) {
-            loginMessage.setText("Login efetuado com sucesso");
-        }else {
-            loginMessage.setText("Credenciais inválidas");
+            mensagemLogin.setText("Login efetuado com sucesso");
+        }  else {
+            mensagemLogin.setText("Credenciais inválidas");
         }
     }
 }

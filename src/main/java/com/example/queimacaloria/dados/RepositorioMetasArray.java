@@ -40,7 +40,6 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         return achou ? i : proximoIndice;
     }
 
-
     @Override
     public void adicionar(Meta meta) throws MetaNaoEncontradaException {
         if (proximoIndice >= metas.length) {
@@ -79,7 +78,6 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         }
     }
 
-
     @Override
     public Meta buscar(UUID id) throws MetaNaoEncontradaException {
         int indice = procurarIndice(id);
@@ -90,6 +88,7 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         }
     }
 
+    // Método getAll() para retornar a lista de metas.
     public List<Meta> getAll() {
         List<Meta> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {

@@ -64,7 +64,7 @@ public class Treino {
         return new SimpleIntegerProperty(nivelDeDificuldade);
     }
 
-    public DoubleProperty progressProperty() {
+    public DoubleProperty progressoProperty() {
         return new SimpleDoubleProperty(progresso);
     }
 

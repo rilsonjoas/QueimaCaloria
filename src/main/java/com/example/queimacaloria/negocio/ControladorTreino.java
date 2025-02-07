@@ -22,11 +22,18 @@ public class ControladorTreino {
         treino.setTipoDeTreino(tipoDeTreino);
         treino.setDuracao(duracao);
         treino.setNivelDeDificuldade(nivelDeDificuldade);
-        repositorio.adicionar(treino);
+
+        // Importante: Se o treino já existe, usa salvar. Se não existe, adiciona.
+        try {
+            repositorio.salvar(treino);
+        } catch (TreinoNaoEncontradoException e) {
+            repositorio.adicionar(treino);
+        }
     }
 
     // Método para adicionar um exercício ao treino
-    public void adicionarExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
+    public void adicionarExercicio(Treino treino, Exercicio exercicio)
+            throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         if (exercicio != null && !treino.getExercicios().contains(exercicio)) {
             treino.getExercicios().add(exercicio);
             calcularCaloriasQueimadas(treino); // Recalcula as calorias queimadas
@@ -35,7 +42,8 @@ public class ControladorTreino {
     }
 
     // Método para remover um exercício do treino
-    public void removerExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
+    public void removerExercicio(Treino treino, Exercicio exercicio)
+            throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         if (exercicio != null && treino.getExercicios().contains(exercicio)) {
             treino.getExercicios().remove(exercicio);
             calcularCaloriasQueimadas(treino); // Recalcula as calorias queimadas
@@ -44,7 +52,8 @@ public class ControladorTreino {
     }
 
     // Método para calcular as calorias queimadas no treino
-    public double calcularCaloriasQueimadas(Treino treino) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
+    public double calcularCaloriasQueimadas(Treino treino)
+            throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         double caloriasQueimadas = 0;
         for (Exercicio exercicio : treino.getExercicios()) {
             ControladorExercicio ce = new ControladorExercicio();
@@ -64,12 +73,16 @@ public class ControladorTreino {
             return;
         }
 
-
         long exerciciosConcluidos = treino.getExercicios().stream().filter(Exercicio::isConcluido).count();
         double progresso = (exerciciosConcluidos / (double) treino.getExercicios().size()) * 100.0;
         treino.setProgresso(progresso);
         treino.setConcluido(progresso == 100.0);
         repositorio.salvar(treino);
+    }
+
+    // Método para listar todos os treinos
+    public List<Treino> listarTreinos() {
+        return repositorio.getAll();
     }
 
 }

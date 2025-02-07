@@ -10,6 +10,8 @@ import com.example.queimacaloria.negocio.Meta;
 import com.example.queimacaloria.negocio.Treino;
 import com.example.queimacaloria.negocio.Usuario;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class RepositorioUsuariosArray implements IRepositorioUsuarios {
@@ -18,7 +20,6 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
     private int proximoIndice;
 
     private static RepositorioUsuariosArray instanciaUnica;
-
 
     public RepositorioUsuariosArray() {
         usuarios = new Usuario[10];
@@ -47,14 +48,14 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
 
     @Override
     public void adicionar(Usuario usuario) throws UsuarioNaoEncontradoException {
-        if(proximoIndice > usuarios.length - 1) {
-          int novoTam = proximoIndice + 10;
-          Usuario[] arrayTemporario = new Usuario[novoTam];
+        if (proximoIndice > usuarios.length - 1) {
+            int novoTam = proximoIndice + 10;
+            Usuario[] arrayTemporario = new Usuario[novoTam];
 
-          for (int i = 0; i < proximoIndice; i++) {
-              arrayTemporario[i] = usuarios[i];
-          }
-          usuarios = arrayTemporario;
+            for (int i = 0; i < proximoIndice; i++) {
+                arrayTemporario[i] = usuarios[i];
+            }
+            usuarios = arrayTemporario;
         }
 
         usuarios[proximoIndice] = usuario;
@@ -64,15 +65,15 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
 
     @Override
     public void salvar(Usuario usuario) throws UsuarioNaoEncontradoException {
-       if(usuario != null) {
-           int indice = this.procurarIndice(usuario.getId());
-           if (indice != proximoIndice) {
-               usuarios[indice] = usuario;
-           }
+        if (usuario != null) {
+            int indice = this.procurarIndice(usuario.getId());
+            if (indice != proximoIndice) {
+                usuarios[indice] = usuario;
+            }
 
-       }else{
-           throw new IllegalArgumentException("Usuário inválido.");
-       }
+        } else {
+            throw new IllegalArgumentException("Usuário inválido.");
+        }
 
     }
 
@@ -84,19 +85,30 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
             this.usuarios[this.proximoIndice - 1] = null;
             this.proximoIndice = this.proximoIndice - 1;
         } else {
-            throw  new UsuarioNaoEncontradoException("Usuario Nao encontrado");
+            throw new UsuarioNaoEncontradoException("Usuario Nao encontrado");
         }
     }
 
     @Override
     public Usuario buscar(UUID id) throws UsuarioNaoEncontradoException {
         int indice = procurarIndice(id);
-        if ( indice < proximoIndice) {
+        if (indice < proximoIndice) {
             return usuarios[indice];
 
-        }else{
+        } else {
             throw new UsuarioNaoEncontradoException("Usuario Nao encontrado");
         }
 
+    }
+
+    // Método getAll() para retornar a lista de Usuários.
+    public List<Usuario> getAll() {
+        List<Usuario> lista = new ArrayList<>();
+        for (int i = 0; i < proximoIndice; i++) {
+            if (usuarios[i] != null) {
+                lista.add(usuarios[i]);
+            }
+        }
+        return lista;
     }
 }

@@ -37,7 +37,7 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
                 i++;
             }
         }
-        return achou ? i : proximoIndice; //retorna proximoIndice se nao achar
+        return achou ? i : proximoIndice; // retorna proximoIndice se nao achar
     }
 
     @Override
@@ -53,21 +53,19 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
 
     }
 
-
     @Override
     public void salvar(Refeicao refeicao) throws RefeicaoNaoEncontradaException {
-        if(refeicao != null) {
+        if (refeicao != null) {
             int indice = this.procurarIndice(refeicao.getId());
             if (indice != proximoIndice) {
                 refeicoes[indice] = refeicao;
-            }else {
+            } else {
                 throw new RefeicaoNaoEncontradaException("Refeição não encontrada para atualizar.");
             }
-        }else{
+        } else {
             throw new IllegalArgumentException("Refeição inválida.");
         }
     }
-
 
     @Override
     public void remover(UUID id) throws RefeicaoNaoEncontradaException {
@@ -90,6 +88,8 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
             throw new RefeicaoNaoEncontradaException("Refeição não encontrada.");
         }
     }
+
+    // Método getAll() para retornar a lista de refeições.
     public List<Refeicao> getAll() {
         List<Refeicao> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {

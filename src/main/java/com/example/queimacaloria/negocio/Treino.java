@@ -47,6 +47,19 @@ public class Treino {
         this.concluido = concluido;
     }
 
+    public Treino(String nome, String tipoDeTreino, String tipo, int duracao, int nivelDeDificuldade,
+            ArrayList<Exercicio> exercicios, double caloriasQueimadas, double progresso, boolean concluido) {
+        this.id = UUID.randomUUID();
+        this.nome = nome;
+        this.tipoDeTreino = tipoDeTreino;
+        this.duracao = duracao;
+        this.nivelDeDificuldade = nivelDeDificuldade;
+        this.exercicios = (exercicios != null) ? exercicios : new ArrayList<>(); // Importante!
+        this.caloriasQueimadas = caloriasQueimadas;
+        this.progresso = progresso;
+        this.concluido = concluido;
+    }
+
 
     public StringProperty nomeProperty() {
         return new SimpleStringProperty(nome);

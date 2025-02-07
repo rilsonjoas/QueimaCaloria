@@ -15,16 +15,13 @@ import java.util.UUID;
 
 @ToString
 @Getter
+@Setter
 public class Refeicao {
 
     private final UUID id;
-    @Setter
     private String nome;
-    @Setter
     private String descricao;
-    @Setter
     private int calorias;
-    @Setter
     private Map<String, Double> macronutrientes;
 
     public Refeicao() {
@@ -35,7 +32,15 @@ public class Refeicao {
         this.id = UUID.randomUUID();
         this.nome = nome;
         this.descricao = descricao;
-        this.calorias = calorias;
+        this.calorias = calorias; // Você já recebe as calorias
+        this.macronutrientes = macronutrientes;
+    }
+
+    // Construtor sem as calorias (para o inicializador)
+    public Refeicao(String nome, String descricao, Map<String, Double> macronutrientes) {
+        this.id = UUID.randomUUID();
+        this.nome = nome;
+        this.descricao = descricao;
         this.macronutrientes = macronutrientes;
     }
 
@@ -50,6 +55,4 @@ public class Refeicao {
     public ObjectProperty<Map<String, Double>> macronutrientesProperty() {
         return new SimpleObjectProperty<>(macronutrientes);
     }
-
-
 }

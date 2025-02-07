@@ -46,6 +46,7 @@
                 <Label fx:id="labelNomeDieta" text="Nome: " textFill="WHITE" />
                 <Label fx:id="labelObjetivoDieta" text="Objetivo: " textFill="WHITE" />
                 <Label fx:id="labelCaloriasDieta" text="Calorias: " textFill="WHITE" />
+                <Label fx:id="labelProgressoDieta" text="Progresso: " textFill="WHITE" />
                 <!-- Adicione mais detalhes conforme necessário -->
 
                 <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar" />

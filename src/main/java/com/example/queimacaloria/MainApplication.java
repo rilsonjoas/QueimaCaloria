@@ -8,21 +8,26 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+// Classe principal da aplicação JavaFX
 public class MainApplication extends Application {
 
     @Override
+    // Método chamado quando a aplicação inicia
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/com/example/queimacaloria/views/meal-view.fxml"));
+        // Carrega o arquivo FXML da interface principal
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/com/example/queimacaloria/views/main-view.fxml"));
         Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root, 800, 600); // Define um tamanho inicial para a janela
-        stage.setTitle("Queima Caloria");
-        stage.setScene(scene);
-        stage.show();
+
+        // Cria a cena principal com o conteúdo carregado do FXML
+        Scene scene = new Scene(root, 800, 600); // Define tamanho inicial da janela
+        stage.setTitle("YouFit"); // Define o título da janela
+        stage.setScene(scene); // Define a cena na janela
+        stage.show(); // Exibe a janela
     }
 
 
     public static void main(String[] args) {
         System.out.println("Início do Teste");
-        launch();
+        launch(); // Inicia a aplicação JavaFX
     }
 }

@@ -4,26 +4,26 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import com.example.queimacaloria.negocio.Usuario;  // Certifique-se de que Usuario está importado
-import java.util.ArrayList;
-import java.time.LocalDate;
+
 
 public class LoginController {
 
     @FXML
-    private TextField campoEmail; // Alterado para português
+    private TextField campoEmail;
 
     @FXML
-    private PasswordField campoSenha; // Alterado para português
+    private PasswordField campoSenha;
 
     @FXML
-    private Label mensagemLogin; // Alterado para português
+    private Label mensagemLogin;
+
 
     @FXML
     public void login() {
         String email = campoEmail.getText();
         String password = campoSenha.getText();
 
+        // Lógica de login (apenas um exemplo)
         if (email.equals("admin") && password.equals("admin")) {
             mensagemLogin.setText("Login efetuado com sucesso");
         }  else {

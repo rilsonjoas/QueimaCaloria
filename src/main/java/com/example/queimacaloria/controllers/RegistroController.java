@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 
 import java.time.LocalDate;
 
+
 public class RegistroController {
 
     @FXML
@@ -30,11 +31,13 @@ public class RegistroController {
     private Fachada fachada = Fachada.getInstanciaUnica();
 
     @FXML
+    // Inicializa o ChoiceBox com as opções de sexo.
     public void initialize() {
         campoSexo.setItems(FXCollections.observableArrayList(Usuario.Sexo.values()));
     }
 
     @FXML
+    // Método chamado ao clicar no botão "Registrar".
     public void registrar() {
         String nome = campoNome.getText();
         String email = campoEmail.getText();
@@ -52,14 +55,16 @@ public class RegistroController {
             return;
         }
 
+
         try {
-            Usuario novoUsuario = new Usuario(); // Cria um novo usuário
+            Usuario novoUsuario = new Usuario();
             fachada.atualizarDadosUsuario(novoUsuario, nome, email, password, dataNascimento, sexo, peso, altura);
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao cadastrar usuário", e.getMessage());
         }
     }
+
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);

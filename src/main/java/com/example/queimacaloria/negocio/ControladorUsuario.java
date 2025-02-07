@@ -1,6 +1,7 @@
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioUsuariosArray;
+import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ public class ControladorUsuario {
 
     // Método para atualizar os dados do usuário, ele testa com um if se os dados
     // fornecidos mudaram
-    public void atualizarDados(Usuario usuario, String nome, String email,String senha,LocalDate dataNascimento,
+    public void atualizarDados(Usuario usuario, String nome, String email, String senha, LocalDate dataNascimento,
             Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
         if (nome != null && !nome.isEmpty()) {
             usuario.setNome(nome);
@@ -167,11 +168,6 @@ public class ControladorUsuario {
     // Verifica se a meta foi concluída
     public boolean isMetaConcluida(Meta meta) {
         return meta.getDataConclusao() != null;
-    }
-
-    // Define a data de conclusão para a data atual, marcando a meta como concluída
-    public void concluirMeta(Meta meta) {
-        meta.setDataConclusao(new Date());
     }
 
 }

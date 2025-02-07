@@ -1,9 +1,9 @@
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioMetasArray;
-import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 
+import java.time.LocalDate; // Usar LocalDate
 import java.util.*;
 
 public class ControladorMeta {
@@ -14,14 +14,14 @@ public class ControladorMeta {
         repositorio = RepositorioMetasArray.getInstanciaUnica();
     }
 
-    // Construtor com parâmetros
+    // Construtor com parâmetros (Corrigido para LocalDate)
     public void inicializar(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
-            Date dataConclusao) throws MetaNaoEncontradaException {
+            LocalDate dataConclusao) throws MetaNaoEncontradaException { // LocalDate aqui
         meta.setDescricao(descricao);
         meta.setTipo(tipo);
         meta.setValorAlvo(valorAlvo);
         meta.setProgressoAtual(progressoAtual);
-        meta.setDataConclusao(dataConclusao);
+        meta.setDataConclusao(dataConclusao); // LocalDate aqui
 
         // Importante: Se a meta já existe, usa salvar. Se não existe, adiciona.
         try {
@@ -31,7 +31,7 @@ public class ControladorMeta {
         }
     }
 
-    // Verifica se a meta foi concluída
+    // Verifica se a meta foi concluída (Corrigido para LocalDate)
     public boolean isConcluida(Meta meta) {
         return meta.getDataConclusao() != null;
     }
@@ -46,7 +46,7 @@ public class ControladorMeta {
 
     // Define a data de conclusão para a data atual, marcando a meta como concluída
     public void concluirMeta(Meta meta) throws MetaNaoEncontradaException {
-        meta.setDataConclusao(new Date());
+        meta.setDataConclusao(LocalDate.now()); // Usar LocalDate.now()
         repositorio.salvar(meta);
     }
 

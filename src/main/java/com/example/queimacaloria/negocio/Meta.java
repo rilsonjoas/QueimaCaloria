@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
+import java.time.LocalDate; // Alterado
 import java.util.UUID;
 
 @Getter
@@ -26,9 +26,9 @@ public class Meta {
     @Setter
     private double progressoAtual;
     @Setter
-    private Date dataCriacao;
+    private LocalDate dataCriacao; // Alterado
     @Setter
-    private Date dataConclusao;
+    private LocalDate dataConclusao; // Alterado
 
     public enum Tipo {
         PESO, MEDIDAS, OUTROS;
@@ -36,11 +36,11 @@ public class Meta {
 
     public Meta() {
         this.id = UUID.randomUUID();
-        this.dataCriacao = new Date();
+        this.dataCriacao = LocalDate.now(); 
     }
 
-    public Meta(String descricao, Tipo tipo, double valorAlvo, double progressoAtual, Date dataCriacao,
-                Date dataConclusao) {
+    public Meta(String descricao, Tipo tipo, double valorAlvo, double progressoAtual, LocalDate dataCriacao, // Alterado
+            LocalDate dataConclusao) { 
         this.id = UUID.randomUUID();
         this.descricao = descricao;
         this.tipo = tipo;
@@ -58,14 +58,12 @@ public class Meta {
         return new SimpleObjectProperty<>(tipo);
     }
 
-
     public DoubleProperty progressoProperty() {
         return new SimpleDoubleProperty(progressoAtual);
     }
 
-    public ObjectProperty<Date> dataConclusaoProperty() {
+    public ObjectProperty<LocalDate> dataConclusaoProperty() { 
         return new SimpleObjectProperty<>(dataConclusao);
     }
-
 
 }

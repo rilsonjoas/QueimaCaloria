@@ -4,9 +4,8 @@ import com.example.queimacaloria.dados.*;
 import com.example.queimacaloria.excecoes.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Map;  // Importe java.util.Map
 
 public class Fachada {
 
@@ -58,62 +57,55 @@ public class Fachada {
         controladorUsuario.adicionarDieta(usuario, dieta);
     }
 
-    public double calcularProgressoGeralUsuario(Usuario usuario) { // Nome modificado
+    public double calcularProgressoGeralUsuario(Usuario usuario) {
         return controladorUsuario.getProgresso(usuario);
     }
 
-    public int calcularIdadeUsuario(Usuario usuario) { // Nome modificado
+    public int calcularIdadeUsuario(Usuario usuario) {
         return controladorUsuario.getIdade(usuario);
     }
 
     // Métodos de Dieta
-    public void configurarDieta(Dieta dieta, String nome, Dieta.ObjetivoDieta objetivo, int caloriasDiarias, // Nomes
-                                                                                                             // modificados
+    public void configurarDieta(Dieta dieta, String nome, Dieta.ObjetivoDieta objetivo, int caloriasDiarias,
             Usuario usuario) throws DietaNaoEncontradaException {
-        controladorDieta.configurarDieta(dieta, nome, objetivo, caloriasDiarias, usuario); // Chamada do controlador
-                                                                                           // Dieta
+        controladorDieta.configurarDieta(dieta, nome, objetivo, caloriasDiarias, usuario);
     }
 
-    public void inserirRefeicaoDieta(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException { // Nome
-                                                                                                          // modificado
-        controladorDieta.inserirRefeicao(dieta, refeicao); // Chamada do controlador Dieta
+    public void inserirRefeicaoDieta(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
+        controladorDieta.inserirRefeicao(dieta, refeicao);
     }
 
-    public void excluirRefeicaoDieta(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException { // Nome
-                                                                                                          // modificado
-        controladorDieta.excluirRefeicao(dieta, refeicao); // Chamada do controlador Dieta
+    public void excluirRefeicaoDieta(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
+        controladorDieta.excluirRefeicao(dieta, refeicao);
     }
 
-    public Map<String, Double> calcularTotalMacronutrientesDieta(Dieta dieta) { // Nome modificado
-        return controladorDieta.calcularTotalMacronutrientes(dieta); // Chamada do controlador Dieta
+    public Map<String, Double> calcularTotalMacronutrientesDieta(Dieta dieta) {
+        return controladorDieta.calcularTotalMacronutrientes(dieta);
     }
 
-    public int calcularTotalCaloriasDieta(Dieta dieta) { // Nome modificado
-        return controladorDieta.calcularTotalCalorias(dieta); // Chamada do controlador Dieta
+    public int calcularTotalCaloriasDieta(Dieta dieta) {
+        return controladorDieta.calcularTotalCalorias(dieta);
     }
 
-    public double calcularProgressoDieta(Dieta dieta) { // Nome modificado
-        return controladorDieta.calcularProgresso(dieta); // Chamada do controlador Dieta
+    public double calcularProgressoDieta(Dieta dieta) {
+        return controladorDieta.calcularProgresso(dieta);
     }
 
-    public boolean verificarDietaConcluida(Dieta dieta) { // Nome modificado
-        return controladorDieta.verificarDietaConcluida(dieta); // Chamada do controlador Dieta
+    public boolean verificarDietaConcluida(Dieta dieta) {
+        return controladorDieta.verificarDietaConcluida(dieta);
     }
 
     // Métodos de Exercício
-    public void configurarExercicio(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo, // Nome
-                                                                                                                      // modificado
+    public void configurarExercicio(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
             int tempo, double caloriasQueimadasPorMinuto) throws ExercicioNaoEncontradoException {
         controladorExercicio.inicializar(exercicio, nome, descricao, tipo, tempo, caloriasQueimadasPorMinuto);
     }
 
-    public void adicionarMusculoExercicio(Exercicio exercicio, String musculo) throws ExercicioNaoEncontradoException { // Nome
-                                                                                                                        // modificado
+    public void adicionarMusculoExercicio(Exercicio exercicio, String musculo) throws ExercicioNaoEncontradoException {
         controladorExercicio.adicionarMusculoTrabalhado(exercicio, musculo);
     }
 
-    public void removerMusculoExercicio(Exercicio exercicio, String musculo) throws ExercicioNaoEncontradoException { // Nome
-                                                                                                                      // modificado
+    public void removerMusculoExercicio(Exercicio exercicio, String musculo) throws ExercicioNaoEncontradoException {
         controladorExercicio.removerMusculoTrabalhado(exercicio, musculo);
     }
 
@@ -126,17 +118,16 @@ public class Fachada {
     }
 
     // Métodos de Meta
-    public void configurarMeta(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual, // Nome
-                                                                                                                     // modificado
-            Date dataConclusao) throws MetaNaoEncontradaException {
+    public void configurarMeta(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
+            LocalDate dataConclusao) throws MetaNaoEncontradaException {
         controladorMeta.inicializar(meta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
     }
 
-    public boolean verificarMetaConcluida(Meta meta) { // Nome modificado
+    public boolean verificarMetaConcluida(Meta meta) {
         return controladorMeta.isConcluida(meta);
     }
 
-    public double calcularProgressoMeta(Meta meta) { // Nome modificado
+    public double calcularProgressoMeta(Meta meta) {
         return controladorMeta.getProgresso(meta);
     }
 
@@ -145,32 +136,32 @@ public class Fachada {
     }
 
     // Métodos de Refeição
-    public void configurarRefeicao(Refeicao refeicao, String nome, String descricao, // Nome modificado
-            Map<String, Double> macronutrientes) {
+    public void configurarRefeicao(Refeicao refeicao, String nome, String descricao,
+            Map<String, Double> macronutrientes) {  // Já está correto
         controladorRefeicao.inicializar(refeicao, nome, descricao, macronutrientes);
     }
 
-    public int calcularCaloriasRefeicao(Refeicao refeicao) { // Nome modificado
+    public int calcularCaloriasRefeicao(Refeicao refeicao) {
         return controladorRefeicao.calcularCalorias(refeicao);
     }
 
-    public Map<String, Double> calcularMacronutrientesRefeicao(Refeicao refeicao) {// Nome modificado
+    public Map<String, Double> calcularMacronutrientesRefeicao(Refeicao refeicao) {
         return controladorRefeicao.calcularMacronutrientes(refeicao);
     }
 
     // Métodos de Treino
     public void configurarTreino(Treino treino, String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade)
-            throws TreinoNaoEncontradoException { // Nome modificado e removido o parâmetro Usuario
+            throws TreinoNaoEncontradoException {
         controladorTreino.inicializar(treino, nome, tipoDeTreino, duracao, nivelDeDificuldade);
     }
 
     public void inserirExercicioTreino(Treino treino, Exercicio exercicio)
-            throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException { // Nome modificado
+            throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         controladorTreino.adicionarExercicio(treino, exercicio);
     }
 
     public void excluirExercicioTreino(Treino treino, Exercicio exercicio)
-            throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException { // Nome modificado
+            throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         controladorTreino.removerExercicio(treino, exercicio);
     }
 
@@ -182,9 +173,6 @@ public class Fachada {
     public void atualizarProgressoTreino(Treino treino) throws TreinoNaoEncontradoException {
         controladorTreino.atualizarProgresso(treino);
     }
-
-    // MUITO IMPORTANTE: Métodos para listar os objetos dos repositórios (para as
-    // TableViews)
 
     public List<Dieta> listarDietas() {
         return controladorDieta.listarDietas();
@@ -205,5 +193,4 @@ public class Fachada {
     public List<Treino> listarTreinos() {
         return controladorTreino.listarTreinos();
     }
-
 }

@@ -9,10 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="500.0" prefWidth="500.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.LoginController">
    <children>
-      <VBox alignment="CENTER" layoutX="50.0" layoutY="95.0" minHeight="310.0" minWidth="400.0" prefHeight="310.0" prefWidth="400.0" spacing="10.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px;">
+      <VBox alignment="CENTER" minHeight="310.0" minWidth="400.0" prefHeight="310.0" prefWidth="400.0" spacing="10.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
           <Label text="Faça login no YouFit" textFill="#d7d7d7">
             <font>
                <Font name="Gill Sans MT" size="24.0" />

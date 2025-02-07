@@ -1,36 +1,37 @@
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
-import com.example.queimacaloria.dados.RepositorioUsuariosArray;
 import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+// Classe responsável pela lógica de negócio relacionada a refeições.
 public class ControladorRefeicao {
 
-    RepositorioRefeicoesArray repositorio;
+    private RepositorioRefeicoesArray repositorio; // Repositório de refeições.
 
+    // Construtor: Inicializa o repositório de refeições.
     public ControladorRefeicao() {
-        repositorio = RepositorioRefeicoesArray.getInstanciaUnica();
+        this.repositorio = RepositorioRefeicoesArray.getInstanciaUnica();
     }
 
-    // Construtor com parâmetros
+    // Inicializa uma refeição com os dados fornecidos. Se a refeição já existe, atualiza; senão, cria uma nova.
     public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes) {
         refeicao.setNome(nome);
         refeicao.setDescricao(descricao);
         refeicao.setMacronutrientes(macronutrientes);
-        refeicao.setCalorias(calcularCalorias(refeicao));
+        refeicao.setCalorias(calcularCalorias(refeicao)); // Calcula as calorias da refeição.
 
-        // Importante: Se a refeicao já existe, usa salvar. Se não existe, adiciona.
         try {
-            repositorio.salvar(refeicao);
+            repositorio.salvar(refeicao); // Tenta salvar. Lança exceção se não encontrar.
         } catch (RefeicaoNaoEncontradaException e) {
-            repositorio.adicionar(refeicao);
+            repositorio.adicionar(refeicao); // Se não encontrar, adiciona como nova refeição.
         }
     }
 
-    // Método para calcular o total de calorias da refeição com base nos
-    // macronutrientes
+    // Calcula o total de calorias da refeição com base nos macronutrientes.
     public int calcularCalorias(Refeicao refeicao) {
         double totalCalorias = 0;
         if (refeicao.getMacronutrientes() != null) {
@@ -38,26 +39,23 @@ public class ControladorRefeicao {
                 String macro = entry.getKey();
                 Double quantidade = entry.getValue();
 
-                // Considera o fator de conversão calórica para cada macronutriente
                 if ("Proteínas".equalsIgnoreCase(macro) || "Carboidratos".equalsIgnoreCase(macro)) {
-                    totalCalorias += quantidade * 4; // 4 calorias por grama de proteína ou carboidrato
+                    totalCalorias += quantidade * 4; // 4 calorias por grama de proteína ou carboidrato.
                 } else if ("Gorduras".equalsIgnoreCase(macro)) {
-                    totalCalorias += quantidade * 9; // 9 calorias por grama de gordura
+                    totalCalorias += quantidade * 9; // 9 calorias por grama de gordura.
                 }
             }
         }
         return (int) Math.round(totalCalorias);
     }
 
-    // Retorna uma cópia dos macronutrientes para evitar modificações diretas em
-    // Refeição
+    // Retorna uma cópia dos macronutrientes para evitar modificações diretas na Refeição.
     public Map<String, Double> calcularMacronutrientes(Refeicao refeicao) {
-        return new HashMap<>(refeicao.getMacronutrientes()); // Retorna uma cópia
+        return new HashMap<>(refeicao.getMacronutrientes()); // Cria uma nova instância do HashMap.
     }
 
-    // Método para listar todas as refeições
+    // Retorna uma lista de todas as refeições no repositório.
     public List<Refeicao> listarRefeicoes() {
         return repositorio.getAll();
     }
-
 }

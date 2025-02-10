@@ -1,43 +1,41 @@
 package com.example.queimacaloria.controllers;
 
+//import com.example.queimacaloria.MainApplication; // Remova este import
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage; // Importe Stage
 
 import java.time.LocalDate;
-
+import java.util.List;
 
 public class RegistroController {
 
-    @FXML
-    private TextField campoNome;
-    @FXML
-    private TextField campoEmail;
-    @FXML
-    private PasswordField campoSenha;
-    @FXML
-    private DatePicker campoDataNascimento;
-    @FXML
-    private ChoiceBox<Usuario.Sexo> campoSexo;
-    @FXML
-    private TextField campoPeso;
-    @FXML
-    private TextField campoAltura;
-    @FXML
-    private Label mensagemRegistro;
+    @FXML private TextField campoNome;
+    @FXML private TextField campoEmail;
+    @FXML private PasswordField campoSenha;
+    @FXML private DatePicker campoDataNascimento;
+    @FXML private ComboBox<Usuario.Sexo> campoSexo;
+    @FXML private TextField campoPeso;
+    @FXML private TextField campoAltura;
+    @FXML private Label mensagemRegistro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
+    @FXML private AuthController authController; // Corrigido
+
+    public void setAuthController(AuthController authController) {
+        this.authController = authController;
+    }
 
     @FXML
-    // Inicializa o ChoiceBox com as opções de sexo.
     public void initialize() {
         campoSexo.setItems(FXCollections.observableArrayList(Usuario.Sexo.values()));
     }
 
     @FXML
-    // Método chamado ao clicar no botão "Registrar".
     public void registrar() {
         String nome = campoNome.getText();
         String email = campoEmail.getText();
@@ -55,13 +53,20 @@ public class RegistroController {
             return;
         }
 
-
         try {
-            Usuario novoUsuario = new Usuario();
-            fachada.atualizarDadosUsuario(novoUsuario, nome, email, password, dataNascimento, sexo, peso, altura);
+            // Removido:  Verificação duplicada de e-mail (o controlador já faz).
+            // Chamada direta ao novo método da fachada:
+            fachada.cadastrarUsuario(nome, email, password, dataNascimento, sexo, peso, altura);
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
-        } catch (Exception e) {
+            authController.mostrarTelaPrincipal(getPrimaryStage());
+
+        } catch (IllegalArgumentException e) { // Captura a exceção de e-mail duplicado
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao cadastrar usuário", e.getMessage());
+
+        } catch (UsuarioNaoEncontradoException e) { //Essa exceção não deve mais ser lançada.
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao cadastrar usuário", e.getMessage());
+        }  catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro inesperado", e.getMessage());
         }
     }
 
@@ -72,5 +77,24 @@ public class RegistroController {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @FXML
+    public void irParaLogin() {
+        if (authController != null) {
+            authController.mostrarTelaLogin();
+        } else {
+            System.err.println("Erro: AuthController não foi injetado!");
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");
+        }
+    }
+
+    // Método para obter o primaryStage a partir do AuthController
+    private Stage getPrimaryStage() {
+        if (authController != null) {
+            // return authController.getPrimaryStage(); // Obtem do Auth
+            return (Stage) campoEmail.getScene().getWindow(); //Forma correta
+        }
+        return null;
     }
 }

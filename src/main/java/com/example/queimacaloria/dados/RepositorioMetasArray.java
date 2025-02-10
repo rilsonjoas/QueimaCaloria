@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class RepositorioMetasArray implements IRepositorioMetas {
-
     private Meta[] metas;
     private int proximoIndice;
-
     private static RepositorioMetasArray instanciaUnica;
 
     private RepositorioMetasArray() {
@@ -28,58 +26,50 @@ public class RepositorioMetasArray implements IRepositorioMetas {
     }
 
     private int procurarIndice(UUID id) {
-        int i = 0;
-        boolean achou = false;
-        while ((!achou) && (i < this.proximoIndice)) {
-            if (id.equals(this.metas[i].getId())) {
-                achou = true;
-            } else {
-                i++;
-            }
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        for (int i = 0; i < proximoIndice; i++) {
+            if (id.equals(metas[i].getId())) return i;
         }
-        return achou ? i : proximoIndice;
+        return proximoIndice;
     }
 
     @Override
     public void adicionar(Meta meta) throws MetaNaoEncontradaException {
+        if (meta == null) throw new IllegalArgumentException("Meta não pode ser nula.");
         if (proximoIndice >= metas.length) {
-            int novoTam = metas.length + 10;
-            Meta[] arrayTemporario = new Meta[novoTam];
-            System.arraycopy(metas, 0, arrayTemporario, 0, metas.length);
-            metas = arrayTemporario;
+            Meta[] temp = new Meta[metas.length + 10];
+            System.arraycopy(metas, 0, temp, 0, metas.length);
+            metas = temp;
         }
-        metas[proximoIndice] = meta;
-        proximoIndice++;
+        metas[proximoIndice++] = meta;
     }
 
     @Override
     public void salvar(Meta meta) throws MetaNaoEncontradaException {
-        if (meta != null) {
-            int indice = this.procurarIndice(meta.getId());
-            if (indice != proximoIndice) {
-                metas[indice] = meta;
-            } else {
-                throw new MetaNaoEncontradaException("Meta não encontrada para atualizar.");
-            }
+        if (meta == null) throw new IllegalArgumentException("Meta não pode ser nula.");
+        int indice = procurarIndice(meta.getId());
+        if (indice < proximoIndice) {
+            metas[indice] = meta;
         } else {
-            throw new IllegalArgumentException("Meta inválida.");
+            throw new MetaNaoEncontradaException("Meta não encontrada.");
         }
     }
 
     @Override
     public void remover(UUID id) throws MetaNaoEncontradaException {
-        int i = this.procurarIndice(id);
-        if (i < proximoIndice) {
-            metas[i] = metas[proximoIndice - 1];
-            metas[proximoIndice - 1] = null;
-            proximoIndice--;
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        int indice = procurarIndice(id);
+        if (indice < proximoIndice) {
+            metas[indice] = metas[proximoIndice - 1];
+            metas[--proximoIndice] = null;
         } else {
-            throw new MetaNaoEncontradaException("Meta não encontrada para remover.");
+            throw new MetaNaoEncontradaException("Meta não encontrada.");
         }
     }
 
     @Override
     public Meta buscar(UUID id) throws MetaNaoEncontradaException {
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         int indice = procurarIndice(id);
         if (indice < proximoIndice) {
             return metas[indice];
@@ -88,7 +78,7 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         }
     }
 
-    // Método getAll() para retornar a lista de metas.
+    @Override
     public List<Meta> getAll() {
         List<Meta> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {

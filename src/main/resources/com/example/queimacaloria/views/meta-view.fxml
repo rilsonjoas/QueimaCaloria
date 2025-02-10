@@ -46,10 +46,9 @@
                 <Label fx:id="labelProgressoMeta" text="Progresso: " textFill="WHITE" />
                 <Label fx:id="labelDataConclusaoMeta" text="Conclusão: " textFill="WHITE" />
 
-                <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar" />
                 <VBox.margin><Insets top="10" /></VBox.margin>
             </VBox>
-
+            <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar para a Tela Inicial" />
             <Label fx:id="mensagemMeta" text="" textFill="RED" />
         </VBox>
     </children>

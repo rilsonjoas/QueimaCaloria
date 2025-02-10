@@ -9,14 +9,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
-
     private Refeicao[] refeicoes;
     private int proximoIndice;
-
     private static RepositorioRefeicoesArray instanciaUnica;
 
     private RepositorioRefeicoesArray() {
-        refeicoes = new Refeicao[100];
+        refeicoes = new Refeicao[100]; // Tamanho inicial maior (conforme seu código original)
         proximoIndice = 0;
     }
 
@@ -28,59 +26,49 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
     }
 
     private int procurarIndice(UUID id) {
-        int i = 0;
-        boolean achou = false;
-        while ((!achou) && (i < this.proximoIndice)) {
-            if (id.equals(this.refeicoes[i].getId())) {
-                achou = true;
-            } else {
-                i++;
-            }
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        for (int i = 0; i < proximoIndice; i++) {
+            if (id.equals(refeicoes[i].getId())) return i;
         }
-        return achou ? i : proximoIndice; // retorna proximoIndice se nao achar
+        return proximoIndice;
     }
 
     @Override
-    public void adicionar(Refeicao refeicao) {
+    public void adicionar(Refeicao refeicao) throws RefeicaoNaoEncontradaException { // Corrigido para throws
+        if (refeicao == null) throw new IllegalArgumentException("Refeição não pode ser nula.");
         if (proximoIndice >= refeicoes.length) {
-            int novoTam = refeicoes.length + 100;
-            Refeicao[] arrayTemporario = new Refeicao[novoTam];
-            System.arraycopy(refeicoes, 0, arrayTemporario, 0, refeicoes.length);
-            refeicoes = arrayTemporario;
+            Refeicao[] temp = new Refeicao[refeicoes.length + 100]; // Aumenta de 100 em 100
+            System.arraycopy(refeicoes, 0, temp, 0, refeicoes.length);
+            refeicoes = temp;
         }
-        refeicoes[proximoIndice] = refeicao;
-        proximoIndice++;
-
+        refeicoes[proximoIndice++] = refeicao;
     }
-
     @Override
     public void salvar(Refeicao refeicao) throws RefeicaoNaoEncontradaException {
-        if (refeicao != null) {
-            int indice = this.procurarIndice(refeicao.getId());
-            if (indice != proximoIndice) {
-                refeicoes[indice] = refeicao;
-            } else {
-                throw new RefeicaoNaoEncontradaException("Refeição não encontrada para atualizar.");
-            }
+        if (refeicao == null) throw new IllegalArgumentException("Refeição não pode ser nula.");
+        int indice = procurarIndice(refeicao.getId());
+        if (indice < proximoIndice) {
+            refeicoes[indice] = refeicao;
         } else {
-            throw new IllegalArgumentException("Refeição inválida.");
+            throw new RefeicaoNaoEncontradaException("Refeição não encontrada.");
         }
     }
 
     @Override
     public void remover(UUID id) throws RefeicaoNaoEncontradaException {
-        int i = this.procurarIndice(id);
-        if (i < proximoIndice) {
-            refeicoes[i] = refeicoes[proximoIndice - 1];
-            refeicoes[proximoIndice - 1] = null;
-            proximoIndice--;
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        int indice = procurarIndice(id);
+        if (indice < proximoIndice) {
+            refeicoes[indice] = refeicoes[proximoIndice - 1];
+            refeicoes[--proximoIndice] = null;
         } else {
-            throw new RefeicaoNaoEncontradaException("Refeição não encontrada para remover.");
+            throw new RefeicaoNaoEncontradaException("Refeição não encontrada.");
         }
     }
 
     @Override
     public Refeicao buscar(UUID id) throws RefeicaoNaoEncontradaException {
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         int indice = procurarIndice(id);
         if (indice < proximoIndice) {
             return refeicoes[indice];
@@ -89,7 +77,7 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
         }
     }
 
-    // Método getAll() para retornar a lista de refeições.
+    @Override
     public List<Refeicao> getAll() {
         List<Refeicao> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {

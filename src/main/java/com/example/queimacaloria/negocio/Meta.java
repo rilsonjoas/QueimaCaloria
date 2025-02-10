@@ -31,7 +31,7 @@ public class Meta {
     private LocalDate dataConclusao; // Alterado
 
     public enum Tipo {
-        PESO, MEDIDAS, OUTROS;
+        PERDA_DE_PESO, GANHO_DE_MASSA
     }
 
     public Meta() {

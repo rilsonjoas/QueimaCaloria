@@ -5,7 +5,7 @@ import com.example.queimacaloria.excecoes.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;  // Importe java.util.Map
+import java.util.Map;
 
 public class Fachada {
 
@@ -34,10 +34,19 @@ public class Fachada {
         return instanciaUnica;
     }
 
+
+    // NOVO MÉTODO para cadastro
+    public void cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
+                                 Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException{
+
+        controladorUsuario.cadastrarUsuario(nome, email, senha, dataNascimento, sexo, peso, altura);
+
+    }
+
     // Métodos de Usuário
     public void atualizarDadosUsuario(Usuario usuario, String nome, String email, String senha,
-            LocalDate dataNascimento,
-            Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
+                                      LocalDate dataNascimento,
+                                      Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
         controladorUsuario.atualizarDados(usuario, nome, email, senha, dataNascimento, sexo, peso, altura);
     }
 
@@ -65,9 +74,14 @@ public class Fachada {
         return controladorUsuario.getIdade(usuario);
     }
 
+    //Adicionado o método listarUsuários
+    public List<Usuario> listarUsuarios() {
+        return controladorUsuario.listarUsuarios();
+    }
+
     // Métodos de Dieta
     public void configurarDieta(Dieta dieta, String nome, Dieta.ObjetivoDieta objetivo, int caloriasDiarias,
-            Usuario usuario) throws DietaNaoEncontradaException {
+                                Usuario usuario) throws DietaNaoEncontradaException {
         controladorDieta.configurarDieta(dieta, nome, objetivo, caloriasDiarias, usuario);
     }
 
@@ -97,7 +111,7 @@ public class Fachada {
 
     // Métodos de Exercício
     public void configurarExercicio(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
-            int tempo, double caloriasQueimadasPorMinuto) throws ExercicioNaoEncontradoException {
+                                    int tempo, double caloriasQueimadasPorMinuto) throws ExercicioNaoEncontradoException {
         controladorExercicio.inicializar(exercicio, nome, descricao, tipo, tempo, caloriasQueimadasPorMinuto);
     }
 
@@ -119,7 +133,7 @@ public class Fachada {
 
     // Métodos de Meta
     public void configurarMeta(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
-            LocalDate dataConclusao) throws MetaNaoEncontradaException {
+                               LocalDate dataConclusao) throws MetaNaoEncontradaException {
         controladorMeta.inicializar(meta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
     }
 
@@ -137,7 +151,7 @@ public class Fachada {
 
     // Métodos de Refeição
     public void configurarRefeicao(Refeicao refeicao, String nome, String descricao,
-            Map<String, Double> macronutrientes) {  // Já está correto
+                                   Map<String, Double> macronutrientes) {  // Já está correto
         controladorRefeicao.inicializar(refeicao, nome, descricao, macronutrientes);
     }
 

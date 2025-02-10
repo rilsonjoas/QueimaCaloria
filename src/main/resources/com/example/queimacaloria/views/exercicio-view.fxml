@@ -46,10 +46,10 @@
                 <Label fx:id="labelTempoExercicio" text="Tempo: " textFill="WHITE" />
                 <Label fx:id="labelCaloriasExercicio" text="Calorias Queimadas: " textFill="WHITE" />
 
-                <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar" />
+
                 <VBox.margin><Insets top="10" /></VBox.margin>
             </VBox>
-
+            <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar para a Tela Inicial" />
             <Label fx:id="mensagemExercicio" text="" textFill="RED" />
         </VBox>
     </children>

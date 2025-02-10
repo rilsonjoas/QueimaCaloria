@@ -3,40 +3,40 @@ package com.example.queimacaloria.negocio;
 import com.example.queimacaloria.dados.RepositorioMetasArray;
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 
-import java.time.LocalDate; // Usar LocalDate
-import java.util.*;
+import java.time.LocalDate;
+import java.util.List;
 
 public class ControladorMeta {
 
-    RepositorioMetasArray repositorio;
+    private RepositorioMetasArray repositorio;
 
     public ControladorMeta() {
-        repositorio = RepositorioMetasArray.getInstanciaUnica();
+        this.repositorio = RepositorioMetasArray.getInstanciaUnica();
     }
 
-    // Construtor com parâmetros (Corrigido para LocalDate)
+    // Configura (cria ou atualiza) uma meta.
     public void inicializar(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
-            LocalDate dataConclusao) throws MetaNaoEncontradaException { // LocalDate aqui
+                            LocalDate dataConclusao) throws MetaNaoEncontradaException {
+
         meta.setDescricao(descricao);
         meta.setTipo(tipo);
         meta.setValorAlvo(valorAlvo);
         meta.setProgressoAtual(progressoAtual);
-        meta.setDataConclusao(dataConclusao); // LocalDate aqui
+        meta.setDataConclusao(dataConclusao);
 
-        // Importante: Se a meta já existe, usa salvar. Se não existe, adiciona.
         try {
-            repositorio.salvar(meta);
+            repositorio.salvar(meta); // Tenta atualizar.
         } catch (MetaNaoEncontradaException e) {
-            repositorio.adicionar(meta);
+            repositorio.adicionar(meta); // Se não existir, adiciona.
         }
     }
 
-    // Verifica se a meta foi concluída (Corrigido para LocalDate)
+    // Verifica se a meta foi concluída.
     public boolean isConcluida(Meta meta) {
         return meta.getDataConclusao() != null;
     }
 
-    // Calcula o progresso da meta em porcentagem
+    // Calcula o progresso da meta (em porcentagem).
     public double getProgresso(Meta meta) {
         if (meta.getValorAlvo() == 0) {
             return 0;
@@ -44,13 +44,13 @@ public class ControladorMeta {
         return (meta.getProgressoAtual() / meta.getValorAlvo()) * 100;
     }
 
-    // Define a data de conclusão para a data atual, marcando a meta como concluída
+    // Conclui a meta (define a data de conclusão como a data atual).
     public void concluirMeta(Meta meta) throws MetaNaoEncontradaException {
-        meta.setDataConclusao(LocalDate.now()); // Usar LocalDate.now()
-        repositorio.salvar(meta);
+        meta.setDataConclusao(LocalDate.now());
+        repositorio.salvar(meta); // Salva a meta como concluída.
     }
 
-    // Método para listar todas as metas
+    // Lista todas as metas do repositório.
     public List<Meta> listarMetas() {
         return repositorio.getAll();
     }

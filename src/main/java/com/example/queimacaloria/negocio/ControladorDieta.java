@@ -2,53 +2,55 @@ package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioDietasArray;
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
+import javafx.collections.ObservableList;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-// Classe responsável pela lógica de negócio relacionada a dietas.
 public class ControladorDieta {
 
-    private RepositorioDietasArray repositorio; // Repositório para armazenar as dietas.
+    private RepositorioDietasArray repositorio;
 
-    // Construtor: Inicializa o repositório de dietas.
     public ControladorDieta() {
         this.repositorio = RepositorioDietasArray.getInstanciaUnica();
     }
 
-    // Configura os dados de uma dieta. Se a dieta já existe (tem ID), ela é atualizada. Senão, uma nova dieta é criada.
+    // Configura (cria ou atualiza) uma dieta.
     public void configurarDieta(Dieta dieta, String nome, Dieta.ObjetivoDieta objetivo, int caloriasDiarias, Usuario usuario) throws DietaNaoEncontradaException {
-        dieta.getNome().set(nome);
-        dieta.getObjetivo().set(objetivo);
-        dieta.getCaloriasDiarias().set(caloriasDiarias);
-        dieta.getUsuario().set(usuario);
+        dieta.setNome(nome);
+        dieta.setObjetivo(objetivo);
+        dieta.setCaloriasDiarias(caloriasDiarias);
+        dieta.setUsuario(usuario);
 
         try {
-            repositorio.salvar(dieta); // Tenta atualizar a dieta. Lança exceção se não encontrar.
+            repositorio.salvar(dieta); // Tenta atualizar.
         } catch (DietaNaoEncontradaException e) {
-            repositorio.adicionar(dieta); // Se não encontrar, adiciona como uma nova dieta.
+            repositorio.adicionar(dieta); // Se não existir, adiciona.
         }
     }
 
-    // Adiciona uma refeição à dieta.
+    // Insere uma refeição na dieta.
     public void inserirRefeicao(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
-        if (refeicao != null && !dieta.getRefeicoes().get().contains(refeicao)) {
-            dieta.getRefeicoes().get().add(refeicao);
-            repositorio.salvar(dieta); // Salva a dieta após adicionar a refeição.
+        if (refeicao != null && !dieta.getRefeicoes().contains(refeicao)) {
+            dieta.getRefeicoes().add(refeicao);
+            repositorio.salvar(dieta); // Salva após adicionar.
         }
     }
 
-    // Remove uma refeição da dieta.
+    // Exclui uma refeição da dieta.
     public void excluirRefeicao(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
-        dieta.getRefeicoes().get().remove(refeicao);
-        repositorio.salvar(dieta); // Salva a dieta após remover a refeição.
+        dieta.getRefeicoes().remove(refeicao);
+        repositorio.salvar(dieta); // Salva após remover.
     }
 
-
+    // Calcula o total de macronutrientes da dieta.
     public Map<String, Double> calcularTotalMacronutrientes(Dieta dieta) {
         Map<String, Double> totalMacronutrientes = new HashMap<>();
-        for (Refeicao refeicao : dieta.getRefeicoes().get()) {
-            Map<String, Double> macrosRefeicao = refeicao.getMacronutrientes();
+        ObservableList<Refeicao> refeicoes = dieta.getRefeicoes(); // Obtenha a lista observável
 
+        for (Refeicao refeicao : refeicoes) { // Agora você pode iterar
+            Map<String, Double> macrosRefeicao = refeicao.getMacronutrientes();
             for (Map.Entry<String, Double> entry : macrosRefeicao.entrySet()) {
                 totalMacronutrientes.put(entry.getKey(),
                         totalMacronutrientes.getOrDefault(entry.getKey(), 0.0) + entry.getValue());
@@ -57,10 +59,10 @@ public class ControladorDieta {
         return totalMacronutrientes;
     }
 
-
+    // Calcula o total de calorias da dieta.
     public int calcularTotalCalorias(Dieta dieta) {
         int totalCalorias = 0;
-        for (Refeicao refeicao : dieta.getRefeicoes().get()) {
+        for (Refeicao refeicao : dieta.getRefeicoes()) {
             totalCalorias += refeicao.getCalorias();
         }
         return totalCalorias;
@@ -68,29 +70,28 @@ public class ControladorDieta {
 
     // Calcula o progresso da dieta (em porcentagem).
     public double calcularProgresso(Dieta dieta) {
-        if (dieta.getCaloriasDiarias().get() == 0) {
+        if (dieta.getCaloriasDiarias() == 0) {
             return 0; // Evita divisão por zero.
         }
-        return (double) calcularTotalCalorias(dieta) / dieta.getCaloriasDiarias().get() * 100;
+        return (double) calcularTotalCalorias(dieta) / dieta.getCaloriasDiarias() * 100;
     }
 
-    // Verifica se a dieta foi concluída com base no objetivo e calorias.
+    // Verifica se a dieta foi concluída.
     public boolean verificarDietaConcluida(Dieta dieta) {
-        if (dieta.getObjetivo().get() == null) {
-            return false; // Sem objetivo, a dieta não pode ser concluída.
+        if (dieta.getObjetivo() == null) {
+            return false;
         }
-
-        switch (dieta.getObjetivo().get()) {
+        switch (dieta.getObjetivo()) {
             case PERDA_DE_PESO:
-                return calcularTotalCalorias(dieta) <= dieta.getCaloriasDiarias().get();
+                return calcularTotalCalorias(dieta) <= dieta.getCaloriasDiarias();
             case GANHO_DE_MASSA:
-                return calcularTotalCalorias(dieta) >= dieta.getCaloriasDiarias().get();
-            default: // MANUTENCAO ou outros casos.
-                return false; // Considera que a dieta de manutenção nunca é "concluída".
+                return calcularTotalCalorias(dieta) >= dieta.getCaloriasDiarias();
+            default: // MANUTENCAO
+                return false;
         }
     }
 
-    // Retorna uma lista de todas as dietas no repositório.
+    // Lista todas as dietas do repositório.
     public List<Dieta> listarDietas() {
         return repositorio.getAll();
     }

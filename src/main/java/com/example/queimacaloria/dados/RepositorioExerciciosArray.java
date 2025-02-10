@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class RepositorioExerciciosArray implements IRepositorioExercicios {
-
     private Exercicio[] exercicios;
     private int proximoIndice;
-
     private static RepositorioExerciciosArray instanciaUnica;
 
     private RepositorioExerciciosArray() {
@@ -28,67 +26,59 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
     }
 
     private int procurarIndice(UUID id) {
-        int i = 0;
-        boolean achou = false;
-        while ((!achou) && (i < this.proximoIndice)) {
-            if (id.equals(this.exercicios[i].getId())) {
-                achou = true;
-            } else {
-                i++;
-            }
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        for (int i = 0; i < proximoIndice; i++) {
+            if (id.equals(exercicios[i].getId())) return i;
         }
-        return achou ? i : proximoIndice;
+        return proximoIndice;
     }
 
     @Override
     public void adicionar(Exercicio exercicio) throws ExercicioNaoEncontradoException {
+        if (exercicio == null) throw new IllegalArgumentException("Exercício não pode ser nulo.");
         if (proximoIndice >= exercicios.length) {
-            int novoTam = exercicios.length + 10;
-            Exercicio[] arrayTemporario = new Exercicio[novoTam];
-            System.arraycopy(exercicios, 0, arrayTemporario, 0, exercicios.length);
-            exercicios = arrayTemporario;
+            Exercicio[] temp = new Exercicio[exercicios.length + 10];
+            System.arraycopy(exercicios, 0, temp, 0, exercicios.length);
+            exercicios = temp;
         }
-        exercicios[proximoIndice] = exercicio;
-        proximoIndice++;
+        exercicios[proximoIndice++] = exercicio;
     }
 
     @Override
     public void salvar(Exercicio exercicio) throws ExercicioNaoEncontradoException {
-        if (exercicio != null) {
-            int indice = this.procurarIndice(exercicio.getId());
-            if (indice != proximoIndice) {
-                exercicios[indice] = exercicio;
-            } else {
-                throw new ExercicioNaoEncontradoException("Exercício não encontrado para atualizar.");
-            }
+        if (exercicio == null) throw new IllegalArgumentException("Exercício não pode ser nulo.");
+        int indice = procurarIndice(exercicio.getId());
+        if (indice < proximoIndice) {
+            exercicios[indice] = exercicio;
         } else {
-            throw new IllegalArgumentException("Exercício inválido.");
+            throw new ExercicioNaoEncontradoException("Exercício não encontrado.");
         }
     }
 
     @Override
     public void remover(UUID id) throws ExercicioNaoEncontradoException {
-        int i = this.procurarIndice(id);
-        if (i < proximoIndice) {
-            exercicios[i] = exercicios[proximoIndice - 1];
-            exercicios[proximoIndice - 1] = null;
-            proximoIndice--;
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        int indice = procurarIndice(id);
+        if (indice < proximoIndice) {
+            exercicios[indice] = exercicios[proximoIndice - 1];
+            exercicios[--proximoIndice] = null;
         } else {
-            throw new ExercicioNaoEncontradoException("Exercício não encontrado para remover.");
+            throw new ExercicioNaoEncontradoException("Exercício não encontrado.");
         }
     }
 
     @Override
     public Exercicio buscar(UUID id) throws ExercicioNaoEncontradoException {
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         int indice = procurarIndice(id);
         if (indice < proximoIndice) {
             return exercicios[indice];
         } else {
-            throw new ExercicioNaoEncontradoException("Exercício não encontrado para buscar.");
+            throw new ExercicioNaoEncontradoException("Exercício não encontrado.");
         }
     }
 
-    // Método getAll() para retornar a lista de exercícios
+    @Override
     public List<Exercicio> getAll() {
         List<Exercicio> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {

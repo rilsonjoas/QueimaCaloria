@@ -13,6 +13,7 @@ import java.util.Map;
 public class InicializadorDados {
 
     public static void inicializarDados() throws TreinoNaoEncontradoException {
+        // 1. Use SEMPRE getInstanciaUnica() para obter os repositórios singleton:
         RepositorioDietasArray repositorioDietas = RepositorioDietasArray.getInstanciaUnica();
         RepositorioExerciciosArray repositorioExercicios = RepositorioExerciciosArray.getInstanciaUnica();
         RepositorioMetasArray repositorioMetas = RepositorioMetasArray.getInstanciaUnica();
@@ -100,40 +101,40 @@ public class InicializadorDados {
         // Metas
         try{
 
-            Meta meta1 = new Meta("Perder 5kg de gordura corporal em 2 meses", Meta.Tipo.PESO, 5.0, 0, LocalDate.now(), null);
+            Meta meta1 = new Meta("Perder 5kg de gordura corporal em 2 meses", Meta.Tipo.PERDA_DE_PESO, 5.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta1);
-            Meta meta2 = new Meta("Ganhar 4kg de massa muscular em 3 meses", Meta.Tipo.PESO, 4.0, 0, LocalDate.now(), null);
+            Meta meta2 = new Meta("Ganhar 4kg de massa muscular em 3 meses", Meta.Tipo.PERDA_DE_PESO, 4.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta2);
-            Meta meta3 = new Meta("Reduzir medidas da cintura em 4cm em 1 mês", Meta.Tipo.MEDIDAS, 4.0, 0, LocalDate.now(), null);
+            Meta meta3 = new Meta("Reduzir medidas da cintura em 4cm em 1 mês", Meta.Tipo.GANHO_DE_MASSA, 4.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta3);
-            Meta meta4 = new Meta("Aumentar carga no agachamento em 10kg em 2 meses", Meta.Tipo.OUTROS, 10.0, 0, LocalDate.now(), null);
+            Meta meta4 = new Meta("Aumentar carga no agachamento em 10kg em 2 meses", Meta.Tipo.GANHO_DE_MASSA, 10.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta4);
-            Meta meta5 = new Meta("Correr 5km em 25 minutos em 3 meses", Meta.Tipo.OUTROS, 5.0, 0, LocalDate.now(), null);
+            Meta meta5 = new Meta("Correr 5km em 25 minutos em 3 meses", Meta.Tipo.GANHO_DE_MASSA, 5.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta5);
-            Meta meta6 = new Meta("Melhorar a flexibilidade das pernas em 2 meses", Meta.Tipo.OUTROS, 2.0, 0, LocalDate.now(), null);
+            Meta meta6 = new Meta("Melhorar a flexibilidade das pernas em 2 meses", Meta.Tipo.GANHO_DE_MASSA, 2.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta6);
-            Meta meta7 = new Meta("Aumentar a resistência física em 1 mês", Meta.Tipo.OUTROS, 1.0, 0, LocalDate.now(), null);
+            Meta meta7 = new Meta("Aumentar a resistência física em 1 mês", Meta.Tipo.GANHO_DE_MASSA, 1.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta7);
-            Meta meta8 = new Meta("Concluir 10 treinos por semana", Meta.Tipo.OUTROS, 10.0, 0, LocalDate.now(), null);
+            Meta meta8 = new Meta("Concluir 10 treinos por semana", Meta.Tipo.GANHO_DE_MASSA, 10.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta8);
-            Meta meta9 = new Meta("Controlar as calorias diarias em 2 meses", Meta.Tipo.OUTROS, 1.0, 0, LocalDate.now(), null);
+            Meta meta9 = new Meta("Controlar as calorias diarias em 2 meses", Meta.Tipo.GANHO_DE_MASSA, 1.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta9);
-            Meta meta10 = new Meta("Melhorar a ingestão de líquidos em 3 meses", Meta.Tipo.OUTROS, 1.0, 0, LocalDate.now(), null);
+            Meta meta10 = new Meta("Melhorar a ingestão de líquidos em 3 meses", Meta.Tipo.GANHO_DE_MASSA, 1.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta10);
-            Meta meta11 = new Meta("Dormir 8h por dia por 2 meses", Meta.Tipo.OUTROS, 1.0, 0, LocalDate.now(), null);
+            Meta meta11 = new Meta("Dormir 8h por dia por 2 meses", Meta.Tipo.GANHO_DE_MASSA, 1.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta11);
-            Meta meta12 = new Meta("Ingerir uma quantidade certa de proteínas em 3 meses", Meta.Tipo.OUTROS, 1.0, 0, LocalDate.now(), null);
+            Meta meta12 = new Meta("Ingerir uma quantidade certa de proteínas em 3 meses", Meta.Tipo.GANHO_DE_MASSA, 1.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta12);
-            Meta meta13 = new Meta("Ter uma alimentação balanceada em 2 meses", Meta.Tipo.OUTROS, 1.0, 0, LocalDate.now(), null);
+            Meta meta13 = new Meta("Ter uma alimentação balanceada em 2 meses", Meta.Tipo.GANHO_DE_MASSA, 1.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta13);
-            Meta meta14 = new Meta("Controlar os níveis de açúcar em 1 mês", Meta.Tipo.OUTROS, 1.0, 0, LocalDate.now(), null);
+            Meta meta14 = new Meta("Controlar os níveis de açúcar em 1 mês", Meta.Tipo.GANHO_DE_MASSA, 1.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta14);
-            Meta meta15 = new Meta("Aumentar a massa muscular em 2 meses", Meta.Tipo.PESO, 2.0, 0, LocalDate.now(), null);
+            Meta meta15 = new Meta("Aumentar a massa muscular em 2 meses", Meta.Tipo.PERDA_DE_PESO, 2.0, 0, LocalDate.now(), null);
             repositorioMetas.adicionar(meta15);
 
 
         } catch (MetaNaoEncontradaException e) {
-             System.err.println("Erro ao adicionar meta: " + e.getMessage());
+            System.err.println("Erro ao adicionar meta: " + e.getMessage());
         }
 
 

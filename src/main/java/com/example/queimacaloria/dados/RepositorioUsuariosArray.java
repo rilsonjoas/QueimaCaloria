@@ -1,13 +1,7 @@
 package com.example.queimacaloria.dados;
 
-import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
-import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
-import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.interfaces.IRepositorioUsuarios;
-import com.example.queimacaloria.negocio.Dieta;
-import com.example.queimacaloria.negocio.Meta;
-import com.example.queimacaloria.negocio.Treino;
 import com.example.queimacaloria.negocio.Usuario;
 
 import java.util.ArrayList;
@@ -15,10 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class RepositorioUsuariosArray implements IRepositorioUsuarios {
-
     private Usuario[] usuarios;
     private int proximoIndice;
-
     private static RepositorioUsuariosArray instanciaUnica;
 
     public RepositorioUsuariosArray() {
@@ -34,74 +26,59 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
     }
 
     private int procurarIndice(UUID id) {
-        int i = 0;
-        boolean achou = false;
-        while ((!achou) && (i < this.proximoIndice)) {
-            if (id.equals(this.usuarios[i].getId())) {
-                achou = true;
-            } else {
-                i = i + 1;
-            }
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        for (int i = 0; i < proximoIndice; i++) {
+            if (id.equals(usuarios[i].getId())) return i;
         }
-        return i;
+        return proximoIndice;
     }
 
     @Override
-    public void adicionar(Usuario usuario) throws UsuarioNaoEncontradoException {
-        if (proximoIndice > usuarios.length - 1) {
-            int novoTam = proximoIndice + 10;
-            Usuario[] arrayTemporario = new Usuario[novoTam];
-
-            for (int i = 0; i < proximoIndice; i++) {
-                arrayTemporario[i] = usuarios[i];
-            }
-            usuarios = arrayTemporario;
+    public void adicionar(Usuario usuario) { // REMOVIDA a exceção
+        if (usuario == null) throw new IllegalArgumentException("Usuário não pode ser nulo.");
+        if (proximoIndice >= usuarios.length) {
+            Usuario[] temp = new Usuario[usuarios.length + 10];
+            System.arraycopy(usuarios, 0, temp, 0, usuarios.length);
+            usuarios = temp;
         }
-
-        usuarios[proximoIndice] = usuario;
-        proximoIndice++;
-
+        usuarios[proximoIndice++] = usuario;
     }
 
     @Override
     public void salvar(Usuario usuario) throws UsuarioNaoEncontradoException {
-        if (usuario != null) {
-            int indice = this.procurarIndice(usuario.getId());
-            if (indice != proximoIndice) {
-                usuarios[indice] = usuario;
-            }
-
+        if (usuario == null) throw new IllegalArgumentException("Usuário não pode ser nulo.");
+        int indice = procurarIndice(usuario.getId());
+        if (indice < proximoIndice) {
+            usuarios[indice] = usuario;
         } else {
-            throw new IllegalArgumentException("Usuário inválido.");
+            throw new UsuarioNaoEncontradoException("Usuário não encontrado.");
         }
-
     }
 
     @Override
     public void remover(UUID id) throws UsuarioNaoEncontradoException {
-        int i = this.procurarIndice(id);
-        if (i != this.proximoIndice) {
-            this.usuarios[i] = this.usuarios[this.proximoIndice - 1];
-            this.usuarios[this.proximoIndice - 1] = null;
-            this.proximoIndice = this.proximoIndice - 1;
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        int indice = procurarIndice(id);
+        if (indice < proximoIndice) {
+            usuarios[indice] = usuarios[proximoIndice - 1];
+            usuarios[--proximoIndice] = null;
         } else {
-            throw new UsuarioNaoEncontradoException("Usuario Nao encontrado");
+            throw new UsuarioNaoEncontradoException("Usuário não encontrado.");
         }
     }
 
     @Override
     public Usuario buscar(UUID id) throws UsuarioNaoEncontradoException {
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         int indice = procurarIndice(id);
         if (indice < proximoIndice) {
             return usuarios[indice];
-
         } else {
-            throw new UsuarioNaoEncontradoException("Usuario Nao encontrado");
+            throw new UsuarioNaoEncontradoException("Usuário não encontrado.");
         }
-
     }
 
-    // Método getAll() para retornar a lista de Usuários.
+    @Override
     public List<Usuario> getAll() {
         List<Usuario> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {

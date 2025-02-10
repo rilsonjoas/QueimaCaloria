@@ -1,124 +1,135 @@
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioUsuariosArray;
-import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.*;
+import java.util.List;
 
-// ControladorUsuário
 public class ControladorUsuario {
 
-    RepositorioUsuariosArray repositorio;
+    private RepositorioUsuariosArray repositorio;
 
     public ControladorUsuario() {
-        repositorio = RepositorioUsuariosArray.getInstanciaUnica();
+        this.repositorio = RepositorioUsuariosArray.getInstanciaUnica();
     }
 
-    // Método para atualizar os dados do usuário, ele testa com um if se os dados
-    // fornecidos mudaram
+    // NOVO MÉTODO para cadastro:
+    public void cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
+                                 Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
+
+        // Verifica se o e-mail já existe (importante!)
+        List<Usuario> usuarios = repositorio.getAll();
+        for (Usuario user : usuarios) {
+            if (user.getEmail().equals(email)) {
+                throw new IllegalArgumentException("Email já cadastrado."); // Use IllegalArgumentException, mais apropriado
+            }
+        }
+
+
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setNome(nome);
+        novoUsuario.setEmail(email);
+        novoUsuario.setSenha(senha);
+        novoUsuario.setDataNascimento(dataNascimento);
+        novoUsuario.setSexo(sexo);
+        novoUsuario.setPeso(peso);
+        novoUsuario.setAltura(altura);
+        calcularIMC(novoUsuario); // Calcula o IMC *antes* de adicionar
+        repositorio.adicionar(novoUsuario); // Usa o método adicionar, que não lança exceção
+    }
+
+
+    // Atualiza os dados de um usuário existente.
     public void atualizarDados(Usuario usuario, String nome, String email, String senha, LocalDate dataNascimento,
-            Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
+                               Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
+
         if (nome != null && !nome.isEmpty()) {
             usuario.setNome(nome);
         }
-
         if (email != null && !email.isEmpty()) {
             usuario.setEmail(email);
         }
-
         if (senha != null && !senha.isEmpty()) {
             usuario.setSenha(senha);
         }
-
         if (dataNascimento != null) {
             usuario.setDataNascimento(dataNascimento);
         }
-
         if (sexo != null) {
             usuario.setSexo(sexo);
         }
-
         if (peso > 0) {
             usuario.setPeso(peso);
         }
-
         if (altura > 0) {
             usuario.setAltura(altura);
         }
 
-        calcularIMC(usuario); // Recalcula o IMC após alterar peso e altura
-
-        repositorio.salvar(usuario);
+        calcularIMC(usuario); // Recalcula o IMC.
+        repositorio.salvar(usuario); // Salva as alterações no repositório.
     }
 
-    // Método para calcular o IMC do usuário
+    // Calcula o IMC do usuário e o atualiza.
     public float calcularIMC(Usuario usuario) throws UsuarioNaoEncontradoException {
         if (usuario.getAltura() > 0 && usuario.getPeso() > 0) {
-            float imc = usuario.getPeso() / (usuario.getAltura() * usuario.getAltura()); // IMC = peso / altura²
+            float imc = usuario.getPeso() / (usuario.getAltura() * usuario.getAltura());
             usuario.setImc(imc);
-            repositorio.salvar(usuario);
+            // Removido: repositório.salvar(usuario); Salva só no final, quem chamou que decide se salva ou não.
+
             return imc;
         } else {
             throw new IllegalArgumentException("Altura e peso devem ser maiores que zero.");
         }
     }
 
-    // Método para cadastrar uma meta para o usuário
+    // Cadastra uma meta para o usuário (adiciona à lista de metas do usuário).
     public void cadastrarMeta(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
         if (meta != null) {
             usuario.getMetas().add(meta);
-            repositorio.salvar(usuario);
+            repositorio.salvar(usuario); // Salva o usuário com a nova meta.
         }
     }
 
-    // Método para adicionar um treino para o usuário
+    // Adiciona um treino à lista de treinos do usuário.
     public void adicionarTreino(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {
-        // Adiciona o treino à lista se ele não for nulo e não existir na lista
         if (treino != null && !usuario.getTreinos().contains(treino)) {
             usuario.getTreinos().add(treino);
-            repositorio.salvar(usuario);
+            repositorio.salvar(usuario); // Salva o usuário com o novo treino.
         }
     }
 
-    // Método para adicionar uma dieta para o usuário
+    // Adiciona uma dieta à lista de dietas do usuário.
     public void adicionarDieta(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException {
         if (dieta != null && !usuario.getDietas().contains(dieta)) {
             usuario.getDietas().add(dieta);
-            repositorio.salvar(usuario);
+            repositorio.salvar(usuario);  // Salva o usuário com a nova dieta.
         }
     }
 
-    // Método para calcular o progresso geral do usuário
+    // Calcula o progresso geral do usuário (combina progresso de metas, treinos e dietas).
     public double getProgresso(Usuario usuario) {
         double progressoTotal = 0;
         int contadorAtividades = 0;
 
-        // Calcula o progresso das metas
         for (Meta meta : usuario.getMetas()) {
             progressoTotal += calcularProgressoMeta(meta);
             contadorAtividades++;
         }
-
-        // Calcula o progresso dos treinos
         for (Treino treino : usuario.getTreinos()) {
             progressoTotal += calcularProgressoTreino(treino);
             contadorAtividades++;
         }
-
-        // Calcula o progresso das dietas
         for (Dieta dieta : usuario.getDietas()) {
             progressoTotal += calcularProgressoDieta(dieta);
             contadorAtividades++;
         }
 
-        // Calcula a média do progresso e retorna
         return contadorAtividades > 0 ? progressoTotal / contadorAtividades : 0;
     }
 
-    // Método para calcular a idade do usuário
+    // Calcula a idade do usuário.
     public int getIdade(Usuario usuario) {
         if (usuario.getDataNascimento() == null) {
             return 0;
@@ -126,7 +137,7 @@ public class ControladorUsuario {
         return Period.between(usuario.getDataNascimento(), LocalDate.now()).getYears();
     }
 
-    // Método para calcular o progresso da meta em porcentagem
+    // Calcula o progresso de uma meta específica.
     public double calcularProgressoMeta(Meta meta) {
         if (meta.getValorAlvo() == 0) {
             return 0;
@@ -134,40 +145,40 @@ public class ControladorUsuario {
         return (meta.getProgressoAtual() / meta.getValorAlvo()) * 100;
     }
 
-    // Método para calcular o progresso do treino
+    // Calcula o progresso de um treino específico.
     public double calcularProgressoTreino(Treino treino) {
-
         if (treino.getExercicios().isEmpty()) {
             return 0.0;
         }
-
         long exerciciosConcluidos = treino.getExercicios().stream().filter(Exercicio::isConcluido).count();
         return (exerciciosConcluidos / (double) treino.getExercicios().size()) * 100.0;
-
     }
 
-    // Método para calcular o progresso da dieta em relação à meta de calorias
-    // diárias
+    // Calcula o progresso de uma dieta específica.
     public double calcularProgressoDieta(Dieta dieta) {
-        int caloriasDiarias = dieta.getCaloriasDiarias().get();
+        int caloriasDiarias = dieta.getCaloriasDiarias();
         if (caloriasDiarias == 0) {
             return 0;
         }
         return (double) calcularCaloriasTotaisDieta(dieta) / caloriasDiarias * 100;
     }
 
-    // Calcula o total de calorias da dieta com base nas refeições
+    // Calcula o total de calorias consumidas em uma dieta.
     public int calcularCaloriasTotaisDieta(Dieta dieta) {
         int totalCalorias = 0;
-        for (Refeicao refeicao : dieta.getRefeicoes().get()) {
+        for (Refeicao refeicao : dieta.getRefeicoes()) {
             totalCalorias += refeicao.getCalorias();
         }
         return totalCalorias;
     }
 
-    // Verifica se a meta foi concluída
+    // Verifica se uma meta foi concluída.
     public boolean isMetaConcluida(Meta meta) {
         return meta.getDataConclusao() != null;
     }
 
+    // Lista todos os usuários do repositório.
+    public List<Usuario> listarUsuarios() {
+        return repositorio.getAll();
+    }
 }

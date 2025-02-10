@@ -9,17 +9,14 @@ import java.util.List;
 import java.util.UUID;
 
 public class RepositorioTreinosArray implements IRepositorioTreinos {
-
     private Treino[] treinos;
     private int proximoIndice;
-
     private static RepositorioTreinosArray instanciaUnica;
 
     public RepositorioTreinosArray() {
         treinos = new Treino[10];
         proximoIndice = 0;
     }
-
     public static RepositorioTreinosArray getInstanciaUnica() {
         if (instanciaUnica == null) {
             instanciaUnica = new RepositorioTreinosArray();
@@ -28,58 +25,50 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
     }
 
     private int procurarIndice(UUID id) {
-        int i = 0;
-        boolean achou = false;
-        while ((!achou) && (i < this.proximoIndice)) {
-            if (id.equals(this.treinos[i].getId())) {
-                achou = true;
-            } else {
-                i++; // Corrigido: incremento simples
-            }
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        for (int i = 0; i < proximoIndice; i++) {
+            if (id.equals(treinos[i].getId())) return i;
         }
-        return achou ? i : proximoIndice; // Retorna proximoIndice se não achar
+        return proximoIndice;
     }
 
     @Override
-    public void adicionar(Treino treino) {
+    public void adicionar(Treino treino) throws TreinoNaoEncontradoException{
+        if (treino == null) throw new IllegalArgumentException("Treino não pode ser nulo.");
         if (proximoIndice >= treinos.length) {
-            int novoTam = treinos.length + 10;
-            Treino[] arrayTemporario = new Treino[novoTam];
-            System.arraycopy(treinos, 0, arrayTemporario, 0, treinos.length);
-            treinos = arrayTemporario;
+            Treino[] temp = new Treino[treinos.length + 10];
+            System.arraycopy(treinos, 0, temp, 0, treinos.length);
+            treinos = temp;
         }
-        treinos[proximoIndice] = treino;
-        proximoIndice++;
+        treinos[proximoIndice++] = treino;
     }
 
     @Override
     public void salvar(Treino treino) throws TreinoNaoEncontradoException {
-        if (treino != null) {
-            int indice = this.procurarIndice(treino.getId());
-            if (indice != proximoIndice) {
-                treinos[indice] = treino;
-            } else {
-                throw new TreinoNaoEncontradoException("Treino não encontrado para atualizar.");
-            }
+        if (treino == null) throw new IllegalArgumentException("Treino não pode ser nulo.");
+        int indice = procurarIndice(treino.getId());
+        if (indice < proximoIndice) {
+            treinos[indice] = treino;
         } else {
-            throw new IllegalArgumentException("Treino inválido.");
+            throw new TreinoNaoEncontradoException("Treino não encontrado.");
         }
     }
 
     @Override
     public void remover(UUID id) throws TreinoNaoEncontradoException {
-        int i = this.procurarIndice(id);
-        if (i < proximoIndice) {
-            treinos[i] = treinos[proximoIndice - 1];
-            treinos[proximoIndice - 1] = null;
-            proximoIndice--;
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
+        int indice = procurarIndice(id);
+        if (indice < proximoIndice) {
+            treinos[indice] = treinos[proximoIndice - 1];
+            treinos[--proximoIndice] = null;
         } else {
-            throw new TreinoNaoEncontradoException("Treino não encontrado para remover.");
+            throw new TreinoNaoEncontradoException("Treino não encontrado.");
         }
     }
 
     @Override
     public Treino buscar(UUID id) throws TreinoNaoEncontradoException {
+        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         int indice = procurarIndice(id);
         if (indice < proximoIndice) {
             return treinos[indice];
@@ -88,7 +77,7 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
         }
     }
 
-    // Método getAll() para retornar a lista de treinos.
+    @Override
     public List<Treino> getAll() {
         List<Treino> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {

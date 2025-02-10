@@ -3,11 +3,12 @@ package com.example.queimacaloria.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import java.io.IOException;
 import javafx.scene.control.Label;
-
+import javafx.stage.Stage; // Importante!
 
 public class MainController {
 
@@ -19,13 +20,19 @@ public class MainController {
     @FXML private Button buttonVerMaisDietas;
 
     // Variáveis para armazenar as telas carregadas
-    private Parent telaLogin;
-    private Parent telaRegistro;
+
     private Parent telaDieta;
     private Parent telaExercicio;
     private Parent telaMeta;
     private Parent telaRefeicao;
     private Parent telaTreino;
+
+    private Stage primaryStage;  // Adicione esta variável
+
+    public void setPrimaryStage(Stage primaryStage) { // Adicione este método
+        this.primaryStage = primaryStage;
+    }
+
 
 
     @FXML
@@ -33,27 +40,27 @@ public class MainController {
     public void initialize() {
         try {
             // Carrega todas as telas FXML durante a inicialização
-            telaLogin = carregarTela("/com/example/queimacaloria/views/login-view.fxml");
-            telaRegistro = carregarTela("/com/example/queimacaloria/views/registro-view.fxml");
             telaDieta = carregarTela("/com/example/queimacaloria/views/dieta-view.fxml");
             telaExercicio = carregarTela("/com/example/queimacaloria/views/exercicio-view.fxml");
             telaMeta = carregarTela("/com/example/queimacaloria/views/meta-view.fxml");
             telaRefeicao = carregarTela("/com/example/queimacaloria/views/refeicao-view.fxml");
             telaTreino = carregarTela("/com/example/queimacaloria/views/treino-view.fxml");
 
-            // Injeta o MainController nos sub-controllers
+
+            // Injeta o MainController nos sub-controllers *APÓS* o carregamento
             ((DietaController) getController(telaDieta)).setMainController(this);
             ((ExercicioController) getController(telaExercicio)).setMainController(this);
             ((MetaController) getController(telaMeta)).setMainController(this);
             ((RefeicaoController) getController(telaRefeicao)).setMainController(this);
             ((TreinoController) getController(telaTreino)).setMainController(this);
 
+
+            mostrarTelaPrincipal(); // <---  mostra Tela Principal() inicialmente
         } catch (IOException e) {
             e.printStackTrace(); // Tratar erro de carregamento
         }
-
-        mostrarTelaPrincipal(); // Exibe a tela principal ao iniciar
     }
+
 
     // Função auxiliar para obter o controller de uma tela
     private Object getController(Parent parent) {
@@ -68,17 +75,6 @@ public class MainController {
         return root;
     }
 
-    @FXML
-    // Exibe a tela de login
-    public void mostrarTelaLogin() {
-        areaConteudo.getChildren().setAll(telaLogin);
-    }
-
-    @FXML
-    // Exibe a tela de registro
-    public void mostrarTelaRegistro() {
-        areaConteudo.getChildren().setAll(telaRegistro);
-    }
 
     @FXML
     // Exibe a tela de dieta
@@ -153,9 +149,17 @@ public class MainController {
     }
 
     @FXML
-    // Faz logout da aplicação
     public void logout() {
-        mostrarTelaLogin();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/auth-view.fxml"));
+            Parent authView = loader.load();
+            Scene authScene = new Scene(authView);
+            primaryStage.setScene(authScene); // Volta para a cena de autenticação
+            primaryStage.setTitle("YouFit - Login/Registro"); // Título apropriado
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Trate o erro (por exemplo, mostrar um alerta)
+        }
     }
 }
-

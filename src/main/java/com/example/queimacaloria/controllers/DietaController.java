@@ -3,6 +3,7 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
 import com.example.queimacaloria.negocio.Dieta;
 import com.example.queimacaloria.negocio.Fachada;
+import javafx.beans.property.SimpleDoubleProperty;  // Importe isso!
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,24 +37,28 @@ public class DietaController {
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
-
     @FXML
-    // Inicializa a tabela de dietas e configura os listeners.
+// Inicializa a tabela de dietas e configura os listeners.
     public void initialize() {
         // Define como cada coluna da tabela exibe os dados da Dieta.
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaObjetivo.setCellValueFactory(new PropertyValueFactory<>("objetivo"));
         colunaCalorias.setCellValueFactory(new PropertyValueFactory<>("caloriasDiarias"));
-        colunaProgresso.setCellValueFactory(cellData -> cellData.getValue().progressoDaDietaProperty().asObject());
+
+        // Configuração CORRETA da colunaProgresso:
+        colunaProgresso.setCellValueFactory(cellData -> {
+            Dieta dieta = cellData.getValue();
+            return new SimpleDoubleProperty(dieta.calcularProgresso()).asObject();
+        });
 
         atualizarTabelaDietas();
 
         tabelaDietas.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 // Exibe os detalhes da dieta selecionada nos labels.
-                labelNomeDieta.setText("Nome: " + newSelection.getNome().get());
-                labelObjetivoDieta.setText("Objetivo: " + newSelection.getObjetivo().get());
-                labelCaloriasDieta.setText("Calorias: " + newSelection.getCaloriasDiarias().get());
+                labelNomeDieta.setText("Nome: " + newSelection.getNome());
+                labelObjetivoDieta.setText("Objetivo: " + newSelection.getObjetivo());
+                labelCaloriasDieta.setText("Calorias: " + newSelection.getCaloriasDiarias());
                 labelProgressoDieta.setText("Progresso: " + String.format("%.2f%%", newSelection.calcularProgresso()));
             } else {
                 // Limpa os labels se nenhuma dieta estiver selecionada.
@@ -65,6 +70,7 @@ public class DietaController {
             }
         });
     }
+
 
     @FXML
     // Abre a tela para criar uma nova dieta.
@@ -93,9 +99,9 @@ public class DietaController {
         Dieta dietaSelecionada = tabelaDietas.getSelectionModel().getSelectedItem();
         if (dietaSelecionada != null) {
             try {
-                fachada.configurarDieta(dietaSelecionada, dietaSelecionada.getNome().get(),
-                        dietaSelecionada.getObjetivo().get(), dietaSelecionada.getCaloriasDiarias().get(),
-                        dietaSelecionada.getUsuario().get());
+                fachada.configurarDieta(dietaSelecionada, dietaSelecionada.getNome(),
+                        dietaSelecionada.getObjetivo(), dietaSelecionada.getCaloriasDiarias(),
+                        dietaSelecionada.getUsuario());
                 atualizarTabelaDietas();
                 mensagemDieta.setText("Dieta atualizada com sucesso!");
             } catch (DietaNaoEncontradaException e) {

@@ -59,9 +59,11 @@
                 </VBox.margin>
             </Button>
             <Button minWidth="120.0" onAction="#irParaLogin" prefHeight="25.0" prefWidth="210.0" style="-fx-background-color: #ffffff;" text="Já tenho uma conta. Quero entrar." />
+            <Label fx:id="mensagemRegistro" text="" textFill="RED" />
             <padding>
                 <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
             </padding>
+
         </VBox>
     </children>
 </AnchorPane>

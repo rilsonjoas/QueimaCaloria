@@ -1,16 +1,13 @@
 package com.example.queimacaloria.controllers;
 
-//import com.example.queimacaloria.MainApplication; // Remova este import
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
-import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage; // Importe Stage
-
+import javafx.stage.Stage;
 import java.time.LocalDate;
-import java.util.List;
+
 
 public class RegistroController {
 
@@ -24,7 +21,7 @@ public class RegistroController {
     @FXML private Label mensagemRegistro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    @FXML private AuthController authController; // Corrigido
+    @FXML private AuthController authController;
 
     public void setAuthController(AuthController authController) {
         this.authController = authController;
@@ -54,19 +51,17 @@ public class RegistroController {
         }
 
         try {
-            // Removido:  Verificação duplicada de e-mail (o controlador já faz).
-            // Chamada direta ao novo método da fachada:
             fachada.cadastrarUsuario(nome, email, password, dataNascimento, sexo, peso, altura);
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
-            authController.mostrarTelaPrincipal(getPrimaryStage());
 
-        } catch (IllegalArgumentException e) { // Captura a exceção de e-mail duplicado
-            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao cadastrar usuário", e.getMessage());
+            authController.mostrarTelaPrincipal(getPrimaryStage(), fachada.listarUsuarios().stream().filter(usuario -> usuario.getEmail().equals(email)).findFirst().get());
 
-        } catch (UsuarioNaoEncontradoException e) { //Essa exceção não deve mais ser lançada.
+
+        } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao cadastrar usuário", e.getMessage());
-        }  catch (Exception e) {
+        } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro inesperado", e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -79,6 +74,7 @@ public class RegistroController {
         alert.showAndWait();
     }
 
+
     @FXML
     public void irParaLogin() {
         if (authController != null) {
@@ -89,11 +85,9 @@ public class RegistroController {
         }
     }
 
-    // Método para obter o primaryStage a partir do AuthController
     private Stage getPrimaryStage() {
         if (authController != null) {
-            // return authController.getPrimaryStage(); // Obtem do Auth
-            return (Stage) campoEmail.getScene().getWindow(); //Forma correta
+            return (Stage) campoEmail.getScene().getWindow();
         }
         return null;
     }

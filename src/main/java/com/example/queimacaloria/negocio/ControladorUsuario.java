@@ -1,3 +1,4 @@
+
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioUsuariosArray;
@@ -6,6 +7,7 @@ import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.UUID;
 
 public class ControladorUsuario {
 
@@ -15,9 +17,9 @@ public class ControladorUsuario {
         this.repositorio = RepositorioUsuariosArray.getInstanciaUnica();
     }
 
-    // NOVO MÉTODO para cadastro:
+    // Método de cadastro (SIMPLIFICADO)
     public void cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
-                                 Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
+                                 Usuario.Sexo sexo, float peso, float altura) {
 
         // Verifica se o e-mail já existe (importante!)
         List<Usuario> usuarios = repositorio.getAll();
@@ -27,21 +29,22 @@ public class ControladorUsuario {
             }
         }
 
-
+        // Cria e adiciona o novo usuário diretamente.  NÃO USA atualizarDados aqui.
         Usuario novoUsuario = new Usuario();
         novoUsuario.setNome(nome);
         novoUsuario.setEmail(email);
         novoUsuario.setSenha(senha);
         novoUsuario.setDataNascimento(dataNascimento);
         novoUsuario.setSexo(sexo);
-        novoUsuario.setPeso(peso);
-        novoUsuario.setAltura(altura);
-        calcularIMC(novoUsuario); // Calcula o IMC *antes* de adicionar
-        repositorio.adicionar(novoUsuario); // Usa o método adicionar, que não lança exceção
+        novoUsuario.setPeso(peso); // Define peso PRIMEIRO
+        novoUsuario.setAltura(altura); //Define altura DEPOIS
+        // novoUsuario.setImc(calcularIMC(novoUsuario)); // Remove daqui, o setPeso/setAltura já calculam
+        repositorio.adicionar(novoUsuario); // Adiciona diretamente
     }
 
 
-    // Atualiza os dados de um usuário existente.
+    // ... restante da classe ControladorUsuario (sem alterações) ...
+    // Atualiza os dados de um usuário existente.  Mantém a exceção.
     public void atualizarDados(Usuario usuario, String nome, String email, String senha, LocalDate dataNascimento,
                                Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
 
@@ -67,22 +70,9 @@ public class ControladorUsuario {
             usuario.setAltura(altura);
         }
 
-        calcularIMC(usuario); // Recalcula o IMC.
         repositorio.salvar(usuario); // Salva as alterações no repositório.
     }
 
-    // Calcula o IMC do usuário e o atualiza.
-    public float calcularIMC(Usuario usuario) throws UsuarioNaoEncontradoException {
-        if (usuario.getAltura() > 0 && usuario.getPeso() > 0) {
-            float imc = usuario.getPeso() / (usuario.getAltura() * usuario.getAltura());
-            usuario.setImc(imc);
-            // Removido: repositório.salvar(usuario); Salva só no final, quem chamou que decide se salva ou não.
-
-            return imc;
-        } else {
-            throw new IllegalArgumentException("Altura e peso devem ser maiores que zero.");
-        }
-    }
 
     // Cadastra uma meta para o usuário (adiciona à lista de metas do usuário).
     public void cadastrarMeta(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
@@ -180,5 +170,15 @@ public class ControladorUsuario {
     // Lista todos os usuários do repositório.
     public List<Usuario> listarUsuarios() {
         return repositorio.getAll();
+    }
+
+    // Corrigido: Método de remoção
+    public void remover(UUID id) throws UsuarioNaoEncontradoException {
+        try {
+            repositorio.remover(id); // Tenta remover
+        } catch (UsuarioNaoEncontradoException e) {
+            // Aqui você decide o que fazer se o usuário não for encontrado: Relançar
+            throw e;
+        }
     }
 }

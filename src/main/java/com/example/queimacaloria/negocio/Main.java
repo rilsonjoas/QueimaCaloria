@@ -19,8 +19,8 @@ public class Main {
                     LocalDate.of(1990, 5, 15), Usuario.Sexo.MASCULINO, 80.5f, 1.75f);
             System.out.println("Usuário atualizado com sucesso.");
 
-            float imc = fachada.calcularIMCUsuario(usuario);
-            System.out.println("IMC do usuário: " + imc);
+            // float imc = fachada.calcularIMCUsuario(usuario); // REMOVE ESTA LINHA
+            System.out.println("IMC do usuário: " + usuario.getImc()); // ACESSA O IMC DIRETAMENTE
 
             Meta meta = new Meta();
             fachada.configurarMeta(meta, "Perder 5kg", Meta.Tipo.PERDA_DE_PESO, 5.0, 0.0, LocalDate.of(2024, 12, 31));

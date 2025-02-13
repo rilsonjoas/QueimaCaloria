@@ -5,6 +5,7 @@ import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 public class ControladorMeta {
 
@@ -53,5 +54,10 @@ public class ControladorMeta {
     // Lista todas as metas do repositório.
     public List<Meta> listarMetas() {
         return repositorio.getAll();
+    }
+
+    // Adiciona o método de remoção
+    public void remover(UUID id) throws MetaNaoEncontradaException {
+        repositorio.remover(id);
     }
 }

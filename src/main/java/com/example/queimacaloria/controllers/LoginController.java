@@ -3,23 +3,22 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.List;
 
 public class LoginController {
 
-    @FXML
-    private TextField campoEmail;
-    @FXML
-    private PasswordField campoSenha;
-    @FXML
-    private Label mensagemLogin; // O nome DEVE ser exatamente "mensagemLogin"
-    @FXML
-    private AuthController authController;
+    @FXML private TextField campoEmail;
+    @FXML private PasswordField campoSenha;
+    @FXML private Label mensagemLogin;
+    @FXML private AuthController authController;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
 
@@ -34,25 +33,24 @@ public class LoginController {
 
         try {
             List<Usuario> usuarios = fachada.listarUsuarios();
-            boolean loginSucesso = false;
 
             for (Usuario usuario : usuarios) {
                 if (usuario.getEmail().equals(email) && usuario.getSenha().equals(password)) {
-                    mensagemLogin.setText("Login efetuado com sucesso"); // ESTA LINHA ESTAVA CAUSANDO O ERRO
-                    loginSucesso = true;
-                    authController.mostrarTelaPrincipal(getPrimaryStage());
-                    break; // Importante:  sair do loop após encontrar
+                    mensagemLogin.setText("Login efetuado com sucesso");
+
+                    authController.mostrarTelaPrincipal(getPrimaryStage(), usuario); // Passa o usuário!
+                    return; // Sai do método após o login bem-sucedido.
                 }
             }
 
-            if (!loginSucesso) {
-                mensagemLogin.setText("Credenciais inválidas"); // E ESTA
-            }
+            mensagemLogin.setText("Credenciais inválidas");
 
         } catch (Exception e) {
             mensagemLogin.setText("Erro ao fazer login: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
 
     @FXML
     public void irParaRegistro() {

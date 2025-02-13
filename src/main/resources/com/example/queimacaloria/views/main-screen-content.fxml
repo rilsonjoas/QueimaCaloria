@@ -10,11 +10,14 @@
 
 <VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" spacing="20" style="-fx-background-color: #1a1922; -fx-padding: 20;">
     <VBox alignment="TOP_LEFT" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15;">
-        <Label text="Resumo do Usuário" textFill="#d7d7d7">
-            <font><Font name="Gill Sans MT" size="20.0" /></font>
-        </Label>
-        <Label fx:id="labelNomeUsuario" text="Nome do Usuário" textFill="WHITE" />
-        <Label fx:id="labelIMC" text="IMC: --" textFill="WHITE" />
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="Resumo do Usuário" textFill="#d7d7d7">
+                <font><Font name="Gill Sans MT" size="20.0" /></font>
+            </Label>
+            <Button text="Ver Mais" fx:id="buttonVerMaisPerfil" style="-fx-background-color: #55c5f5;" />
+        </HBox>
+        <Label fx:id="labelNomeUsuario" text="Nome do Usuário" textFill="WHITE" />  <!-- Adicionado fx:id -->
+        <Label fx:id="labelIMC" text="IMC: --" textFill="WHITE" />  <!-- Adicionado fx:id -->
         <VBox.margin><Insets top="10"/></VBox.margin>
     </VBox>
 

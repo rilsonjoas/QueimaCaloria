@@ -60,7 +60,7 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
         int indice = procurarIndice(id);
         if (indice < proximoIndice) {
             refeicoes[indice] = refeicoes[proximoIndice - 1];
-            refeicoes[--proximoIndice] = null;
+            refeicoes[--proximoIndice] = null;  //  Remove a referência
         } else {
             throw new RefeicaoNaoEncontradaException("Refeição não encontrada.");
         }

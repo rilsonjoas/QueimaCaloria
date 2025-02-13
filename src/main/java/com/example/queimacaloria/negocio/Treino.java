@@ -48,7 +48,7 @@ public class Treino {
     }
 
     public Treino(String nome, String tipoDeTreino, String tipo, int duracao, int nivelDeDificuldade,
-            ArrayList<Exercicio> exercicios, double caloriasQueimadas, double progresso, boolean concluido) {
+                  ArrayList<Exercicio> exercicios, double caloriasQueimadas, double progresso, boolean concluido) {
         this.id = UUID.randomUUID();
         this.nome = nome;
         this.tipoDeTreino = tipoDeTreino;

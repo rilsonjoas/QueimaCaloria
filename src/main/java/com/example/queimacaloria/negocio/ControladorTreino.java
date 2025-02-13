@@ -5,6 +5,7 @@ import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 
 import java.util.List;
+import java.util.UUID;
 
 public class ControladorTreino {
 
@@ -79,5 +80,10 @@ public class ControladorTreino {
     // Lista todos os treinos do repositório.
     public List<Treino> listarTreinos() {
         return repositorio.getAll();
+    }
+
+    // Adiciona o método de remoção
+    public void remover(UUID id) throws TreinoNaoEncontradoException {
+        repositorio.remover(id);
     }
 }

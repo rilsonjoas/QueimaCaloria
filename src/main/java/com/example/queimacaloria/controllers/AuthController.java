@@ -9,6 +9,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import com.example.queimacaloria.negocio.Usuario; // Importante
 
 public class AuthController {
 
@@ -57,14 +58,15 @@ public class AuthController {
         authContainer.getChildren().setAll(telaRegistro);
     }
 
-    // Adicione este método
-    public void mostrarTelaPrincipal(Stage primaryStage) { // Recebe o primaryStage
+    // Modifique este método:
+    public void mostrarTelaPrincipal(Stage primaryStage, Usuario usuario) { // Recebe o usuário
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-view.fxml"));
             Parent telaPrincipal = loader.load();
 
             MainController mainController = loader.getController();
-            mainController.setPrimaryStage(primaryStage); // Injete o stage principal no MainController
+            mainController.setPrimaryStage(primaryStage);
+            mainController.setUsuarioLogado(usuario); // Define o usuário logado!
 
             Scene scene = new Scene(telaPrincipal);
             primaryStage.setScene(scene);
@@ -76,7 +78,6 @@ public class AuthController {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar a tela principal", e.getMessage());
         }
     }
-
     // Adicione este método showAlert, se você não tiver um método utilitário para isso
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
@@ -85,5 +86,4 @@ public class AuthController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
 }

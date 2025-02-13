@@ -36,11 +36,11 @@ public class Meta {
 
     public Meta() {
         this.id = UUID.randomUUID();
-        this.dataCriacao = LocalDate.now(); 
+        this.dataCriacao = LocalDate.now();
     }
 
     public Meta(String descricao, Tipo tipo, double valorAlvo, double progressoAtual, LocalDate dataCriacao, // Alterado
-            LocalDate dataConclusao) { 
+                LocalDate dataConclusao) {
         this.id = UUID.randomUUID();
         this.descricao = descricao;
         this.tipo = tipo;
@@ -62,7 +62,7 @@ public class Meta {
         return new SimpleDoubleProperty(progressoAtual);
     }
 
-    public ObjectProperty<LocalDate> dataConclusaoProperty() { 
+    public ObjectProperty<LocalDate> dataConclusaoProperty() {
         return new SimpleObjectProperty<>(dataConclusao);
     }
 

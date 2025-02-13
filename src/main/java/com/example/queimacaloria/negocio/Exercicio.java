@@ -52,12 +52,13 @@ public class Exercicio {
         this.concluido = false;
     }
 
+    // Construtor que trata corretamente o caso de musculosTrabalhados ser nulo.
     public Exercicio(String nome, String descricao, ArrayList<String> musculosTrabalhados, TipoExercicio tipo,
                      int tempo, double caloriasQueimadasPorMinuto, boolean concluido, double caloriasQueimadas) {
         this.id = UUID.randomUUID();
         this.nome = nome;
         this.descricao = descricao;
-        this.musculosTrabalhados = musculosTrabalhados;
+        this.musculosTrabalhados = (musculosTrabalhados != null) ? musculosTrabalhados : new ArrayList<>(); // IMPORTANTE!
         this.tipo = tipo;
         this.tempo = tempo;
         this.caloriasQueimadasPorMinuto = caloriasQueimadasPorMinuto;

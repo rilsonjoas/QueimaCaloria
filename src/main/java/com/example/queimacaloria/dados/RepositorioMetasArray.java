@@ -61,7 +61,7 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         int indice = procurarIndice(id);
         if (indice < proximoIndice) {
             metas[indice] = metas[proximoIndice - 1];
-            metas[--proximoIndice] = null;
+            metas[--proximoIndice] = null;  //  Remove a referência
         } else {
             throw new MetaNaoEncontradaException("Meta não encontrada.");
         }

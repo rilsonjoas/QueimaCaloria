@@ -6,6 +6,7 @@ import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ControladorRefeicao {
 
@@ -55,5 +56,10 @@ public class ControladorRefeicao {
     // Lista todas as refeições do repositório.
     public List<Refeicao> listarRefeicoes() {
         return repositorio.getAll();
+    }
+
+    // Adiciona o método de remoção
+    public void remover(UUID id) throws RefeicaoNaoEncontradaException {
+        repositorio.remover(id);
     }
 }

@@ -15,7 +15,7 @@ public class ControladorExercicio {
 
     // Construtor com parâmetros
     public void inicializar(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
-            int tempo, double caloriasQueimadasPorMinuto) throws ExercicioNaoEncontradoException {
+                            int tempo, double caloriasQueimadasPorMinuto) throws ExercicioNaoEncontradoException {
         exercicio.setNome(nome);
         exercicio.setDescricao(descricao);
         exercicio.setTipo(tipo);
@@ -62,5 +62,10 @@ public class ControladorExercicio {
     // Método para listar todos os exercícios
     public List<Exercicio> listarExercicios() {
         return repositorio.getAll();
+    }
+
+    // Adicione este método
+    public void remover(UUID id) throws ExercicioNaoEncontradoException {
+        repositorio.remover(id);
     }
 }

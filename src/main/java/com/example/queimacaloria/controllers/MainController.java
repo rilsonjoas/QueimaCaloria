@@ -8,123 +8,143 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import java.io.IOException;
 import javafx.scene.control.Label;
-import javafx.stage.Stage; // Importante!
+import javafx.stage.Stage;
+import com.example.queimacaloria.negocio.Usuario;
+import javafx.beans.binding.Bindings; // Importante para o binding
 
 public class MainController {
 
-    @FXML private StackPane areaConteudo; // Container para as telas
+    @FXML private StackPane areaConteudo;
     @FXML private Label labelNomeUsuario;
     @FXML private Label labelIMC;
     @FXML private Button buttonVerMaisMetas;
     @FXML private Button buttonVerMaisExercicios;
     @FXML private Button buttonVerMaisDietas;
-
-    // Variáveis para armazenar as telas carregadas
+    @FXML private Button buttonVerMaisPerfil;
 
     private Parent telaDieta;
     private Parent telaExercicio;
     private Parent telaMeta;
     private Parent telaRefeicao;
     private Parent telaTreino;
+    private Parent telaPerfil;
 
-    private Stage primaryStage;  // Adicione esta variável
+    private Stage primaryStage;
+    private Usuario usuarioLogado;
 
-    public void setPrimaryStage(Stage primaryStage) { // Adicione este método
+    public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
 
+    public void setUsuarioLogado(Usuario usuario) {
+        this.usuarioLogado = usuario;
 
+        if (usuarioLogado != null) {
+            labelNomeUsuario.setText(usuarioLogado.getNome());
+
+            // USANDO BINDING para o IMC:  Muito mais eficiente!
+            labelIMC.textProperty().bind(Bindings.createStringBinding(
+                    () -> String.format("IMC: %.2f", usuarioLogado.getImc()), // Função que calcula o texto
+                    usuarioLogado.imcProperty()  // Propriedade que dispara a atualização
+            ));
+        } else {
+            labelNomeUsuario.setText("Nome do Usuário");
+            labelIMC.setText("IMC: --");  // Ou use um binding aqui também, para um valor padrão.
+        }
+    }
 
     @FXML
-    // Inicializa o controller principal
     public void initialize() {
         try {
-            // Carrega todas as telas FXML durante a inicialização
             telaDieta = carregarTela("/com/example/queimacaloria/views/dieta-view.fxml");
             telaExercicio = carregarTela("/com/example/queimacaloria/views/exercicio-view.fxml");
             telaMeta = carregarTela("/com/example/queimacaloria/views/meta-view.fxml");
             telaRefeicao = carregarTela("/com/example/queimacaloria/views/refeicao-view.fxml");
             telaTreino = carregarTela("/com/example/queimacaloria/views/treino-view.fxml");
+            telaPerfil = carregarTela("/com/example/queimacaloria/views/perfil-view.fxml");
 
-
-            // Injeta o MainController nos sub-controllers *APÓS* o carregamento
             ((DietaController) getController(telaDieta)).setMainController(this);
             ((ExercicioController) getController(telaExercicio)).setMainController(this);
             ((MetaController) getController(telaMeta)).setMainController(this);
             ((RefeicaoController) getController(telaRefeicao)).setMainController(this);
             ((TreinoController) getController(telaTreino)).setMainController(this);
+            ((PerfilController) getController(telaPerfil)).setMainController(this); //isso garante que o main controller seja setado antes.
+
+            // mostrarTelaPrincipal() *ANTES* de tentar modificar os labels!
+            mostrarTelaPrincipal();
 
 
-            mostrarTelaPrincipal(); // <---  mostra Tela Principal() inicialmente
         } catch (IOException e) {
-            e.printStackTrace(); // Tratar erro de carregamento
+            e.printStackTrace();
+            // Trate a exceção apropriadamente (ex: mostrar um alerta)
         }
     }
 
-
-    // Função auxiliar para obter o controller de uma tela
     private Object getController(Parent parent) {
         return ((FXMLLoader) parent.getProperties().get("fxmlLoader")).getController();
     }
 
-    // Função auxiliar para carregar uma tela FXML
     private Parent carregarTela(String caminho) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(caminho));
         Parent root = loader.load();
-        root.getProperties().put("fxmlLoader", loader); // Armazena o loader para uso posterior
+        root.getProperties().put("fxmlLoader", loader);
         return root;
     }
 
-
     @FXML
-    // Exibe a tela de dieta
     public void mostrarTelaDieta() {
         areaConteudo.getChildren().setAll(telaDieta);
     }
 
     @FXML
-    // Exibe a tela de exercício
     public void mostrarTelaExercicio() {
         areaConteudo.getChildren().setAll(telaExercicio);
     }
 
     @FXML
-    // Exibe a tela de meta
     public void mostrarTelaMeta() {
         areaConteudo.getChildren().setAll(telaMeta);
     }
 
     @FXML
-    // Exibe a tela de refeição
     public void mostrarTelaRefeicao() {
         areaConteudo.getChildren().setAll(telaRefeicao);
     }
 
     @FXML
-    // Exibe a tela de treino
     public void mostrarTelaTreino() {
         areaConteudo.getChildren().setAll(telaTreino);
     }
 
+    @FXML
+    public void mostrarTelaPerfil() {
+        // *PRIMEIRO* obtém a instância do controlador.
+        PerfilController perfilController = (PerfilController) getController(telaPerfil);
+
+        // *DEPOIS* define o usuário logado.  Isso vai chamar atualizarLabels()
+        // e preencher os labels *ANTES* de a tela ser exibida.
+        perfilController.setUsuarioLogado(usuarioLogado);
+
+        // *AGORA* você pode adicionar a tela ao StackPane.
+        areaConteudo.getChildren().setAll(telaPerfil);
+    }
 
     @FXML
-    // Exibe a tela principal
     public void mostrarTelaPrincipal() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-screen-content.fxml"));
             Parent telaPrincipalContent = loader.load();
             areaConteudo.getChildren().setAll(telaPrincipalContent);
 
-
+            // Obtenção dos elementos gráficos *DEPOIS* de carregar o FXML
             labelNomeUsuario = (Label) telaPrincipalContent.lookup("#labelNomeUsuario");
             labelIMC = (Label) telaPrincipalContent.lookup("#labelIMC");
-
             buttonVerMaisMetas = (Button) telaPrincipalContent.lookup("#buttonVerMaisMetas");
             buttonVerMaisExercicios = (Button) telaPrincipalContent.lookup("#buttonVerMaisExercicios");
             buttonVerMaisDietas = (Button) telaPrincipalContent.lookup("#buttonVerMaisDietas");
+            buttonVerMaisPerfil = (Button) telaPrincipalContent.lookup("#buttonVerMaisPerfil");
 
-
-            // Define os eventos dos botões
+            // Configuração dos eventos dos botões
             if (buttonVerMaisMetas != null) {
                 buttonVerMaisMetas.setOnAction(e -> mostrarTelaMeta());
             }
@@ -135,18 +155,27 @@ public class MainController {
                 buttonVerMaisDietas.setOnAction(e -> mostrarTelaDieta());
             }
 
-            // Define valores para os labels (substitua pelos valores reais)
-            if (labelNomeUsuario != null) {
-                labelNomeUsuario.setText("Nome do Usuário");
-            }
-            if (labelIMC != null) {
-                labelIMC.setText("IMC: ");
+            if (buttonVerMaisPerfil != null) {
+                buttonVerMaisPerfil.setOnAction(e -> mostrarTelaPerfil());
             }
 
+            // Preenchimento dos labels, *SE* o usuário estiver logado
+            if (usuarioLogado != null) {
+                setUsuarioLogado(usuarioLogado); //Chama o setUsuarioLogado para atualizar a interface.
+            }
+            else { // Caso não haja usuário logado.
+                labelNomeUsuario.setText("Nome do Usuário");
+                labelIMC.setText("IMC: --");
+            }
+
+
         } catch (IOException e) {
-            e.printStackTrace(); // Tratar erro de carregamento
+            e.printStackTrace();
+            // Trate a exceção apropriadamente (ex: mostrar um alerta)
         }
     }
+
+
 
     @FXML
     public void logout() {
@@ -154,12 +183,11 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/auth-view.fxml"));
             Parent authView = loader.load();
             Scene authScene = new Scene(authView);
-            primaryStage.setScene(authScene); // Volta para a cena de autenticação
-            primaryStage.setTitle("YouFit - Login/Registro"); // Título apropriado
+            primaryStage.setScene(authScene);
+            primaryStage.setTitle("YouFit - Login/Registro");
             primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            // Trate o erro (por exemplo, mostrar um alerta)
         }
     }
 }

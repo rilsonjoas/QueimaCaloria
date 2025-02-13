@@ -10,47 +10,55 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.TreinoController">
+<AnchorPane prefHeight="600.0" prefWidth="700.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.TreinoController">
     <children>
-        <VBox alignment="TOP_CENTER" prefHeight="450.0" prefWidth="600.0" spacing="20.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
+        <VBox alignment="TOP_CENTER" prefHeight="550.0" prefWidth="600.0" spacing="20.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px;" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
             <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
-            <Label text="Treinos" textFill="#d7d7d7">
-                <font>
-                    <Font name="Gill Sans MT" size="24.0" />
-                </font>
+
+            <Label text="Treinos do Usuário" textFill="#d7d7d7">
+                <font><Font name="Gill Sans MT" size="20.0" /></font>
             </Label>
-            <TableView fx:id="tabelaTreinos" prefHeight="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
+            <TableView fx:id="tabelaTreinosUsuario" prefHeight="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
                 <columns>
-                    <TableColumn fx:id="colunaNome" prefWidth="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Nome" />
-                    <TableColumn fx:id="colunaTipoTreino" prefWidth="100.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Tipo" />
-                    <TableColumn fx:id="colunaDuracao" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Duração" />
-                    <TableColumn fx:id="colunaNivelDificuldade" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Dificuldade" />
-                    <TableColumn fx:id="colunaProgresso" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Progresso" />
+                    <TableColumn fx:id="colunaNomeUsuario" prefWidth="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Nome" />
+                    <TableColumn fx:id="colunaTipoTreinoUsuario" prefWidth="100.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Tipo" />
+                    <TableColumn fx:id="colunaDuracaoUsuario" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Duração" />
+                    <TableColumn fx:id="colunaNivelDificuldadeUsuario" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Dificuldade" />
+                    <TableColumn fx:id="colunaProgressoUsuario" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Progresso" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                 </columnResizePolicy>
             </TableView>
+
             <HBox alignment="CENTER" spacing="10.0">
-                <Button onAction="#abrirTelaCriarTreino" style="-fx-background-color: #55c5f5;" text="Criar Novo Treino" />
                 <Button onAction="#atualizarTreino" style="-fx-background-color: #55c5f5;" text="Atualizar Treino" />
                 <Button onAction="#removerTreino" style="-fx-background-color: #55c5f5;" text="Remover Treino" />
             </HBox>
 
-            <!-- Detalhes do Treino -->
-            <VBox fx:id="detalhesTreino" alignment="TOP_LEFT" spacing="10" style="-fx-background-color: #1a1922; -fx-border-width: 1px; -fx-border-color: #55c5f5; -fx-border-radius: 5px; -fx-padding: 10;">
-                <Label text="Detalhes do Treino" textFill="#55c5f5">
-                    <font><Font name="Gill Sans MT" size="18.0" /></font>
-                </Label>
+            <Label text="Treinos Pré-definidos" textFill="#d7d7d7">
+                <font><Font name="Gill Sans MT" size="20.0" /></font>
+                <VBox.margin><Insets top="20.0" /></VBox.margin>
+            </Label>
+            <TableView fx:id="tabelaTreinosPreDefinidos" prefHeight="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
+                <columns>
+                    <TableColumn fx:id="colunaNomePreDefinido" prefWidth="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Nome" />
+                    <TableColumn fx:id="colunaTipoTreinoPreDefinido" prefWidth="100.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Tipo" />
+                    <TableColumn fx:id="colunaDuracaoPreDefinido" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Duração" />
+                    <TableColumn fx:id="colunaNivelDificuldadePreDefinido" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Dificuldade" />
+                    <TableColumn fx:id="colunaProgressoPreDefinido" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Progresso" />
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+            <!-- Novo HBox para os botões abaixo da tabela -->
+            <HBox alignment="CENTER" spacing="10.0">
+                <Button onAction="#adicionarTreinoPreDefinido" style="-fx-background-color: #55c5f5;" text="Adicionar Treino Selecionado" />
+                <Button onAction="#abrirTelaCriarTreino" style="-fx-background-color: #55c5f5;" text="Criar Novo Treino" />
+            </HBox>
 
-                <Label fx:id="labelNomeTreino" text="Nome: " textFill="WHITE" />
-                <Label fx:id="labelTipoTreino" text="Tipo: " textFill="WHITE" />
-                <Label fx:id="labelDuracaoTreino" text="Duração: " textFill="WHITE" />
-                <Label fx:id="labelDificuldadeTreino" text="Dificuldade: " textFill="WHITE" />
-                <Label fx:id="labelExerciciosTreino" text="Exercícios: " textFill="WHITE" wrapText="true" />
-               <VBox.margin><Insets top="10" /></VBox.margin>
-            </VBox>
-            <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar para a Tela Inicial" />
+            <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar para a página inicial" />
             <Label fx:id="mensagemTreino" text="" textFill="RED" />
         </VBox>
     </children>

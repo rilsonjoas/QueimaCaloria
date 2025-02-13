@@ -5,4 +5,3 @@ public class UsuarioNaoEncontradoException extends Exception {
         super(message);
     }
 }
-

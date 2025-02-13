@@ -1,11 +1,12 @@
 package com.example.queimacaloria.negocio;
 
-import com.example.queimacaloria.dados.*;
+import com.example.queimacaloria.dados.RepositorioUsuariosArray;
 import com.example.queimacaloria.excecoes.*;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class Fachada {
 
@@ -35,12 +36,10 @@ public class Fachada {
     }
 
 
-    // NOVO MÉTODO para cadastro
+    // MÉTODO para cadastro
     public void cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
-                                 Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException{
-
+                                 Usuario.Sexo sexo, float peso, float altura)  { // Removida a exception
         controladorUsuario.cadastrarUsuario(nome, email, senha, dataNascimento, sexo, peso, altura);
-
     }
 
     // Métodos de Usuário
@@ -50,9 +49,9 @@ public class Fachada {
         controladorUsuario.atualizarDados(usuario, nome, email, senha, dataNascimento, sexo, peso, altura);
     }
 
-    public float calcularIMCUsuario(Usuario usuario) throws UsuarioNaoEncontradoException {
-        return controladorUsuario.calcularIMC(usuario);
-    }
+    // public float calcularIMCUsuario(Usuario usuario) throws UsuarioNaoEncontradoException {  REMOVIDO
+    //     return controladorUsuario.calcularIMC(usuario);
+    // }
 
     public void cadastrarMetaUsuario(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
         controladorUsuario.cadastrarMeta(usuario, meta);
@@ -131,6 +130,11 @@ public class Fachada {
         controladorExercicio.concluir(exercicio);
     }
 
+    // Adicionado o método de remoção de exercício
+    public void removerExercicio(UUID id) throws ExercicioNaoEncontradoException {
+        controladorExercicio.remover(id);
+    }
+
     // Métodos de Meta
     public void configurarMeta(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
                                LocalDate dataConclusao) throws MetaNaoEncontradaException {
@@ -161,6 +165,18 @@ public class Fachada {
 
     public Map<String, Double> calcularMacronutrientesRefeicao(Refeicao refeicao) {
         return controladorRefeicao.calcularMacronutrientes(refeicao);
+    }
+
+    public void removerTreino(UUID id) throws TreinoNaoEncontradoException {
+        controladorTreino.remover(id);
+    }
+
+    public void removerRefeicao(UUID id) throws RefeicaoNaoEncontradaException {
+        controladorRefeicao.remover(id);
+    }
+
+    public void removerMeta(UUID id) throws MetaNaoEncontradaException {
+        controladorMeta.remover(id);
     }
 
     // Métodos de Treino

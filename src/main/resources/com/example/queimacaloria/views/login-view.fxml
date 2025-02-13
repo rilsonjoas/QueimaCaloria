@@ -11,7 +11,7 @@
 
 <AnchorPane prefHeight="500.0" prefWidth="500.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.LoginController">
     <children>
-        <VBox alignment="CENTER" minHeight="310.0" minWidth="400.0" prefHeight="310.0" prefWidth="400.0" spacing="5.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
+        <VBox alignment="CENTER" minHeight="310.0" minWidth="400.0" prefHeight="310.0" prefWidth="400.0" spacing="10.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
             <Label text="Faça login no YouFit" textFill="#d7d7d7">
                 <font>
                     <Font name="Gill Sans MT" size="24.0" />
@@ -30,14 +30,14 @@
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </PasswordField>
-            <Button minWidth="120.0" onAction="#login" style="-fx-background-color: #55c5f5;" text="Entrar">
+            <Button minWidth="120.0" onAction="#login" prefWidth="210.0" style="-fx-background-color: #55c5f5;" text="Entrar">
                 <VBox.margin>
                     <Insets top="10.0" />
                 </VBox.margin>
             </Button>
-            <Button fx:id="registrar" minWidth="120.0" onAction="#irParaRegistro" style="-fx-background-color: #ffffff;" text="Registrar">
+            <Button fx:id="registrar" minWidth="120.0" onAction="#irParaRegistro" prefWidth="210.0" style="-fx-background-color: #ffffff;" text="Ainda não tenho conta. Registrar">
                 <VBox.margin>
-                    <Insets top="10.0" />
+                    <Insets />
                 </VBox.margin>
             </Button>
             <Label fx:id="mensagemLogin" text="" textFill="RED" />

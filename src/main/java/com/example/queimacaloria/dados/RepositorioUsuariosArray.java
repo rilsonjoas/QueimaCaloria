@@ -82,7 +82,7 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
     public List<Usuario> getAll() {
         List<Usuario> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {
-            if (usuarios[i] != null) {
+            if (usuarios[i] != null) { // Evita NullPointerException
                 lista.add(usuarios[i]);
             }
         }

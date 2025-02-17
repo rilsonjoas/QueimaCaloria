@@ -2,10 +2,13 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+
+import java.time.Duration;
 import java.time.LocalDate;
 
 
@@ -54,7 +57,8 @@ public class RegistroController {
             fachada.cadastrarUsuario(nome, email, password, dataNascimento, sexo, peso, altura);
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
 
-            authController.mostrarTelaPrincipal(getPrimaryStage(), fachada.listarUsuarios().stream().filter(usuario -> usuario.getEmail().equals(email)).findFirst().get());
+
+          //authController.mostrarTelaPrincipal(getPrimaryStage(), fachada.listarUsuarios().stream().filter(usuario -> usuario.getEmail().equals(email)).findFirst().get());
 
 
         } catch (IllegalArgumentException e) {

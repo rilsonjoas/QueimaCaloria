@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -116,13 +117,27 @@ public class ExercicioController {
         Exercicio exercicioSelecionado = tabelaExerciciosUsuario.getSelectionModel().getSelectedItem();
         if (exercicioSelecionado != null) {
             try {
-                fachada.configurarExercicio(exercicioSelecionado, exercicioSelecionado.getNome(),
-                        exercicioSelecionado.getDescricao(), exercicioSelecionado.getTipo(),
-                        exercicioSelecionado.getTempo(), exercicioSelecionado.getCaloriasQueimadasPorMinuto());
+                // Carrega a tela de edição
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/edicao-exercicio-view.fxml"));
+                Parent root = loader.load();
+
+                // Obtém o controlador da tela de edição
+                EdicaoExercicioController controller = loader.getController();
+                controller.setExercicioController(this); //Passa a referência para esse controller
+                controller.setExercicio(exercicioSelecionado);
+
+
+                // Exibe a tela de edição
+                Stage stage = new Stage();
+                stage.setTitle("Editar Exercício");
+                stage.setScene(new Scene(root));
+                stage.showAndWait(); //Modal
+
                 atualizarTabelaExerciciosUsuario();
                 mensagemExercicio.setText("Exercício atualizado com sucesso!");
-            } catch (ExercicioNaoEncontradoException e) {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar exercício", e.getMessage());
+
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhum exercício selecionado",

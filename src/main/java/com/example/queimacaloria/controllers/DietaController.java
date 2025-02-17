@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -16,11 +17,7 @@ import javafx.stage.Stage;
 
 import com.example.queimacaloria.negocio.Usuario;
 
-
-
 import java.util.HashMap;
-
-
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -136,23 +133,39 @@ public class DietaController {
     }
 
     @FXML
-    public void realizarAtualizacaoDieta() {
+    public void realizarAtualizacaoDieta() { // Renomeei o método
         Dieta dietaSelecionada = tabelaDietasUsuario.getSelectionModel().getSelectedItem();
         if (dietaSelecionada != null) {
             try {
-                fachada.configurarDieta(dietaSelecionada, dietaSelecionada.getNome(),
-                        dietaSelecionada.getObjetivo(), dietaSelecionada.getCaloriasDiarias(),
-                        dietaSelecionada.getUsuario());
+                // Carrega a tela de edição
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/edicao-dieta-view.fxml"));
+                Parent root = loader.load();
+
+                // Obtém o controlador da tela de edição
+                EdicaoDietaController controller = loader.getController();
+                controller.setDietaController(this); //Passa a referência para esse controller
+                // Passa a dieta selecionada para o controlador
+                controller.setDieta(dietaSelecionada);
+
+                // Exibe a tela de edição
+                Stage stage = new Stage();
+                stage.setTitle("Editar Dieta");
+                stage.setScene(new Scene(root));
+                stage.showAndWait(); // Exibe como um diálogo modal
+
+                // Atualiza a tabela após a edição (o controlador de edição já deve ter
+                // chamado o fachada.configurarDieta())
                 atualizarTabelaDietasUsuario();
-                mensagemDieta.setText("Dieta atualizada com sucesso!");
-            } catch (DietaNaoEncontradaException e) {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar dieta", e.getMessage());
+                mensagemDieta.setText("Dieta atualizada com sucesso!"); //Feedback para o usuário
+
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
             }
         } else {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma dieta selecionada",
-                    "Por favor, selecione uma dieta para atualizar.");
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma dieta selecionada", "Por favor, selecione uma dieta para editar.");
         }
     }
+
 
     @FXML
     public void realizarRemocaoDieta() {
@@ -240,14 +253,6 @@ public class DietaController {
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {
@@ -256,5 +261,13 @@ public class DietaController {
             System.err.println("Erro: MainController não foi injetado!");
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "MainController não foi configurado corretamente.");
         }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

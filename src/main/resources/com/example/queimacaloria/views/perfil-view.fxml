@@ -65,7 +65,7 @@
                 <Label fx:id="labelPeso" text="Peso (kg):" textFill="WHITE" />
                 <TextField fx:id="campoPeso" promptText="Peso" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
 
-                <Label fx:id="labelAltura" text="Altura (m):" textFill="WHITE" />
+                <Label fx:id="labelAltura" text="Altura (em metros. Ex: 1,75):" textFill="WHITE" />
                 <TextField fx:id="campoAltura" promptText="Altura" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
             </VBox>
 

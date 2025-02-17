@@ -26,7 +26,6 @@ public class MainApplication extends Application {
             FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/com/example/queimacaloria/views/auth-view.fxml"));
             Parent raiz = loader.load();
 
-            // Injete o Stage principal no AuthController, se necessário.
             AuthController authController = loader.getController();
 
 

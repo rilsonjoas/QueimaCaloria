@@ -49,10 +49,6 @@ public class Fachada {
         controladorUsuario.atualizarDados(usuario, nome, email, senha, dataNascimento, sexo, peso, altura);
     }
 
-    // public float calcularIMCUsuario(Usuario usuario) throws UsuarioNaoEncontradoException {  REMOVIDO
-    //     return controladorUsuario.calcularIMC(usuario);
-    // }
-
     public void cadastrarMetaUsuario(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
         controladorUsuario.cadastrarMeta(usuario, meta);
     }

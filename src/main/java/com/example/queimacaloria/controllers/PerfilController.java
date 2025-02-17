@@ -11,7 +11,7 @@ import javafx.beans.binding.Bindings; // Importante!
 
 public class PerfilController {
 
-    // Labels para os valores ATUAIS
+    // Labels para os valores
     @FXML private Label labelNomeAtual;
     @FXML private Label labelEmailAtual;
     @FXML private Label labelPesoAtual;
@@ -19,7 +19,7 @@ public class PerfilController {
     @FXML private Label labelIMCatual;
 
 
-    // Campos de texto (continuam os mesmos)
+    // Campos de texto
     @FXML private TextField campoNome;
     @FXML private TextField campoEmail;
     @FXML private TextField campoPeso;
@@ -36,7 +36,7 @@ public class PerfilController {
 
     public void setUsuarioLogado(Usuario usuario) {
         this.usuarioLogado = usuario;
-        bindLabels(); //Chama o método que configura os bindings.
+        bindLabels(); //Chama o método que configura os bindings.  DEPOIS de definir usuarioLogado.
     }
 
     private void bindLabels() {
@@ -79,16 +79,11 @@ public class PerfilController {
         }
 
         try {
-            //O nome e email já foram atualizados devido aos bindings.
-            //float peso = Float.parseFloat(campoPeso.getText()); //Não precisa mais, o binding já fez
-            //float altura = Float.parseFloat(campoAltura.getText()); //Não precisa mais
-
-            //A fachada só precisa ser chamada para persistir as mudanças, o que *já foi feito*.
             fachada.atualizarDadosUsuario(usuarioLogado, usuarioLogado.getNome(), usuarioLogado.getEmail(), null, null, null, usuarioLogado.getPeso(), usuarioLogado.getAltura());
             // atualizarLabels(); // Não precisa mais! Os bindings fazem a atualização.
             mensagemPerfil.setText("Perfil atualizado com sucesso!");
 
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException e) { // REMOVIDO daqui, o NumberStringConverter já trata
             showAlert(Alert.AlertType.ERROR, "Erro", "Dados inválidos", "Peso e altura devem ser números válidos.");
         } catch (UsuarioNaoEncontradoException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado", e.getMessage());

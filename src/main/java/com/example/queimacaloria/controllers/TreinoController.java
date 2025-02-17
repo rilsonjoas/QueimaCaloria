@@ -1,4 +1,3 @@
-
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
@@ -9,6 +8,7 @@ import com.example.queimacaloria.negocio.Treino;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.fxml.FXMLLoader;
@@ -125,13 +125,28 @@ public class TreinoController {
         Treino treinoSelecionado = tabelaTreinosUsuario.getSelectionModel().getSelectedItem();
         if (treinoSelecionado != null) {
             try {
-                fachada.configurarTreino(treinoSelecionado, treinoSelecionado.getNome(),
-                        treinoSelecionado.getTipoDeTreino(), treinoSelecionado.getDuracao(),
-                        treinoSelecionado.getNivelDeDificuldade());
+                // Carrega a tela de edição
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/edicao-treino-view.fxml"));
+                Parent root = loader.load();
+
+                // Obtém o controlador da tela de edição
+                EdicaoTreinoController controller = loader.getController();
+                controller.setTreinoController(this);
+                // Passa o treino selecionada para o controlador
+                controller.setTreino(treinoSelecionado);
+
+                // Exibe a tela de edição
+                Stage stage = new Stage();
+                stage.setTitle("Editar Treino");
+                stage.setScene(new Scene(root));
+                stage.showAndWait(); // Exibe como um diálogo modal
+
+                // Atualiza a tabela após a edição
                 atualizarTabelaTreinosUsuario();
-                mensagemTreino.setText("Treino atualizado com sucesso!");
-            } catch (TreinoNaoEncontradoException e) {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar treino", e.getMessage());
+                mensagemTreino.setText("Treino atualizado com sucesso!"); //Feedback pro usuário
+
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhum treino selecionado",

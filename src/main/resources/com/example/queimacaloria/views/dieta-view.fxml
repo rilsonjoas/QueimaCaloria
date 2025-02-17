@@ -15,7 +15,7 @@
         <VBox alignment="TOP_CENTER" prefHeight="550.0" prefWidth="600.0" spacing="20.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px;" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
             <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
 
-            <Label text="Dietas do Usuário" textFill="#d7d7d7">
+            <Label text="Suas dietas atuais" textFill="#d7d7d7">
                 <font><Font name="Gill Sans MT" size="20.0" /></font>
             </Label>
             <TableView fx:id="tabelaDietasUsuario" prefHeight="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
@@ -36,7 +36,7 @@
                 <Button onAction="#realizarRemocaoDieta" style="-fx-background-color: #55c5f5;" text="Remover Dieta" />
             </HBox>
 
-            <Label text="Dietas Pré-definidas" textFill="#d7d7d7">
+            <Label text="Selecione uma dieta pré-definida abaixo" textFill="#d7d7d7">
                 <font><Font name="Gill Sans MT" size="20.0" /></font>
                 <VBox.margin><Insets top="20" /></VBox.margin>
             </Label>

@@ -41,7 +41,6 @@ public class Usuario {
 
     public Usuario() {
         this.id = UUID.randomUUID();
-        //this.imc.set(0); // Removido! O IMC será calculado quando peso/altura forem definidos.
         this.metas = new ArrayList<>();
         this.treinos = new ArrayList<>();
         this.dietas = new ArrayList<>();
@@ -53,7 +52,6 @@ public class Usuario {
 
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ArrayList<Meta> metas, ArrayList<Treino> treinos, ArrayList<Dieta> dietas) {
         this.id = UUID.randomUUID();
-        //this.imc.set(0); // Removido!
         this.nome.set(nome);
         this.email.set(email);
         this.dataNascimento.set(dataNascimento);

@@ -1,4 +1,3 @@
-
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
@@ -8,6 +7,7 @@ import com.example.queimacaloria.negocio.Meta;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.fxml.FXMLLoader;
@@ -114,13 +114,29 @@ public class MetaController {
         Meta metaSelecionada = tabelaMetasUsuario.getSelectionModel().getSelectedItem();
         if (metaSelecionada != null) {
             try {
-                fachada.configurarMeta(metaSelecionada, metaSelecionada.getDescricao(),
-                        metaSelecionada.getTipo(), metaSelecionada.getValorAlvo(),
-                        metaSelecionada.getProgressoAtual(), metaSelecionada.getDataConclusao());
+                // Carrega a tela de edição
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/edicao-meta-view.fxml"));
+                Parent root = loader.load();
+
+                // Obtém o controlador da tela de edição
+                EdicaoMetaController controller = loader.getController();
+                controller.setMetaController(this);
+
+                // Passa a meta selecionada para o controlador
+                controller.setMeta(metaSelecionada);
+
+                // Exibe a tela de edição
+                Stage stage = new Stage();
+                stage.setTitle("Editar Meta");
+                stage.setScene(new Scene(root));
+                stage.showAndWait(); // Exibe como um diálogo modal
+
+                // Atualiza a tabela após a edição
                 atualizarTabelaMetasUsuario();
                 mensagemMeta.setText("Meta atualizada com sucesso!");
-            } catch (MetaNaoEncontradaException e) {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar meta", e.getMessage());
+
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma meta selecionada",
@@ -172,7 +188,6 @@ public class MetaController {
                     "Por favor, selecione uma meta pré-definida para adicionar.");
         }
     }
-
 
 
     private void atualizarTabelaMetasUsuario() {

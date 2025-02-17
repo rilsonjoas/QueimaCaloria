@@ -6,6 +6,7 @@ import com.example.queimacaloria.negocio.Refeicao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.fxml.FXMLLoader;
@@ -106,12 +107,28 @@ public class RefeicaoController {
         Refeicao refeicaoSelecionada = tabelaRefeicoesUsuario.getSelectionModel().getSelectedItem();
         if (refeicaoSelecionada != null) {
             try {
-                fachada.configurarRefeicao(refeicaoSelecionada, refeicaoSelecionada.getNome(),
-                        refeicaoSelecionada.getDescricao(), refeicaoSelecionada.getMacronutrientes());
+                // Carrega a tela de edição
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/edicao-refeicao-view.fxml"));
+                Parent root = loader.load();
+
+                // Obtém o controlador da tela de edição
+                EdicaoRefeicaoController controller = loader.getController();
+                controller.setRefeicaoController(this);
+                // Passa a refeicao selecionada para o controlador
+                controller.setRefeicao(refeicaoSelecionada);
+
+                // Exibe a tela de edição
+                Stage stage = new Stage();
+                stage.setTitle("Editar Refeição");
+                stage.setScene(new Scene(root));
+                stage.showAndWait(); // Exibe como um diálogo modal
+
+                // Atualiza a tabela após a edição
                 atualizarTabelaRefeicoesUsuario();
                 mensagemRefeicao.setText("Refeição atualizada com sucesso!");
-            } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar refeição", e.getMessage());
+
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma refeição selecionada",

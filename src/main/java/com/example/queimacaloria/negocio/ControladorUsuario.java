@@ -1,4 +1,3 @@
-
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioUsuariosArray;
@@ -17,7 +16,7 @@ public class ControladorUsuario {
         this.repositorio = RepositorioUsuariosArray.getInstanciaUnica();
     }
 
-    // Método de cadastro (SIMPLIFICADO)
+    // Método de cadastro
     public void cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
                                  Usuario.Sexo sexo, float peso, float altura) {
 
@@ -40,6 +39,16 @@ public class ControladorUsuario {
         novoUsuario.setAltura(altura); //Define altura DEPOIS
         // novoUsuario.setImc(calcularIMC(novoUsuario)); // Remove daqui, o setPeso/setAltura já calculam
         repositorio.adicionar(novoUsuario); // Adiciona diretamente
+
+
+        try {
+            repositorio.salvar(novoUsuario); //  ISSO É CRUCIAL! Salva o usuário *DEPOIS* de todas as modificações.
+            System.out.println("DEBUG: Usuário salvo no repositório após cadastro. IMC: " + novoUsuario.getImc()); // Log para depuração
+        } catch (UsuarioNaoEncontradoException e) {
+            System.err.println("Erro ao salvar usuário após cadastro: " + e.getMessage()); // Log de erro
+            throw new RuntimeException("Erro interno ao cadastrar usuário.", e); // Relança como RuntimeException
+        }
+
     }
 
 
@@ -69,8 +78,10 @@ public class ControladorUsuario {
         if (altura > 0) {
             usuario.setAltura(altura);
         }
-
+        System.out.println("DEBUG: Dentro de atualizarDados.  IMC antes de salvar: " + usuario.getImc()); // Log
         repositorio.salvar(usuario); // Salva as alterações no repositório.
+        System.out.println("DEBUG: Dentro de atualizarDados.  IMC depois de salvar: " + usuario.getImc());//Log
+
     }
 
 

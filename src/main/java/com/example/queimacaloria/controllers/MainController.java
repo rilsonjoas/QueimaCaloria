@@ -22,6 +22,12 @@ public class MainController {
     @FXML private Button buttonVerMaisDietas;
     @FXML private Button buttonVerMaisPerfil;
 
+    // NOVOS LABELS
+    @FXML private Label labelPesoUsuario;
+    @FXML private Label labelAlturaUsuario;
+    @FXML private Label labelIMCSituacao; // Label para a situação do IMC
+
+
     private Parent telaDieta;
     private Parent telaExercicio;
     private Parent telaMeta;
@@ -42,17 +48,58 @@ public class MainController {
         if (usuarioLogado != null) {
             labelNomeUsuario.setText(usuarioLogado.getNome());
 
-            // USANDO BINDING para o IMC:  Muito mais eficiente!
-            labelIMC.textProperty().bind(Bindings.createStringBinding(
-                    () -> String.format("IMC: %.2f", usuarioLogado.getImc()), // Função que calcula o texto
-                    usuarioLogado.imcProperty()  // Propriedade que dispara a atualização
+            // Binding para Peso
+            labelPesoUsuario.textProperty().bind(Bindings.createStringBinding(
+                    () -> String.format("Peso: %.2f kg", usuarioLogado.getPeso()),
+                    usuarioLogado.pesoProperty()
             ));
+
+            // Binding para Altura
+            labelAlturaUsuario.textProperty().bind(Bindings.createStringBinding(
+                    () -> String.format("Altura: %.2f m", usuarioLogado.getAltura()),
+                    usuarioLogado.alturaProperty()
+            ));
+
+            // Binding para IMC (agora com a situação)
+            labelIMC.textProperty().bind(Bindings.createStringBinding(
+                    () -> String.format("IMC: %.2f", usuarioLogado.getImc()),
+                    usuarioLogado.imcProperty()
+            ));
+
+            // Binding para a Situação do IMC *DENTRO* do binding do IMC
+            labelIMCSituacao.textProperty().bind(Bindings.createStringBinding(
+                    () -> "Situação: " + getSituacaoIMC(usuarioLogado.getImc()), // Chama o método para obter a situação
+                    usuarioLogado.imcProperty() // Atualiza quando o IMC mudar
+            ));
+
+
         } else {
             labelNomeUsuario.setText("Nome do Usuário");
-            labelIMC.setText("IMC: --");  // Ou use um binding aqui também, para um valor padrão.
+            labelPesoUsuario.setText("Peso: --"); // Valor padrão
+            labelAlturaUsuario.setText("Altura: --"); // Valor padrão
+            labelIMC.setText("IMC: --");
+            labelIMCSituacao.setText("Situação: --"); // Valor padrão
         }
     }
 
+    // Método para determinar a situação do IMC (NOVO)
+    private String getSituacaoIMC(float imc) {
+        if (imc < 18.5) {
+            return "Abaixo do peso";
+        } else if (imc < 25) {
+            return "Peso normal";
+        } else if (imc < 30) {
+            return "Sobrepeso";
+        } else if (imc < 35) {
+            return "Obesidade grau I";
+        } else if (imc < 40) {
+            return "Obesidade grau II";
+        } else {
+            return "Obesidade grau III";
+        }
+    }
+
+    // ... restante do MainController (sem alterações) ...
     @FXML
     public void initialize() {
         try {
@@ -138,7 +185,10 @@ public class MainController {
 
             // Obtenção dos elementos gráficos *DEPOIS* de carregar o FXML
             labelNomeUsuario = (Label) telaPrincipalContent.lookup("#labelNomeUsuario");
-            labelIMC = (Label) telaPrincipalContent.lookup("#labelIMC");
+            labelIMC = (Label) telaPrincipalContent.lookup("#labelIMC");  // Certifique-se de que este ID está correto no FXML
+            labelPesoUsuario = (Label) telaPrincipalContent.lookup("#labelPesoUsuario"); // Adicionado
+            labelAlturaUsuario = (Label) telaPrincipalContent.lookup("#labelAlturaUsuario"); //Adicionado
+            labelIMCSituacao = (Label) telaPrincipalContent.lookup("#labelIMCSituacao"); // Adicionado
             buttonVerMaisMetas = (Button) telaPrincipalContent.lookup("#buttonVerMaisMetas");
             buttonVerMaisExercicios = (Button) telaPrincipalContent.lookup("#buttonVerMaisExercicios");
             buttonVerMaisDietas = (Button) telaPrincipalContent.lookup("#buttonVerMaisDietas");
@@ -161,11 +211,14 @@ public class MainController {
 
             // Preenchimento dos labels, *SE* o usuário estiver logado
             if (usuarioLogado != null) {
-                setUsuarioLogado(usuarioLogado); //Chama o setUsuarioLogado para atualizar a interface.
+                setUsuarioLogado(usuarioLogado); //Chama o setUsuarioLogado para atualizar a interface.  DEPOIS de obter os labels!
             }
             else { // Caso não haja usuário logado.
                 labelNomeUsuario.setText("Nome do Usuário");
                 labelIMC.setText("IMC: --");
+                labelIMCSituacao.setText("Situação: --");
+                labelPesoUsuario.setText("Peso: --");
+                labelAlturaUsuario.setText("Altura: --");
             }
 
 

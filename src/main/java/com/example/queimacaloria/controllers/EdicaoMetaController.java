@@ -30,11 +30,19 @@ public class EdicaoMetaController {
 
     private Fachada fachada = Fachada.getInstanciaUnica();
 
-    private Meta meta; // a meta a ser editada.
+    private Meta meta;
     private MetaController metaController;
+
+    //ADD
+    private MainController mainController;
 
     public void setMetaController(MetaController metaController) {
         this.metaController = metaController;
+    }
+
+    //ADD
+    public void setMainController(MainController mainController){
+        this.mainController = mainController;
     }
 
     public void setMeta(Meta meta) {
@@ -77,13 +85,16 @@ public class EdicaoMetaController {
             double valorAlvo = Double.parseDouble(campoValorAlvo.getText());
             double progressoAtual = Double.parseDouble(campoProgressoAtual.getText());
 
-            // A data de conclusão *não* é atualizada aqui.
-
-            fachada.configurarMeta(meta, descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao()); // Mantém a data original (ou null)
+            fachada.configurarMeta(meta, descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao()); // Mantém a data original ou null
             mensagemErro.setText("Meta atualizada com sucesso!");
 
             if(metaController != null){
-                metaController.initialize();
+                metaController.initialize(); //  Chama initialize
+            }
+
+            //ADD
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
             }
 
             fecharJanela();
@@ -108,7 +119,10 @@ public class EdicaoMetaController {
             buttonConcluirMeta.setDisable(true); // Desabilita o botão
 
             if(metaController != null){
-                metaController.initialize();
+                metaController.initialize(); //  Chama initialize
+            }
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
             }
 
             mensagemErro.setText("Meta concluída com sucesso!");

@@ -24,10 +24,18 @@ public class CriacaoDietaController {
     private Fachada fachada = Fachada.getInstanciaUnica();
     private DietaController dietaController;
 
+    //ADD
+    private MainController mainController;
+
 
     // Permite que o DietaController seja acessado por esta classe
     public void setDietaController(DietaController dietaController) {
         this.dietaController = dietaController;
+    }
+
+    //ADD
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 
     @FXML
@@ -44,7 +52,7 @@ public class CriacaoDietaController {
             Dieta.ObjetivoDieta objetivo = campoObjetivo.getValue();
             int calorias = Integer.parseInt(campoCalorias.getText());
 
-            // TODO: Obter usuário logado (por enquanto, usuário de exemplo)
+            // Aqui abaixo estamos testando com um usuário de exemplo
             Usuario usuarioExemplo = new Usuario();
             try {
                 fachada.atualizarDadosUsuario(usuarioExemplo, "Exemplo", "exemplo@email.com", "senha",
@@ -57,9 +65,15 @@ public class CriacaoDietaController {
             fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioExemplo);
             mensagemErro.setText("Dieta criada com sucesso!");
 
-            // Atualiza a tabela de dietas no DietaController
+
+// Atualiza a tabela de dietas no DietaController
             if (dietaController != null) {
                 dietaController.initialize();
+            }
+
+            //ADD
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
             }
 
             fecharJanela(); // Fecha a janela atual
@@ -80,3 +94,4 @@ public class CriacaoDietaController {
         stage.close();
     }
 }
+

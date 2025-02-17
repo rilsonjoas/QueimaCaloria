@@ -94,9 +94,9 @@ public class RefeicaoController {
 
             CriacaoRefeicaoController controller = loader.getController();
             controller.setRefeicaoController(this);
+            controller.setMainController(mainController);
 
             stage.showAndWait();
-            atualizarTabelaRefeicoesUsuario();
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
         }
@@ -114,7 +114,8 @@ public class RefeicaoController {
                 // Obtém o controlador da tela de edição
                 EdicaoRefeicaoController controller = loader.getController();
                 controller.setRefeicaoController(this);
-                // Passa a refeicao selecionada para o controlador
+                controller.setMainController(mainController); // ADD
+                // Passa a refeição selecionada para o controlador
                 controller.setRefeicao(refeicaoSelecionada);
 
                 // Exibe a tela de edição
@@ -123,9 +124,6 @@ public class RefeicaoController {
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); // Exibe como um diálogo modal
 
-                // Atualiza a tabela após a edição
-                atualizarTabelaRefeicoesUsuario();
-                mensagemRefeicao.setText("Refeição atualizada com sucesso!");
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -142,8 +140,11 @@ public class RefeicaoController {
         if (refeicaoSelecionada != null) {
             try {
                 fachada.removerRefeicao(refeicaoSelecionada.getId()); //  Chama remover da fachada
-                atualizarTabelaRefeicoesUsuario(); //  ATUALIZA A TABELA
+                atualizarTabelaRefeicoesUsuario(); //  Atualiza a tabela
                 mensagemRefeicao.setText("Refeição removida com sucesso!");
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
             } catch (RefeicaoNaoEncontradaException e) { // Captura a exceção
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover refeição", e.getMessage());
             }
@@ -168,6 +169,9 @@ public class RefeicaoController {
                         novaRefeicao.getDescricao(), novaRefeicao.getMacronutrientes());
                 atualizarTabelaRefeicoesUsuario();
                 mensagemRefeicao.setText("Refeição adicionada com sucesso!");
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
             } catch(Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar refeição", e.getMessage());
             }

@@ -41,12 +41,9 @@ public class PerfilController {
 
     private void bindLabels() {
         if (usuarioLogado != null) {
-            // Usando apenas String.valueOf para nome e email, já que são Strings.
             labelNomeAtual.textProperty().bind(usuarioLogado.nomeProperty());
             labelEmailAtual.textProperty().bind(usuarioLogado.emailProperty());
 
-            // Usando createStringBinding e String.format para formatar os números,
-            // mas SEM texto adicional.
             labelPesoAtual.textProperty().bind(Bindings.createStringBinding(
                     () -> String.format("%.2f", usuarioLogado.getPeso()),
                     usuarioLogado.pesoProperty()
@@ -83,13 +80,13 @@ public class PerfilController {
             // atualizarLabels(); // Não precisa mais! Os bindings fazem a atualização.
             mensagemPerfil.setText("Perfil atualizado com sucesso!");
 
-        } catch (NumberFormatException e) { // REMOVIDO daqui, o NumberStringConverter já trata
+        } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Dados inválidos", "Peso e altura devem ser números válidos.");
         } catch (UsuarioNaoEncontradoException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado", e.getMessage());
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar perfil", e.getMessage());
-            e.printStackTrace(); // Boa prática: imprimir o stack trace em caso de erro inesperado.
+            e.printStackTrace();
         }
     }
 

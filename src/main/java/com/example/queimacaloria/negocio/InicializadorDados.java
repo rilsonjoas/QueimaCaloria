@@ -15,13 +15,12 @@ import java.util.Map;
 public class InicializadorDados {
 
     public static void inicializarDados() throws TreinoNaoEncontradoException {
-        // 1. Use SEMPRE getInstanciaUnica() para obter os repositórios singleton:
         RepositorioDietasArray repositorioDietas = RepositorioDietasArray.getInstanciaUnica();
         RepositorioExerciciosArray repositorioExercicios = RepositorioExerciciosArray.getInstanciaUnica();
         RepositorioMetasArray repositorioMetas = RepositorioMetasArray.getInstanciaUnica();
         RepositorioRefeicoesArray repositorioRefeicoes = RepositorioRefeicoesArray.getInstanciaUnica();
         RepositorioTreinosArray repositorioTreinos = RepositorioTreinosArray.getInstanciaUnica();
-        ControladorRefeicao controladorRefeicao = new ControladorRefeicao(); //Para usar o metodo de calcular calorias.
+        ControladorRefeicao controladorRefeicao = new ControladorRefeicao();
     }
 
 

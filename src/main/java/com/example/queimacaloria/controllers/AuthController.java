@@ -23,11 +23,11 @@ public class AuthController {
     @FXML
     public void initialize(){
         try{
-            telaLogin = carregarTela("/com/example/queimacaloria/views/login-view.fxml"); // Caminho correto?
+            telaLogin = carregarTela("/com/example/queimacaloria/views/login-view.fxml");
             telaRegistro = carregarTela("/com/example/queimacaloria/views/registro-view.fxml");
 
             ((LoginController) getController(telaLogin)).setAuthController(this);
-            ((RegistroController) getController(telaRegistro)).setAuthController(this);
+            ((RegistroController) getController(telaRegistro)).setAuthController(this); //  <--  AQUI!!
 
             mostrarTelaLogin();
 
@@ -55,7 +55,19 @@ public class AuthController {
     }
 
     public void mostrarTelaRegistro() {
-        authContainer.getChildren().setAll(telaRegistro);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/registro-view.fxml"));
+            Parent telaRegistro = loader.load();
+
+            RegistroController registroController = loader.getController();
+            registroController.setAuthController(this); //  <-- ESSENCIAL! 'this' é o AuthController
+
+            authContainer.getChildren().setAll(telaRegistro);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Trate a exceção
+        }
     }
 
     // Modifique este método:

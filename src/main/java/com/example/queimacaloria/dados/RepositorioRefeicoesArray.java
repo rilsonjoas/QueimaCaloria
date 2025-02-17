@@ -14,7 +14,7 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
     private static RepositorioRefeicoesArray instanciaUnica;
 
     private RepositorioRefeicoesArray() {
-        refeicoes = new Refeicao[100]; // Tamanho inicial maior (conforme seu código original)
+        refeicoes = new Refeicao[100]; // Tamanho inicial maior
         proximoIndice = 0;
     }
 
@@ -34,7 +34,7 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
     }
 
     @Override
-    public void adicionar(Refeicao refeicao) throws RefeicaoNaoEncontradaException { // Corrigido para throws
+    public void adicionar(Refeicao refeicao) throws RefeicaoNaoEncontradaException {
         if (refeicao == null) throw new IllegalArgumentException("Refeição não pode ser nula.");
         if (proximoIndice >= refeicoes.length) {
             Refeicao[] temp = new Refeicao[refeicoes.length + 100]; // Aumenta de 100 em 100

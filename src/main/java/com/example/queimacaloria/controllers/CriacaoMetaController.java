@@ -1,3 +1,4 @@
+
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
@@ -30,8 +31,16 @@ public class CriacaoMetaController {
 
     private MetaController metaController;
 
+    private MainController mainController;
+
     public void setMetaController(MetaController metaController) {
         this.metaController = metaController;
+
+    }
+
+    //ADD
+    public void setMainController(MainController mainController){
+        this.mainController = mainController;
     }
 
     @FXML
@@ -57,6 +66,10 @@ public class CriacaoMetaController {
             // Atualiza a tabela de metas no MetaController
             if (metaController != null) {
                 metaController.initialize();
+            }
+            //ADD
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
             }
 
             fecharJanela(); // Fecha a janela atual

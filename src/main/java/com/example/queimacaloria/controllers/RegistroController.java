@@ -7,10 +7,10 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.Duration; // Importante
 
-import java.time.Duration;
 import java.time.LocalDate;
-
+import java.util.Optional;
 
 public class RegistroController {
 
@@ -42,23 +42,35 @@ public class RegistroController {
         String password = campoSenha.getText();
         LocalDate dataNascimento = campoDataNascimento.getValue();
         Usuario.Sexo sexo = campoSexo.getValue();
+        float peso = 0.0f;
+        float altura = 0.0f;
 
-        float peso = 0;
-        float altura = 0;
+
         try {
             peso = Float.parseFloat(campoPeso.getText());
             altura = Float.parseFloat(campoAltura.getText());
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Dados inválidos", "Peso e altura devem ser números válidos.");
-            return;
+            return; // Retorna se houver erro de conversão.
         }
 
+
         try {
-            fachada.cadastrarUsuario(nome, email, password, dataNascimento, sexo, peso, altura);
+            // Cadastra e já obtém o usuário criado.
+            Usuario novoUsuario = fachada.cadastrarUsuario(nome, email, password, dataNascimento, sexo, peso, altura);
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
 
-
-          //authController.mostrarTelaPrincipal(getPrimaryStage(), fachada.listarUsuarios().stream().filter(usuario -> usuario.getEmail().equals(email)).findFirst().get());
+            // Adiciona um pequeno atraso antes de redirecionar (ajuda aos dados carregarem completamente)
+            PauseTransition delay = new PauseTransition(Duration.seconds(0.3)); // Atraso de menos de meio segundo
+            delay.setOnFinished(event -> {
+                if (authController != null) {
+                    authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario); // Passa o novo usuário!
+                } else {
+                    System.err.println("Erro: AuthController é nulo em RegistroController!");
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");
+                }
+            });
+            delay.play(); // Inicia o atraso.
 
 
         } catch (IllegalArgumentException e) {
@@ -68,7 +80,6 @@ public class RegistroController {
             e.printStackTrace();
         }
     }
-
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
@@ -83,6 +94,7 @@ public class RegistroController {
     public void irParaLogin() {
         if (authController != null) {
             authController.mostrarTelaLogin();
+            // Limpeza dos campos
             campoNome.clear();
             campoSenha.clear();
             campoAltura.clear();
@@ -92,13 +104,15 @@ public class RegistroController {
             campoDataNascimento.setValue(null);
             mensagemRegistro.setText(null);
         } else {
-            System.err.println("Erro: AuthController não foi injetado!");
+            System.err.println("Erro: AuthController não foi injetado!"); // Boa prática
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");
         }
     }
 
+
     private Stage getPrimaryStage() {
         if (authController != null) {
+            // Forma correta de obter o Stage a partir de um componente da cena.
             return (Stage) campoEmail.getScene().getWindow();
         }
         return null;

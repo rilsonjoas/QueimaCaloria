@@ -20,11 +20,15 @@ public class EdicaoDietaController {
     @FXML private Label mensagemErro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    private Dieta dieta;  // A dieta a ser editada
+    private Dieta dieta;
     private DietaController dietaController;
+    private MainController mainController;
 
     public void setDietaController(DietaController dietaController) {
         this.dietaController = dietaController;
+    }
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 
 
@@ -37,30 +41,38 @@ public class EdicaoDietaController {
     @FXML
     public void initialize() {
         campoObjetivo.setItems(FXCollections.observableArrayList(Dieta.ObjetivoDieta.values()));
-        // Os bindings serão feitos no preencherCampos()
     }
 
     // Preenche os campos com os dados da dieta
     private void preencherCampos() {
         if (dieta != null) {
-            campoNome.textProperty().bindBidirectional(dieta.nomeProperty());
-            campoObjetivo.valueProperty().bindBidirectional(dieta.objetivoProperty());
-            campoCalorias.textProperty().bindBidirectional(dieta.caloriasDiariasProperty(), new javafx.util.converter.NumberStringConverter());
+            campoNome.setText(dieta.getNome());
+            campoObjetivo.setValue(dieta.getObjetivo());
+            campoCalorias.setText(String.valueOf(dieta.getCaloriasDiarias()));
         }
     }
 
     @FXML
     public void atualizarDieta() {
         try {
-            // O nome, objetivo e calorias *já foram atualizados* na instância 'dieta'
-            // devido aos bindings bidirecionais.
-            fachada.configurarDieta(dieta, dieta.getNome(), dieta.getObjetivo(), dieta.getCaloriasDiarias(), dieta.getUsuario());
+            //  Obtém os valores dos campos
+            String nome = campoNome.getText();
+            Dieta.ObjetivoDieta objetivo = campoObjetivo.getValue();
+            int calorias = Integer.parseInt(campoCalorias.getText());
+
+            //  Chama configurarDieta com os novos valores
+            fachada.configurarDieta(dieta, nome, objetivo, calorias, dieta.getUsuario());
+
             mensagemErro.setText("Dieta atualizada com sucesso!");
 
-            if (dietaController != null) {
-                dietaController.initialize(); //Atualiza a tabela na tela principal.
+            if(dietaController != null){
+                dietaController.initialize(); //Chama o initialize do DietaController.
             }
 
+            //ADD
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
+            }
 
             fecharJanela(); // Fecha a janela de edição
 
@@ -70,7 +82,7 @@ public class EdicaoDietaController {
             mensagemErro.setText("Erro ao atualizar dieta: " + e.getMessage());
         } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace(); // Boa prática: imprimir o stack trace
+            e.printStackTrace();
         }
     }
 

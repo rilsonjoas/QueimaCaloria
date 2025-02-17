@@ -16,44 +16,31 @@ public class ControladorUsuario {
         this.repositorio = RepositorioUsuariosArray.getInstanciaUnica();
     }
 
-    // Método de cadastro
-    public void cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
-                                 Usuario.Sexo sexo, float peso, float altura) {
-
-        // Verifica se o e-mail já existe (importante!)
+    // Método de cadastro.
+    public void cadastrarUsuario(Usuario novoUsuario) {
+        // Verifica se o e-mail já existe
         List<Usuario> usuarios = repositorio.getAll();
         for (Usuario user : usuarios) {
-            if (user.getEmail().equals(email)) {
-                throw new IllegalArgumentException("Email já cadastrado."); // Use IllegalArgumentException, mais apropriado
+            if (user.getEmail().equals(novoUsuario.getEmail())) {
+                throw new IllegalArgumentException("Email já cadastrado.");
             }
         }
 
-        // Cria e adiciona o novo usuário diretamente.  NÃO USA atualizarDados aqui.
-        Usuario novoUsuario = new Usuario();
-        novoUsuario.setNome(nome);
-        novoUsuario.setEmail(email);
-        novoUsuario.setSenha(senha);
-        novoUsuario.setDataNascimento(dataNascimento);
-        novoUsuario.setSexo(sexo);
-        novoUsuario.setPeso(peso); // Define peso PRIMEIRO
-        novoUsuario.setAltura(altura); //Define altura DEPOIS
-        // novoUsuario.setImc(calcularIMC(novoUsuario)); // Remove daqui, o setPeso/setAltura já calculam
-        repositorio.adicionar(novoUsuario); // Adiciona diretamente
-
+        // Adiciona o novo usuário diretamente.
+        repositorio.adicionar(novoUsuario);
 
         try {
-            repositorio.salvar(novoUsuario); //  ISSO É CRUCIAL! Salva o usuário *DEPOIS* de todas as modificações.
-            System.out.println("DEBUG: Usuário salvo no repositório após cadastro. IMC: " + novoUsuario.getImc()); // Log para depuração
+            repositorio.salvar(novoUsuario); //  Salva o usuário
+            System.out.println("DEBUG: Usuário salvo no repositório após cadastro. IMC: " + novoUsuario.getImc());
         } catch (UsuarioNaoEncontradoException e) {
-            System.err.println("Erro ao salvar usuário após cadastro: " + e.getMessage()); // Log de erro
-            throw new RuntimeException("Erro interno ao cadastrar usuário.", e); // Relança como RuntimeException
+            System.err.println("Erro ao salvar usuário após cadastro: " + e.getMessage());
+            throw new RuntimeException("Erro interno ao cadastrar usuário.", e);
         }
 
     }
 
 
-    // ... restante da classe ControladorUsuario (sem alterações) ...
-    // Atualiza os dados de um usuário existente.  Mantém a exceção.
+    // Atualiza os dados de um usuário existente
     public void atualizarDados(Usuario usuario, String nome, String email, String senha, LocalDate dataNascimento,
                                Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
 
@@ -183,13 +170,13 @@ public class ControladorUsuario {
         return repositorio.getAll();
     }
 
-    // Corrigido: Método de remoção
+    // Método de remoção
     public void remover(UUID id) throws UsuarioNaoEncontradoException {
         try {
             repositorio.remover(id); // Tenta remover
         } catch (UsuarioNaoEncontradoException e) {
-            // Aqui você decide o que fazer se o usuário não for encontrado: Relançar
             throw e;
         }
     }
+
 }

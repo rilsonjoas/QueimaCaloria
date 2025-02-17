@@ -12,6 +12,7 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
 @ToString
 @Getter
 public class Treino {
@@ -54,7 +55,7 @@ public class Treino {
         this.tipoDeTreino = tipoDeTreino;
         this.duracao = duracao;
         this.nivelDeDificuldade = nivelDeDificuldade;
-        this.exercicios = (exercicios != null) ? exercicios : new ArrayList<>(); // Importante!
+        this.exercicios = (exercicios != null) ? exercicios : new ArrayList<>();
         this.caloriasQueimadas = caloriasQueimadas;
         this.progresso = progresso;
         this.concluido = concluido;

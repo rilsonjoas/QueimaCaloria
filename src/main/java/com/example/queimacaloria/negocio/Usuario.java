@@ -157,7 +157,7 @@ public class Usuario {
         return imc;
     }
 
-    public void setImc(float imc) { //Mantem o setImc, mas ele não é mais usado diretamente.
+    public void setImc(float imc) {
         this.imc.set(imc);
     }
 

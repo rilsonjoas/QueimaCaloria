@@ -11,6 +11,10 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import com.example.queimacaloria.negocio.Usuario;
 import javafx.beans.binding.Bindings; // Importante para o binding
+import com.example.queimacaloria.negocio.Dieta; // Importante
+import com.example.queimacaloria.negocio.Refeicao;  //Importante
+import java.util.List;
+
 
 public class MainController {
 
@@ -26,6 +30,10 @@ public class MainController {
     @FXML private Label labelPesoUsuario;
     @FXML private Label labelAlturaUsuario;
     @FXML private Label labelIMCSituacao; // Label para a situação do IMC
+
+
+    //Label de Calorias do dia.
+    @FXML private Label labelCaloriasDia;
 
 
     private Parent telaDieta;
@@ -72,6 +80,9 @@ public class MainController {
                     usuarioLogado.imcProperty() // Atualiza quando o IMC mudar
             ));
 
+            //  Chama o método para atualizar as calorias
+            atualizarCalorias();
+
 
         } else {
             labelNomeUsuario.setText("Nome do Usuário");
@@ -79,6 +90,7 @@ public class MainController {
             labelAlturaUsuario.setText("Altura: --"); // Valor padrão
             labelIMC.setText("IMC: --");
             labelIMCSituacao.setText("Situação: --"); // Valor padrão
+            labelCaloriasDia.setText("Calorias: -- / --"); //Valor padrão
         }
     }
 
@@ -99,7 +111,6 @@ public class MainController {
         }
     }
 
-    // ... restante do MainController (sem alterações) ...
     @FXML
     public void initialize() {
         try {
@@ -117,13 +128,11 @@ public class MainController {
             ((TreinoController) getController(telaTreino)).setMainController(this);
             ((PerfilController) getController(telaPerfil)).setMainController(this); //isso garante que o main controller seja setado antes.
 
-            // mostrarTelaPrincipal() *ANTES* de tentar modificar os labels!
             mostrarTelaPrincipal();
 
 
         } catch (IOException e) {
             e.printStackTrace();
-            // Trate a exceção apropriadamente (ex: mostrar um alerta)
         }
     }
 
@@ -165,14 +174,10 @@ public class MainController {
 
     @FXML
     public void mostrarTelaPerfil() {
-        // *PRIMEIRO* obtém a instância do controlador.
         PerfilController perfilController = (PerfilController) getController(telaPerfil);
 
-        // *DEPOIS* define o usuário logado.  Isso vai chamar atualizarLabels()
-        // e preencher os labels *ANTES* de a tela ser exibida.
         perfilController.setUsuarioLogado(usuarioLogado);
 
-        // *AGORA* você pode adicionar a tela ao StackPane.
         areaConteudo.getChildren().setAll(telaPerfil);
     }
 
@@ -189,6 +194,7 @@ public class MainController {
             labelPesoUsuario = (Label) telaPrincipalContent.lookup("#labelPesoUsuario"); // Adicionado
             labelAlturaUsuario = (Label) telaPrincipalContent.lookup("#labelAlturaUsuario"); //Adicionado
             labelIMCSituacao = (Label) telaPrincipalContent.lookup("#labelIMCSituacao"); // Adicionado
+            labelCaloriasDia = (Label) telaPrincipalContent.lookup("#labelCaloriasDia"); //  <--  Obtém a referência
             buttonVerMaisMetas = (Button) telaPrincipalContent.lookup("#buttonVerMaisMetas");
             buttonVerMaisExercicios = (Button) telaPrincipalContent.lookup("#buttonVerMaisExercicios");
             buttonVerMaisDietas = (Button) telaPrincipalContent.lookup("#buttonVerMaisDietas");
@@ -219,6 +225,7 @@ public class MainController {
                 labelIMCSituacao.setText("Situação: --");
                 labelPesoUsuario.setText("Peso: --");
                 labelAlturaUsuario.setText("Altura: --");
+                labelCaloriasDia.setText("Calorias: -- / --");
             }
 
 
@@ -228,8 +235,59 @@ public class MainController {
         }
     }
 
+    // Método para calcular o total de calorias consumidas pelo usuário
+    private int calcularTotalCaloriasConsumidas() {
+        int total = 0;
+        if (usuarioLogado != null && usuarioLogado.getDietas() != null) {
+            for (Dieta dieta : usuarioLogado.getDietas()) {
+                total += calcularTotalCaloriasDieta(dieta);
+            }
+        }
+        return total;
+    }
 
+    // Método auxiliar para calcular calorias em uma dieta
+    private int calcularTotalCaloriasDieta(Dieta dieta) {
+        int total = 0;
+        if (dieta.getRefeicoes() != null) {
+            for (Refeicao refeicao : dieta.getRefeicoes()) {
+                total += refeicao.getCalorias();
+            }
+        }
+        return total;
+    }
 
+    // Método para obter a dieta atual do usuário
+    private Dieta getDietaAtual() {
+        if (usuarioLogado != null && usuarioLogado.getDietas() != null && !usuarioLogado.getDietas().isEmpty()) {
+            return usuarioLogado.getDietas().get(0);
+        }
+        return null;
+    }
+    // Método para atualizar o label de calorias
+    private void atualizarCalorias() {
+        if (usuarioLogado != null) {
+            int caloriasConsumidas = calcularTotalCaloriasConsumidas();
+            Dieta dietaAtual = getDietaAtual(); // Pega a dieta
+
+            if (dietaAtual != null) {
+                int caloriasDiarias = dietaAtual.getCaloriasDiarias();
+                labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias);
+            } else {
+                labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / --"); // Se não houver dieta
+            }
+        } else{
+            labelCaloriasDia.setText("Calorias: --/--");
+        }
+    }
+
+    public void atualizarDadosTelaPrincipal() {
+        if (usuarioLogado != null) {
+            atualizarCalorias();
+        }
+    }
+
+    //Método logout
     @FXML
     public void logout() {
         try {

@@ -101,8 +101,8 @@ public class MetaController {
 
             CriacaoMetaController controller = loader.getController();
             controller.setMetaController(this);
+            controller.setMainController(mainController);
             stage.showAndWait();
-            atualizarTabelaMetasUsuario();
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
@@ -121,6 +121,7 @@ public class MetaController {
                 // Obtém o controlador da tela de edição
                 EdicaoMetaController controller = loader.getController();
                 controller.setMetaController(this);
+                controller.setMainController(mainController); //ADD
 
                 // Passa a meta selecionada para o controlador
                 controller.setMeta(metaSelecionada);
@@ -131,9 +132,6 @@ public class MetaController {
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); // Exibe como um diálogo modal
 
-                // Atualiza a tabela após a edição
-                atualizarTabelaMetasUsuario();
-                mensagemMeta.setText("Meta atualizada com sucesso!");
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -150,8 +148,11 @@ public class MetaController {
         if (metaSelecionada != null) {
             try {
                 fachada.removerMeta(metaSelecionada.getId()); //  Chama remover da fachada
-                atualizarTabelaMetasUsuario(); //  ATUALIZA A TABELA
+                atualizarTabelaMetasUsuario(); //  atualiza a tabela
                 mensagemMeta.setText("Meta removida com sucesso!");
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
             } catch (MetaNaoEncontradaException e) { // Captura a exceção
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover meta", e.getMessage());
             }
@@ -179,6 +180,9 @@ public class MetaController {
                         novaMeta.getValorAlvo(), novaMeta.getProgressoAtual(), novaMeta.getDataConclusao());
                 atualizarTabelaMetasUsuario();
                 mensagemMeta.setText("Meta adicionada com sucesso!");
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
 
             } catch (MetaNaoEncontradaException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar meta", e.getMessage());
@@ -193,7 +197,7 @@ public class MetaController {
     private void atualizarTabelaMetasUsuario() {
         try {
             List<Meta> listaMetas = fachada.listarMetas();
-            tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas)); //MUITO IMPORTANTE
+            tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas));
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar metas", e.getMessage());
         }

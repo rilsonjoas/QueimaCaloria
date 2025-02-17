@@ -124,8 +124,7 @@ public class DietaController {
 
             CriacaoDietaController controller = loader.getController();
             controller.setDietaController(this);
-            stage.showAndWait(); // Use showAndWait para bloquear a tela principal
-            atualizarTabelaDietasUsuario(); //Atualiza após o fechamento da tela de criação
+            stage.showAndWait();
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
@@ -153,11 +152,6 @@ public class DietaController {
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); // Exibe como um diálogo modal
 
-                // Atualiza a tabela após a edição (o controlador de edição já deve ter
-                // chamado o fachada.configurarDieta())
-                atualizarTabelaDietasUsuario();
-                mensagemDieta.setText("Dieta atualizada com sucesso!"); //Feedback para o usuário
-
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
             }
@@ -175,6 +169,9 @@ public class DietaController {
                 fachada.configurarDieta(dietaSelecionada, null, null, 0, null);
                 atualizarTabelaDietasUsuario();
                 mensagemDieta.setText("Dieta removida com sucesso!");
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover dieta", e.getMessage());
             }
@@ -189,17 +186,17 @@ public class DietaController {
         Dieta dietaSelecionada = tabelaDietasPreDefinidas.getSelectionModel().getSelectedItem();
         if (dietaSelecionada != null) {
             try {
-                // Cria uma *NOVA* instância de Dieta, copiando os valores
+                // Cria uma nova instância de Dieta, copiando os valores
                 Dieta novaDieta = new Dieta(
                         dietaSelecionada.getNome(),
                         dietaSelecionada.getObjetivo(),
                         dietaSelecionada.getCaloriasDiarias(),
-                        new HashMap<>(dietaSelecionada.getMacronutrientes()), // Copia o Map
-                        new ArrayList<>(dietaSelecionada.getRefeicoes()),    // Copia a lista
-                        null // Usuário será definido depois.  NÃO use o usuário da dieta pré-definida.
+                        new HashMap<>(dietaSelecionada.getMacronutrientes()),
+                        new ArrayList<>(dietaSelecionada.getRefeicoes()),
+                        null // Usuário será definido depois.
                 );
 
-                // Obtém o usuário logado (simulação - substitua pela lógica correta)
+                // Obtém o usuário logado, abaixo um exemplo de simulação
                 Usuario usuarioExemplo = new Usuario();
                 try {
                     fachada.atualizarDadosUsuario(usuarioExemplo, "Exemplo", "exemplo@email.com", "senha",
@@ -213,6 +210,10 @@ public class DietaController {
                         novaDieta.getCaloriasDiarias(), novaDieta.getUsuario()); // Adiciona através da fachada
                 atualizarTabelaDietasUsuario(); // Atualiza a tabela
                 mensagemDieta.setText("Dieta adicionada com sucesso!");
+                //Atualiza a tela principal
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
 
             } catch (DietaNaoEncontradaException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", e.getMessage());
@@ -227,7 +228,7 @@ public class DietaController {
         try {
             List<Dieta> listaDietas = fachada.listarDietas();
 
-            // Filtrar para mostrar apenas as dietas do usuário logado (simulação)
+            // Filtrar para mostrar apenas as dietas do usuário logado
             List<Dieta> dietasDoUsuario = listaDietas.stream()
                     .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getEmail().equals("exemplo@email.com")) //Filtra
                     .collect(Collectors.toList());

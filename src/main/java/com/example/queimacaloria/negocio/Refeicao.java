@@ -32,11 +32,11 @@ public class Refeicao {
         this.id = UUID.randomUUID();
         this.nome = nome;
         this.descricao = descricao;
-        this.calorias = calorias; // Você já recebe as calorias
+        this.calorias = calorias;
         this.macronutrientes = macronutrientes;
     }
 
-    // Construtor sem as calorias (para o inicializador)
+    // Construtor sem as calorias
     public Refeicao(String nome, String descricao, Map<String, Double> macronutrientes) {
         this.id = UUID.randomUUID();
         this.nome = nome;

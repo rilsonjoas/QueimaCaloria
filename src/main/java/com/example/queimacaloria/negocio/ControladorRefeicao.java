@@ -16,7 +16,7 @@ public class ControladorRefeicao {
         this.repositorio = RepositorioRefeicoesArray.getInstanciaUnica();
     }
 
-    // Inicializa (cria ou atualiza) uma refeição.
+    // Inicializa uma refeição.
     public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes) {
         refeicao.setNome(nome);
         refeicao.setDescricao(descricao);

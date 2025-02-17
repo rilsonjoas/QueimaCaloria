@@ -32,8 +32,9 @@
             </TableView>
 
             <HBox alignment="CENTER" spacing="10.0">
-                <Button onAction="#atualizarTreino" style="-fx-background-color: #55c5f5;" text="Atualizar Treino" />
-                <Button onAction="#removerTreino" style="-fx-background-color: #55c5f5;" text="Remover Treino" />
+                <Button onAction="#abrirTelaCriarTreino" style="-fx-background-color: #55c5f5;" text="Criar treino personalizado" />
+                <Button onAction="#atualizarTreino" style="-fx-background-color: #55c5f5;" text="Atualizar treino selecionado" />
+                <Button onAction="#removerTreino" style="-fx-background-color: #55c5f5;" text="Remover treino" />
             </HBox>
 
             <Label text="Adicione um treino pré-definido abaixo" textFill="#d7d7d7">
@@ -55,7 +56,7 @@
             <!-- Novo HBox para os botões abaixo da tabela -->
             <HBox alignment="CENTER" spacing="10.0">
                 <Button onAction="#adicionarTreinoPreDefinido" style="-fx-background-color: #55c5f5;" text="Adicionar Treino Selecionado" />
-                <Button onAction="#abrirTelaCriarTreino" style="-fx-background-color: #55c5f5;" text="Criar Novo Treino" />
+
             </HBox>
 
             <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar para a página inicial" />

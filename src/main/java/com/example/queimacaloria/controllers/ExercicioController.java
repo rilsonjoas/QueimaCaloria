@@ -1,3 +1,4 @@
+
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
@@ -102,9 +103,9 @@ public class ExercicioController {
 
             CriacaoExercicioController controller = loader.getController();
             controller.setExercicioController(this);
+            controller.setMainController(mainController); //ADD
 
-            stage.showAndWait(); //Bloqueia a tela principal
-            atualizarTabelaExerciciosUsuario(); //Atualiza após fechamento
+            stage.showAndWait();
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
@@ -125,6 +126,7 @@ public class ExercicioController {
                 EdicaoExercicioController controller = loader.getController();
                 controller.setExercicioController(this); //Passa a referência para esse controller
                 controller.setExercicio(exercicioSelecionado);
+                controller.setMainController(mainController); //ADD
 
 
                 // Exibe a tela de edição
@@ -133,8 +135,8 @@ public class ExercicioController {
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); //Modal
 
-                atualizarTabelaExerciciosUsuario();
-                mensagemExercicio.setText("Exercício atualizado com sucesso!");
+                //atualizarTabelaExerciciosUsuario(); //REMOVIDO
+                //mensagemExercicio.setText("Exercício atualizado com sucesso!");
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -153,6 +155,10 @@ public class ExercicioController {
                 fachada.removerExercicio(exercicioSelecionado.getId()); //  Chama remover da fachada
                 atualizarTabelaExerciciosUsuario(); //  ATUALIZA A TABELA
                 mensagemExercicio.setText("Exercício removido com sucesso!");
+                //ADD
+                if (mainController != null) {
+                    mainController.atualizarDadosTelaPrincipal();
+                }
             } catch (ExercicioNaoEncontradoException e) { // Captura a exceção
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover exercício", e.getMessage());
             }
@@ -185,6 +191,11 @@ public class ExercicioController {
                         novoExercicio.getTempo(), novoExercicio.getCaloriasQueimadasPorMinuto());
                 atualizarTabelaExerciciosUsuario(); // <--- ATUALIZA A TABELA
                 mensagemExercicio.setText("Exercício adicionado com sucesso!");
+
+                //ADD
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
             } catch (ExercicioNaoEncontradoException e){
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar exercício", e.getMessage());
             }

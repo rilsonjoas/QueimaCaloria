@@ -22,7 +22,7 @@ public class ControladorExercicio {
         exercicio.setTempo(tempo);
         exercicio.setCaloriasQueimadasPorMinuto(caloriasQueimadasPorMinuto);
 
-        // Importante: Se o exercício já existe, usa salvar. Se não existe, adiciona.
+        // Se o exercício já existe, usa salvar. Se não existe, adiciona.
         try {
             repositorio.salvar(exercicio);
         } catch (ExercicioNaoEncontradoException e) {

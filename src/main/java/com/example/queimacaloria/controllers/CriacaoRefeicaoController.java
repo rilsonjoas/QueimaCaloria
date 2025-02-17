@@ -30,9 +30,15 @@ public class CriacaoRefeicaoController {
 
     private RefeicaoController refeicaoController;
 
+    private MainController mainController; //ADD
+
     // Permite que o RefeicaoController seja acessado por esta classe
     public void setRefeicaoController(RefeicaoController refeicaoController) {
         this.refeicaoController = refeicaoController;
+    }
+
+    public void setMainController(MainController mainController){
+        this.mainController = mainController;
     }
 
     @FXML
@@ -56,6 +62,11 @@ public class CriacaoRefeicaoController {
             // Atualiza a tabela de refeições no RefeicaoController
             if (refeicaoController != null) {
                 refeicaoController.initialize();
+            }
+
+            //Adicionado
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
             }
 
             fecharJanela();

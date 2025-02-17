@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDate; // Alterado
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -26,9 +26,9 @@ public class Meta {
     @Setter
     private double progressoAtual;
     @Setter
-    private LocalDate dataCriacao; // Alterado
+    private LocalDate dataCriacao;
     @Setter
-    private LocalDate dataConclusao; // Alterado
+    private LocalDate dataConclusao;
 
     public enum Tipo {
         PERDA_DE_PESO, GANHO_DE_MASSA

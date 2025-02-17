@@ -19,8 +19,7 @@ public class Main {
                     LocalDate.of(1990, 5, 15), Usuario.Sexo.MASCULINO, 80.5f, 1.75f);
             System.out.println("Usuário atualizado com sucesso.");
 
-            // float imc = fachada.calcularIMCUsuario(usuario); // REMOVE ESTA LINHA
-            System.out.println("IMC do usuário: " + usuario.getImc()); // ACESSA O IMC DIRETAMENTE
+            System.out.println("IMC do usuário: " + usuario.getImc());
 
             Meta meta = new Meta();
             fachada.configurarMeta(meta, "Perder 5kg", Meta.Tipo.PERDA_DE_PESO, 5.0, 0.0, LocalDate.of(2024, 12, 31));
@@ -52,10 +51,9 @@ public class Main {
 
         // Testes de Dieta
         Dieta dieta = new Dieta();
-        Usuario userDieta = new Usuario(); // Crie um usuário associado
+        Usuario userDieta = new Usuario();
 
         try {
-            // Configurar a dieta primeiro
             fachada.configurarDieta(dieta, "Dieta de Teste", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 2500, userDieta);
 
             Refeicao refeicao1 = new Refeicao();
@@ -90,7 +88,7 @@ public class Main {
             System.out.println("Dieta concluída? " + dietaConcluida);
 
 
-            // Teste de exclusão (opcional)
+            // Teste de exclusão
             fachada.excluirRefeicaoDieta(dieta, refeicao1);
             System.out.println("Refeição excluída da dieta (teste).");
 
@@ -111,7 +109,7 @@ public class Main {
             fachada.concluirExercicio(exercicio);
             System.out.println("Exercício concluído.");
 
-            //Teste de remoção (opcional)
+            //Teste de remoção
             fachada.removerMusculoExercicio(exercicio, "Pernas");
             System.out.println("Músculo removido do exercício(Teste).");
         } catch (ExercicioNaoEncontradoException e) {

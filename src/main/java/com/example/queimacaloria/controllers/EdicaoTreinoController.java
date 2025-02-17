@@ -19,9 +19,15 @@ public class EdicaoTreinoController {
     private Fachada fachada = Fachada.getInstanciaUnica();
     private Treino treino; // O treino a ser editado
     private TreinoController treinoController;
+    //ADD
+    private MainController mainController;
 
     public void setTreinoController(TreinoController treinoController) {
         this.treinoController = treinoController;
+    }
+
+    public void setMainController(MainController mainController){
+        this.mainController = mainController;
     }
 
     public void setTreino(Treino treino) {
@@ -31,21 +37,30 @@ public class EdicaoTreinoController {
 
     private void preencherCampos() {
         if (treino != null) {
-            campoNome.textProperty().bindBidirectional(treino.nomeProperty());
-            campoTipoTreino.textProperty().bindBidirectional(treino.tipoDeTreinoProperty());
-            campoDuracao.textProperty().bindBidirectional(treino.duracaoProperty(), new javafx.util.converter.NumberStringConverter());
-            campoNivelDificuldade.textProperty().bindBidirectional(treino.nivelDeDificuldadeProperty(), new javafx.util.converter.NumberStringConverter());
+            campoNome.setText(treino.getNome());
+            campoTipoTreino.setText(treino.getTipoDeTreino());
+            campoDuracao.setText(String.valueOf(treino.getDuracao()));
+            campoNivelDificuldade.setText(String.valueOf(treino.getNivelDeDificuldade()));
         }
     }
 
     @FXML
     public void atualizarTreino() {
         try {
-            fachada.configurarTreino(treino, treino.getNome(), treino.getTipoDeTreino(),
-                    treino.getDuracao(), treino.getNivelDeDificuldade());
+            // Obtém os valores dos campos.
+            String nome = campoNome.getText();
+            String tipoTreino = campoTipoTreino.getText();
+            int duracao = Integer.parseInt(campoDuracao.getText());
+            int nivelDificuldade = Integer.parseInt(campoNivelDificuldade.getText());
+
+
+            fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade);
             mensagemErro.setText("Treino atualizado com sucesso!");
             if (treinoController != null) {
-                treinoController.initialize();
+                treinoController.initialize(); //  Chama initialize
+            }
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
             }
             fecharJanela();
         } catch (NumberFormatException e) {

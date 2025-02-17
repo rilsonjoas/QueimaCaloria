@@ -20,13 +20,17 @@ public class EdicaoRefeicaoController {
     @FXML private Label mensagemErro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    private Refeicao refeicao; // A refeição a ser editada
+    private Refeicao refeicao;
     private RefeicaoController refeicaoController;
+    private MainController mainController;
 
     public void setRefeicaoController(RefeicaoController refeicaoController) {
         this.refeicaoController = refeicaoController;
     }
 
+    public void setMainController(MainController mainController){
+        this.mainController = mainController;
+    }
 
     public void setRefeicao(Refeicao refeicao) {
         this.refeicao = refeicao;
@@ -35,12 +39,10 @@ public class EdicaoRefeicaoController {
 
     private void preencherCampos() {
         if (refeicao != null) {
-            campoNome.textProperty().bindBidirectional(refeicao.nomeProperty());
-            campoDescricao.setText(refeicao.getDescricao()); // Descrição não tem binding.
+            campoNome.setText(refeicao.getNome());
+            campoDescricao.setText(refeicao.getDescricao());
 
-            // Para os macronutrientes, não usamos binding (é mais complexo com Map).
-            // Em vez disso, preenchemos os campos diretamente *e* atualizamos
-            // manualmente no método atualizarRefeicao().
+
             if (refeicao.getMacronutrientes() != null) {
                 campoProteinas.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Proteínas", 0.0)));
                 campoCarboidratos.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Carboidratos", 0.0)));
@@ -53,7 +55,8 @@ public class EdicaoRefeicaoController {
     public void atualizarRefeicao() {
         try {
             // Atualiza a descrição
-            refeicao.setDescricao(campoDescricao.getText());
+            String nome = campoNome.getText();
+            String descricao = campoDescricao.getText();
 
             // Coleta e atualiza os macronutrientes
             Map<String, Double> novosMacronutrientes = new HashMap<>();
@@ -66,15 +69,16 @@ public class EdicaoRefeicaoController {
                 mensagemErro.setText("Erro: Os macronutrientes devem ser números");
                 return;
             }
-            refeicao.setMacronutrientes(novosMacronutrientes);
-            // Recalcula as calorias (importante!)
-            refeicao.setCalorias(fachada.calcularCaloriasRefeicao(refeicao));
 
-
-            fachada.configurarRefeicao(refeicao, refeicao.getNome(), refeicao.getDescricao(), refeicao.getMacronutrientes());
+            fachada.configurarRefeicao(refeicao,nome, descricao, novosMacronutrientes);
             mensagemErro.setText("Refeição atualizada com sucesso!");
+
             if (refeicaoController != null) {
                 refeicaoController.initialize();
+            }
+            //ADD
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
             }
 
             fecharJanela();

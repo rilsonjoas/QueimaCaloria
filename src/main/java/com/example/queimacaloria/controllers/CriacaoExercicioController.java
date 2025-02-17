@@ -30,6 +30,12 @@ public class CriacaoExercicioController {
     @Setter
     private ExercicioController exercicioController;
 
+    private MainController mainController;
+
+    public void setMainController(MainController mainController){
+        this.mainController = mainController;
+    }
+
     @FXML
     // Inicializa o ChoiceBox com os tipos de exercício
     public void initialize() {
@@ -54,6 +60,10 @@ public class CriacaoExercicioController {
             // Atualiza a tabela de exercícios no ExercicioController
             if (exercicioController != null) {
                 exercicioController.initialize();
+            }
+
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
             }
 
             fecharJanela();

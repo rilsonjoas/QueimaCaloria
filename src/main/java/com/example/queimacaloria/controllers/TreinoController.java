@@ -34,7 +34,7 @@ public class TreinoController {
     @FXML private TableColumn<Treino, String> colunaTipoTreinoPreDefinido;
     @FXML private TableColumn<Treino, Integer> colunaDuracaoPreDefinido;
     @FXML private TableColumn<Treino, Integer> colunaNivelDificuldadePreDefinido;
-    @FXML private TableColumn<Treino, Double> colunaProgressoPreDefinido; // Mesmo progresso
+    @FXML private TableColumn<Treino, Double> colunaProgressoPreDefinido;
 
     @FXML private Label mensagemTreino;
     @FXML private Label labelNomeTreino;
@@ -111,9 +111,9 @@ public class TreinoController {
 
             CriacaoTreinoController controller = loader.getController();
             controller.setTreinoController(this);
+            controller.setMainController(mainController);
 
             stage.showAndWait();
-            atualizarTabelaTreinosUsuario();
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
@@ -134,6 +134,7 @@ public class TreinoController {
                 controller.setTreinoController(this);
                 // Passa o treino selecionada para o controlador
                 controller.setTreino(treinoSelecionado);
+                controller.setMainController(mainController);
 
                 // Exibe a tela de edição
                 Stage stage = new Stage();
@@ -141,9 +142,6 @@ public class TreinoController {
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); // Exibe como um diálogo modal
 
-                // Atualiza a tabela após a edição
-                atualizarTabelaTreinosUsuario();
-                mensagemTreino.setText("Treino atualizado com sucesso!"); //Feedback pro usuário
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -160,8 +158,11 @@ public class TreinoController {
         if (treinoSelecionado != null) {
             try {
                 fachada.removerTreino(treinoSelecionado.getId()); //  Chama remover da fachada
-                atualizarTabelaTreinosUsuario(); //  ATUALIZA A TABELA
+                atualizarTabelaTreinosUsuario(); //  Atualiza a tabela
                 mensagemTreino.setText("Treino removido com sucesso!");
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
             } catch (TreinoNaoEncontradoException e) { // Captura a exceção
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover treino", e.getMessage());
             }
@@ -175,7 +176,7 @@ public class TreinoController {
         Treino treinoSelecionado = tabelaTreinosPreDefinidos.getSelectionModel().getSelectedItem();
         if (treinoSelecionado != null) {
             try {
-                // Cria uma *NOVA* instância, copiando os valores.
+                // Cria uma nova instância, copiando os valores.
                 Treino novoTreino = new Treino(
                         treinoSelecionado.getNome(),
                         treinoSelecionado.getTipoDeTreino(),
@@ -191,6 +192,9 @@ public class TreinoController {
                         novoTreino.getNivelDeDificuldade());
                 atualizarTabelaTreinosUsuario();
                 mensagemTreino.setText("Treino adicionado com sucesso!");
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
             } catch (TreinoNaoEncontradoException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar treino", e.getMessage());
             }
@@ -204,7 +208,7 @@ public class TreinoController {
     private void atualizarTabelaTreinosUsuario() {
         try {
             List<Treino> listaTreinos = fachada.listarTreinos();
-            tabelaTreinosUsuario.setItems(FXCollections.observableArrayList(listaTreinos)); //MUITO IMPORTANTE
+            tabelaTreinosUsuario.setItems(FXCollections.observableArrayList(listaTreinos));
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar treinos", e.getMessage());
         }

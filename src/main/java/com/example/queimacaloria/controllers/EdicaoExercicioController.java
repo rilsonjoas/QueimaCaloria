@@ -21,11 +21,16 @@ public class EdicaoExercicioController {
     @FXML private Label mensagemErro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    private Exercicio exercicio; // O exercício a ser editado
+    private Exercicio exercicio;
     private ExercicioController exercicioController;
+    //ADD
+    private MainController mainController;
 
     public void setExercicioController(ExercicioController exercicioController) {
         this.exercicioController = exercicioController;
+    }
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 
     public void setExercicio(Exercicio exercicio) {
@@ -40,11 +45,11 @@ public class EdicaoExercicioController {
 
     private void preencherCampos() {
         if (exercicio != null) {
-            campoNome.textProperty().bindBidirectional(exercicio.nomeProperty());
-            campoDescricao.setText(exercicio.getDescricao()); //Descricao nao tem binding
-            campoTipo.valueProperty().bindBidirectional(exercicio.tipoProperty());
-            campoTempo.textProperty().bindBidirectional(exercicio.tempoProperty(), new javafx.util.converter.NumberStringConverter());
-            campoCaloriasPorMinuto.textProperty().bindBidirectional(exercicio.caloriasQueimadasProperty(), new javafx.util.converter.NumberStringConverter());
+            campoNome.setText(exercicio.getNome());
+            campoDescricao.setText(exercicio.getDescricao());
+            campoTipo.setValue(exercicio.getTipo());
+            campoTempo.setText(String.valueOf(exercicio.getTempo()));
+            campoCaloriasPorMinuto.setText(String.valueOf(exercicio.getCaloriasQueimadasPorMinuto()));
         }
     }
 
@@ -52,17 +57,22 @@ public class EdicaoExercicioController {
     @FXML
     public void atualizarExercicio() {
         try {
+            // Obtém os valores dos campos
+            String nome = campoNome.getText();
+            String descricao = campoDescricao.getText();
+            Exercicio.TipoExercicio tipo = campoTipo.getValue();
+            int tempo = Integer.parseInt(campoTempo.getText());
+            double caloriasPorMinuto = Double.parseDouble(campoCaloriasPorMinuto.getText());
 
-            exercicio.setDescricao(campoDescricao.getText()); //Atualiza a descrição que não tem binding.
-
-            fachada.configurarExercicio(exercicio, exercicio.getNome(), exercicio.getDescricao(),
-                    exercicio.getTipo(), exercicio.getTempo(),
-                    exercicio.getCaloriasQueimadasPorMinuto());
+            fachada.configurarExercicio(exercicio, nome, descricao, tipo, tempo, caloriasPorMinuto);
 
             mensagemErro.setText("Exercício atualizado com sucesso!");
 
             if (exercicioController != null) {
-                exercicioController.initialize();
+                exercicioController.initialize(); //  Chama initialize
+            }
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
             }
             fecharJanela();
 

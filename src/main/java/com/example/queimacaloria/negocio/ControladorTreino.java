@@ -15,7 +15,7 @@ public class ControladorTreino {
         this.repositorio = RepositorioTreinosArray.getInstanciaUnica();
     }
 
-    // Inicializa (cria ou atualiza) um treino.
+    // Inicializa um treino.
     public void inicializar(Treino treino, String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade) throws TreinoNaoEncontradoException {
         treino.setNome(nome);
         treino.setTipoDeTreino(tipoDeTreino);

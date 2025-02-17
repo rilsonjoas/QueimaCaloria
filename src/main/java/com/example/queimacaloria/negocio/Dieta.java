@@ -18,7 +18,6 @@ public class Dieta {
     private StringProperty nome = new SimpleStringProperty("");
     private ObjectProperty<ObjetivoDieta> objetivo = new SimpleObjectProperty<>();
     private IntegerProperty caloriasDiarias = new SimpleIntegerProperty(0);
-    // Remova o DoubleProperty progresso daqui
 
     // Usando MapProperty e ListProperty para coleções observáveis:
     private MapProperty<String, Double> macronutrientes = new SimpleMapProperty<>(FXCollections.observableHashMap());
@@ -30,7 +29,6 @@ public class Dieta {
         PERDA_DE_PESO, GANHO_DE_MASSA, MANUTENCAO
     }
 
-    // Construtor que *copia* os dados, garantindo encapsulamento:
     public Dieta(String nome, ObjetivoDieta objetivo, int caloriasDiarias,
                  Map<String, Double> macronutrientes, ArrayList<Refeicao> refeicoes, Usuario usuario) {
         this.nome.set(nome);
@@ -47,7 +45,17 @@ public class Dieta {
         }
     }
 
-    // Método para calcular o progresso (agora DENTRO da classe Dieta):
+    // Método para calcular o total de calorias dentro da classe Dieta:
+    public int calcularTotalCalorias() {
+        int total = 0;
+        for (Refeicao refeicao : this.getRefeicoes()) { //Usa o getRefeicoes()
+            total += refeicao.getCalorias();
+        }
+        return total;
+    }
+
+
+    // Método para calcular o progresso dentro da classe Dieta:
     public double calcularProgresso() {
         // Exemplo simples de cálculo de progresso (adapte à sua lógica):
         if (refeicoes.isEmpty()) {
@@ -59,11 +67,11 @@ public class Dieta {
             totalCaloriasConsumidas += refeicao.getCalorias();
         }
 
-        // Supondo que o progresso seja a porcentagem de calorias consumidas em relação às calorias diárias:
+        // O progresso é a porcentagem de calorias consumidas em relação às calorias diárias:
         return (double) totalCaloriasConsumidas / caloriasDiarias.get() * 100.0;
     }
 
-    // Getters (sem setters para id):
+    // Getters:
     public UUID getId() { return id; }
 
     public String getNome() { return nome.get(); }
@@ -79,24 +87,22 @@ public class Dieta {
     public void setMacronutrientes(Map<String, Double> macronutrientes) { this.macronutrientes.putAll(macronutrientes); }
 
     public ObservableList<Refeicao> getRefeicoes() { return refeicoes.get(); }
-    public void setRefeicoes(ArrayList<Refeicao> refeicoes) { this.refeicoes.setAll(refeicoes); } // Use setAll para listas observáveis
+    public void setRefeicoes(ArrayList<Refeicao> refeicoes) { this.refeicoes.setAll(refeicoes); }
 
     public Usuario getUsuario() { return usuario.get(); }
     public void setUsuario(Usuario usuario) { this.usuario.set(usuario); }
 
 
-    // Métodos Property *DENTRO* da classe Dieta (essenciais!)
+    // Métodos Property da classe Dieta
     public StringProperty nomeProperty() { return nome; }
     public ObjectProperty<ObjetivoDieta> objetivoProperty() { return objetivo; }
     public IntegerProperty caloriasDiariasProperty() { return caloriasDiarias; }
     public ObjectProperty<Usuario> usuarioProperty() { return usuario; }
     public MapProperty<String, Double> macronutrientesProperty(){ return macronutrientes;}
     public ListProperty<Refeicao> refeicoesProperty() { return refeicoes;}
-    // REMOVA o progressoProperty daqui!
 
 
-
-    // equals() e hashCode() baseados no ID (importante!)
+    // equals() e hashCode() baseados no ID
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -15,7 +15,7 @@ public class ControladorMeta {
         this.repositorio = RepositorioMetasArray.getInstanciaUnica();
     }
 
-    // Configura (cria ou atualiza) uma meta.
+    // Configura uma meta.
     public void inicializar(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
                             LocalDate dataConclusao) throws MetaNaoEncontradaException {
 

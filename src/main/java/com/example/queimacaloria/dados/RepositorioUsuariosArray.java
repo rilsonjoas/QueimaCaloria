@@ -34,7 +34,7 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
     }
 
     @Override
-    public void adicionar(Usuario usuario) { // REMOVIDA a exceção
+    public void adicionar(Usuario usuario) {
         if (usuario == null) throw new IllegalArgumentException("Usuário não pode ser nulo.");
         if (proximoIndice >= usuarios.length) {
             Usuario[] temp = new Usuario[usuarios.length + 10];

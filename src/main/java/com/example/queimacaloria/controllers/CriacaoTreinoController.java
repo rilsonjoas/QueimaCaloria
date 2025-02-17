@@ -26,9 +26,15 @@ public class CriacaoTreinoController {
 
     private TreinoController treinoController;
 
+    private MainController mainController; //ADD
+
     // Injeta o TreinoController para que a tabela seja atualizada após criar um novo treino.
     public void setTreinoController(TreinoController treinoController) {
         this.treinoController = treinoController;
+    }
+
+    public void setMainController(MainController mainController){
+        this.mainController = mainController;
     }
 
     @FXML
@@ -46,6 +52,10 @@ public class CriacaoTreinoController {
 
             if (treinoController != null) {
                 treinoController.initialize();
+            }
+
+            if(mainController != null){ //ADD
+                mainController.atualizarDadosTelaPrincipal();
             }
 
             fecharJanela();

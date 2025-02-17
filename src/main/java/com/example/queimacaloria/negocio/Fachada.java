@@ -37,9 +37,29 @@ public class Fachada {
 
 
     // MÉTODO para cadastro
-    public void cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
-                                 Usuario.Sexo sexo, float peso, float altura)  { // Removida a exception
-        controladorUsuario.cadastrarUsuario(nome, email, senha, dataNascimento, sexo, peso, altura);
+    public Usuario cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
+                                    Usuario.Sexo sexo, float peso, float altura)  { // Removida a exception
+        // Verifica se o e-mail já existe (importante!)
+        List<Usuario> usuarios = controladorUsuario.listarUsuarios();
+        for (Usuario user : usuarios) {
+            if (user.getEmail().equals(email)) {
+                throw new IllegalArgumentException("Email já cadastrado."); // Use IllegalArgumentException, mais apropriado
+            }
+        }
+
+        // Cria e adiciona o novo usuário diretamente
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setNome(nome);
+        novoUsuario.setEmail(email);
+        novoUsuario.setSenha(senha);
+        novoUsuario.setDataNascimento(dataNascimento);
+        novoUsuario.setSexo(sexo);
+        novoUsuario.setPeso(peso);
+        novoUsuario.setAltura(altura);
+        // Adiciona o usuário ao repositório e já retorna o usuário.
+        controladorUsuario.cadastrarUsuario(novoUsuario);
+        return novoUsuario;
+
     }
 
     // Métodos de Usuário

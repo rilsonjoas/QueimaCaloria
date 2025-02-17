@@ -47,7 +47,7 @@ public class RegistroController {
         float altura = 0;
         try {
             peso = Float.parseFloat(campoPeso.getText());
-            altura = Float.parseFloat(campoAltura.getText());
+            altura = Float.parseFloat(campoAltura.getText())/100;
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Dados inválidos", "Peso e altura devem ser números válidos.");
             return;

@@ -83,6 +83,14 @@ public class RegistroController {
     public void irParaLogin() {
         if (authController != null) {
             authController.mostrarTelaLogin();
+            campoNome.clear();
+            campoSenha.clear();
+            campoAltura.clear();
+            campoEmail.clear();
+            campoPeso.clear();
+            campoSexo.setValue(null);
+            campoDataNascimento.setValue(null);
+            mensagemRegistro.setText(null);
         } else {
             System.err.println("Erro: AuthController não foi injetado!");
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");

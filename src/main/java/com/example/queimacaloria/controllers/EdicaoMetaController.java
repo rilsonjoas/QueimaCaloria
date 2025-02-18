@@ -3,12 +3,15 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Meta;
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
+//Adicionado o import que faltava.
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 
 
 public class EdicaoMetaController {
@@ -59,8 +62,9 @@ public class EdicaoMetaController {
         if (meta != null) {
             campoDescricao.setText(meta.getDescricao());
             campoTipo.setValue(meta.getTipo());
-            campoValorAlvo.setText(String.valueOf(meta.getValorAlvo()));
-            campoProgressoAtual.setText(String.valueOf(meta.getProgressoAtual()));
+            //CORREÇÃO AQUI:
+            campoValorAlvo.setText(String.valueOf(meta.getValorAlvo())); // Valor Alvo
+            campoProgressoAtual.setText(String.valueOf(meta.getProgressoAtual())); // Progresso Atual
 
             // Data de conclusão: formata e exibe, mas não é editável
             if (meta.getDataConclusao() != null) {
@@ -79,32 +83,33 @@ public class EdicaoMetaController {
     @FXML
     public void atualizarMeta() {
         try {
-            // Atualiza os campos que podem ser editados
             String descricao = campoDescricao.getText();
             Meta.Tipo tipo = campoTipo.getValue();
             double valorAlvo = Double.parseDouble(campoValorAlvo.getText());
             double progressoAtual = Double.parseDouble(campoProgressoAtual.getText());
 
-            fachada.configurarMeta(meta, descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao()); // Mantém a data original ou null
+            // Atualiza os dados da meta através da fachada.
+            fachada.configurarMeta(meta, descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao());
             mensagemErro.setText("Meta atualizada com sucesso!");
 
-            if(metaController != null){
-                metaController.initialize(); //  Chama initialize
-            }
-
-            //ADD
-            if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal();
+            // Atualiza o usuário logado e a tela principal *após* a modificação:
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                try {
+                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                    mainController.setUsuarioLogado(usuarioAtualizado);
+                    mainController.atualizarDadosTelaPrincipal(); // <-- Atualiza a tela principal
+                } catch (UsuarioNaoEncontradoException e) {
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
+                            "O usuário logado não pôde ser encontrado após a atualização da meta.");
+                }
             }
 
             fecharJanela();
 
-        }  catch (NumberFormatException e) {
-            mensagemErro.setText("Erro: Valores numéricos inválidos.");
-        } catch (MetaNaoEncontradaException e) {
-            mensagemErro.setText("Erro ao atualizar meta: " + e.getMessage());
-        }
-        catch (Exception e) {
+        }  catch (NumberFormatException | MetaNaoEncontradaException e) { //Captura apenas o que pode ocorrer.
+            mensagemErro.setText("Erro: " + e.getMessage());
+
+        } catch (Exception e) { //Captura genérica, para outros erros.
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
             e.printStackTrace();
         }
@@ -114,21 +119,30 @@ public class EdicaoMetaController {
     public void concluirMeta() {
         try {
             meta.setDataConclusao(LocalDate.now()); // Define a data de conclusão
+            meta.setProgressoAtual(meta.getValorAlvo()); // Define o progresso como 100%
             fachada.configurarMeta(meta, meta.getDescricao(), meta.getTipo(), meta.getValorAlvo(), meta.getProgressoAtual(), meta.getDataConclusao());// Salva
             labelDataConclusao.setText("Concluída em: " + meta.getDataConclusao().toString()); // Atualiza a exibição
             buttonConcluirMeta.setDisable(true); // Desabilita o botão
 
-            if(metaController != null){
-                metaController.initialize(); //  Chama initialize
+            if (metaController != null) {
+                metaController.atualizarTabelaMetasUsuario(); // Atualiza a tabela.
             }
-            if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal();
+
+            // Atualiza o usuário logado *após* a modificação:
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                try {
+                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                    mainController.setUsuarioLogado(usuarioAtualizado);
+                    mainController.atualizarDadosTelaPrincipal();
+                } catch (UsuarioNaoEncontradoException e) {
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
+                            "O usuário logado não pôde ser encontrado.");
+                }
             }
 
             mensagemErro.setText("Meta concluída com sucesso!");
         } catch (MetaNaoEncontradaException e) {
             mensagemErro.setText("Erro ao concluir meta: " + e.getMessage());
-
         }
     }
 
@@ -136,5 +150,12 @@ public class EdicaoMetaController {
     private void fecharJanela() {
         Stage stage = (Stage) campoDescricao.getScene().getWindow();
         stage.close();
+    }
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

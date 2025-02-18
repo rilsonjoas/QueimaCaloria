@@ -36,7 +36,7 @@ public class Dieta {
         this.caloriasDiarias.set(caloriasDiarias);
         this.usuario.set(usuario);
 
-        // Copiando os dados para evitar compartilhamento acidental:
+
         if (macronutrientes != null) {
             this.macronutrientes.putAll(macronutrientes);
         }

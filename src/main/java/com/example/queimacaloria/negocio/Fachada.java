@@ -66,11 +66,15 @@ public class Fachada {
     public void atualizarDadosUsuario(Usuario usuario, String nome, String email, String senha,
                                       LocalDate dataNascimento,
                                       Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
-        controladorUsuario.atualizarDados(usuario, nome, email, senha, dataNascimento, sexo, peso, altura);
+        controladorUsuario.atualizarDados(usuario.getId(), nome, email, senha, dataNascimento, sexo, peso, altura);
     }
 
     public void cadastrarMetaUsuario(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
         controladorUsuario.cadastrarMeta(usuario, meta);
+    }
+
+    public Usuario buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException{
+        return controladorUsuario.buscarPorId(id);
     }
 
     public void adicionarTreinoUsuario(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {

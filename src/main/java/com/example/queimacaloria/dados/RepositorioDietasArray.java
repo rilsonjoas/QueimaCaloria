@@ -43,6 +43,7 @@ public class RepositorioDietasArray implements IRepositorioDietas {
             System.arraycopy(dietas, 0, temp, 0, dietas.length);
             dietas = temp;
         }
+        System.out.println("Repositorio.adicionar - Adicionando dieta: " + dieta.getNome() + " do usuário: " + (dieta.getUsuario() != null ? dieta.getUsuario().getEmail(): "null"));
         dietas[proximoIndice++] = dieta;
     }
 
@@ -51,7 +52,9 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         if (dieta == null) throw new IllegalArgumentException("Dieta não pode ser nula.");
         int indice = procurarIndice(dieta.getId());
         if (indice < proximoIndice) {
+            System.out.println("Repositorio.salvar - Salvando dieta: " + dieta.getNome() + " do usuário: " + (dieta.getUsuario() != null ? dieta.getUsuario().getEmail(): "null"));
             dietas[indice] = dieta;
+
         } else {
             throw new DietaNaoEncontradaException("Dieta não encontrada.");
         }

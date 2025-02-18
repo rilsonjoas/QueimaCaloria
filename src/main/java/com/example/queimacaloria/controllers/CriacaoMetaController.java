@@ -1,9 +1,10 @@
-
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Meta;
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -11,34 +12,21 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
-
 public class CriacaoMetaController {
 
-    @FXML
-    private TextField campoDescricao;
-    @FXML
-    private ChoiceBox<Meta.Tipo> campoTipo;
-    @FXML
-    private TextField campoValorAlvo;
-    @FXML
-    private TextField campoProgressoAtual;
-    @FXML
-    private DatePicker campoDataConclusao;
-    @FXML
-    private Label mensagemErro;
-
+    @FXML private TextField campoDescricao;
+    @FXML private ChoiceBox<Meta.Tipo> campoTipo;
+    @FXML private TextField campoValorAlvo;
+    @FXML private TextField campoProgressoAtual;
+    @FXML private DatePicker campoDataConclusao;
+    @FXML private Label mensagemErro;
     private Fachada fachada = Fachada.getInstanciaUnica();
-
     private MetaController metaController;
-
     private MainController mainController;
 
     public void setMetaController(MetaController metaController) {
         this.metaController = metaController;
-
     }
-
-    //ADD
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
@@ -49,28 +37,44 @@ public class CriacaoMetaController {
     }
 
     @FXML
-    // Método chamado ao clicar no botão "Criar Meta"
     public void criarMeta() {
         try {
             String descricao = campoDescricao.getText();
             Meta.Tipo tipo = campoTipo.getValue();
             double valorAlvo = Double.parseDouble(campoValorAlvo.getText());
-            double progressoAtual = Double.parseDouble(campoProgressoAtual.getText());
+            // O progresso inicial de uma nova meta DEVE ser 0.0. Não use o valor do campo.
+            double progressoAtual = 0.0; // Valor inicial correto.
             LocalDate dataConclusao = campoDataConclusao.getValue();
 
-            Meta novaMeta = new Meta();
-            fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
+            //Verifica se o usuário está logado
+            if(mainController != null && mainController.getUsuarioLogado() != null){
+                Meta novaMeta = new Meta();
+                fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
 
-            mensagemErro.setText("Meta criada com sucesso!");
+                mensagemErro.setText("Meta criada com sucesso!");
 
-            // Atualiza a tabela de metas no MetaController
-            if (metaController != null) {
-                metaController.initialize();
+                // Atualiza o usuário logado *após* a modificação:
+                try {
+                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                    mainController.setUsuarioLogado(usuarioAtualizado);
+                } catch (UsuarioNaoEncontradoException e) {
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
+                            "O usuário logado não pôde ser encontrado.");
+                }
+
+
+                // Atualiza a tabela de metas no MetaController
+                if (metaController != null) {
+                    metaController.initialize();
+                }
+                if(mainController != null){
+                    mainController.atualizarDadosTelaPrincipal();
+                }
+            } else {
+                mensagemErro.setText("Erro, usuário não logado");
             }
-            //ADD
-            if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal();
-            }
+
+
 
             fecharJanela(); // Fecha a janela atual
 
@@ -83,10 +87,18 @@ public class CriacaoMetaController {
         }
     }
 
+
     @FXML
-    // Fecha a janela atual
     private void fecharJanela() {
         Stage stage = (Stage) campoDescricao.getScene().getWindow();
         stage.close();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

@@ -21,8 +21,14 @@
                 <Insets bottom="15.0" />
             </VBox.margin>
         </Label>
+
+        <Label text="Nome da Dieta:" textFill="WHITE" />  <!-- Label adicionado -->
         <TextField fx:id="campoNome" promptText="Nome da Dieta" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
+        <Label text="Objetivo:" textFill="WHITE" />  <!-- Label adicionado -->
         <ChoiceBox fx:id="campoObjetivo" prefHeight="25.0" prefWidth="260.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
+        <Label text="Calorias Diárias:" textFill="WHITE" />  <!-- Label adicionado -->
         <TextField fx:id="campoCalorias" promptText="Calorias Diárias" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
 
         <HBox alignment="CENTER" spacing="10.0">

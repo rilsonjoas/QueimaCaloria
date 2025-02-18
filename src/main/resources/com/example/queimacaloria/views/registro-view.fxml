@@ -11,7 +11,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="504.0" prefWidth="500.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.RegistroController">
+<!--  Note a ausência do <fx:define> e a presença/correção do stylesheets -->
+<AnchorPane prefHeight="504.0" prefWidth="500.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.RegistroController" stylesheets="@estilos.css">
     <children>
         <VBox alignment="CENTER" prefHeight="440.0" prefWidth="400.0" spacing="10.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
             <Label text="Cadastro" textFill="#d7d7d7">
@@ -22,33 +23,33 @@
                     <Insets bottom="20.0" />
                 </VBox.margin>
             </Label>
-            <TextField fx:id="campoNome" promptText="Nome" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
+            <TextField fx:id="campoNome" promptText="Nome" styleClass="campo-escuro">  <!-- Aplicando a classe -->
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </TextField>
-            <TextField fx:id="campoEmail" promptText="Email" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
+            <TextField fx:id="campoEmail" promptText="Email" styleClass="campo-escuro"> <!-- Aplicando a classe -->
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </TextField>
-            <PasswordField fx:id="campoSenha" promptText="Senha" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
+            <PasswordField fx:id="campoSenha" promptText="Senha" styleClass="campo-escuro"> <!-- Aplicando a classe -->
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </PasswordField>
-            <DatePicker fx:id="campoDataNascimento" prefHeight="25.0" prefWidth="210.0" promptText="Data de Nascimento" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
+            <DatePicker fx:id="campoDataNascimento" prefHeight="25.0" prefWidth="210.0" promptText="Data de Nascimento" styleClass="campo-escuro" > <!-- Aplicando a classe -->
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </DatePicker>
-            <ComboBox fx:id="campoSexo" prefHeight="25.0" prefWidth="210.0" promptText="Sexo" style="-fx-background-color: #1a1922;" />
-            <TextField fx:id="campoPeso" promptText="Peso (kg)" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
+            <ComboBox fx:id="campoSexo" prefHeight="25.0" prefWidth="210.0" promptText="Sexo" styleClass="campo-escuro" />  <!-- Aplicando a classe -->
+            <TextField fx:id="campoPeso" promptText="Peso (kg)" styleClass="campo-escuro"> <!-- Aplicando a classe -->
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </TextField>
-            <TextField fx:id="campoAltura" promptText="Altura (em centimetros. Ex: 175 cm)" style="-fx-background-color: #1a1922; -fx-text-fill: white;">
+            <TextField fx:id="campoAltura" promptText="Altura (em centimetros. Ex: 175 cm)" styleClass="campo-escuro"> <!-- Aplicando a classe -->
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>

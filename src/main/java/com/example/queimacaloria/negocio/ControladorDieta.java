@@ -18,16 +18,27 @@ public class ControladorDieta {
 
     // Configura (cria ou atualiza) uma dieta.
     public void configurarDieta(Dieta dieta, String nome, Dieta.ObjetivoDieta objetivo, int caloriasDiarias, Usuario usuario) throws DietaNaoEncontradaException {
+        System.out.println("ControladorDieta.configurarDieta: Iniciando...");
+        System.out.println("ControladorDieta.configurarDieta: Usuário recebido: " + (usuario != null ? usuario.getEmail() : "NULO")); // PRINT
         dieta.setNome(nome);
         dieta.setObjetivo(objetivo);
         dieta.setCaloriasDiarias(caloriasDiarias);
-        dieta.setUsuario(usuario);
+        dieta.setUsuario(usuario); // <- A associação crucial
+
+        System.out.println("ControladorDieta.configurarDieta: Dieta antes de salvar: " + dieta);
 
         try {
             repositorio.salvar(dieta); // Tenta atualizar.
         } catch (DietaNaoEncontradaException e) {
+            System.out.println("ControladorDieta.configurarDieta: Dieta não encontrada, adicionando..."); // PRINT
             repositorio.adicionar(dieta); // Se não existir, adiciona.
         }
+        System.out.println("ControladorDieta.configurarDieta: Dieta após salvar/adicionar" + dieta); //PRINT
+    }
+
+    public List<Dieta> listarDietas() {
+        System.out.println("ControladorDieta.listarDietas - Aqui estão as dietas: "+ repositorio.getAll());
+        return repositorio.getAll();
     }
 
     // Insere uma refeição na dieta.
@@ -91,8 +102,5 @@ public class ControladorDieta {
         }
     }
 
-    // Lista todas as dietas do repositório.
-    public List<Dieta> listarDietas() {
-        return repositorio.getAll();
-    }
+
 }

@@ -47,7 +47,6 @@
                     <TableColumn fx:id="colunaTipoTreinoPreDefinido" prefWidth="100.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Tipo" />
                     <TableColumn fx:id="colunaDuracaoPreDefinido" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Duração" />
                     <TableColumn fx:id="colunaNivelDificuldadePreDefinido" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Dificuldade" />
-                    <TableColumn fx:id="colunaProgressoPreDefinido" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Progresso" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -59,7 +58,7 @@
 
             </HBox>
 
-            <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar para a página inicial" />
+            <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: WHITE;" text="Voltar para a página inicial" />
             <Label fx:id="mensagemTreino" text="" textFill="RED" />
         </VBox>
     </children>

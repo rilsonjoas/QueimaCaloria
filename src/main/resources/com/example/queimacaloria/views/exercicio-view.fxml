@@ -56,7 +56,7 @@
                 <Button onAction="#adicionarExercicioPreDefinido" style="-fx-background-color: #55c5f5;" text="Adicionar Exercício Selecionado" />
             </HBox>
 
-            <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #55c5f5;" text="Voltar para a página inicial" />
+            <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: WHITE" text="Voltar para a página inicial" />
             <Label fx:id="mensagemExercicio" text="" textFill="RED" />
         </VBox>
     </children>

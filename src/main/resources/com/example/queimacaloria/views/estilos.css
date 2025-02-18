@@ -1,0 +1,63 @@
+/* estilos.css */
+
+.tabela-escura {
+    -fx-background-color: #1a1922;
+    -fx-text-fill: white;
+    -fx-control-inner-background: #1a1922; /* Cor de fundo das células */
+}
+
+.tabela-escura-coluna {
+    -fx-alignment: CENTER;
+    -fx-background-color: #1a1922;
+    -fx-text-fill: white;
+}
+
+.coluna-conclusao {
+    -fx-alignment: CENTER;
+}
+
+/* Estilos para os campos de texto, DatePicker e ComboBox */
+.campo-escuro {
+    -fx-background-color: #1a1922;
+    -fx-text-fill: white;       /* Cor do texto digitado/selecionado */
+    -fx-control-inner-background: #1a1922; /* Cor de fundo do campo */
+    -fx-prompt-text-fill: #999999; /* Cor do texto de placeholder (opcional)*/
+}
+
+/* Estilos adicionais para o DatePicker */
+.date-picker > .text-field {
+    -fx-text-fill: white;       /* Cor do texto no TextField do DatePicker */
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #55c5f5; /* Cor de fundo do botão */
+}
+.date-picker .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+/* Estilo do ComboBox */
+.combo-box .list-cell{
+    -fx-text-fill: white;
+}
+
+.combo-box-popup .list-view{
+    -fx-background-color: #1a1922;
+}
+
+.combo-box-popup .list-view .list-cell:hover{
+    -fx-background-color: #55c5f5;
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected{
+    -fx-background-color: #55c5f5;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.combo-box .arrow-button{
+    -fx-background-color: #55c5f5;
+}
+.combo-box .arrow-button .arrow{
+    -fx-background-color: white;
+}

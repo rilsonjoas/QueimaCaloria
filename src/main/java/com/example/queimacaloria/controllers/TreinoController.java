@@ -1,10 +1,12 @@
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.InicializadorDados;
 import com.example.queimacaloria.negocio.Treino;
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -34,7 +36,8 @@ public class TreinoController {
     @FXML private TableColumn<Treino, String> colunaTipoTreinoPreDefinido;
     @FXML private TableColumn<Treino, Integer> colunaDuracaoPreDefinido;
     @FXML private TableColumn<Treino, Integer> colunaNivelDificuldadePreDefinido;
-    @FXML private TableColumn<Treino, Double> colunaProgressoPreDefinido;
+    //Removido
+    //@FXML private TableColumn<Treino, Double> colunaProgressoPreDefinido;
 
     @FXML private Label mensagemTreino;
     @FXML private Label labelNomeTreino;
@@ -58,20 +61,6 @@ public class TreinoController {
 
         configurarTabelaPreDefinida();
         carregarTreinosPreDefinidos();
-
-        tabelaTreinosUsuario.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                tabelaTreinosPreDefinidos.getSelectionModel().clearSelection();
-                exibirDetalhesTreino(newSelection);
-            }
-        });
-
-        tabelaTreinosPreDefinidos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                tabelaTreinosUsuario.getSelectionModel().clearSelection();
-                exibirDetalhesTreino(newSelection);
-            }
-        });
     }
 
     private void configurarTabelaUsuario() {
@@ -87,7 +76,8 @@ public class TreinoController {
         colunaTipoTreinoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("tipoDeTreino"));
         colunaDuracaoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("duracao"));
         colunaNivelDificuldadePreDefinido.setCellValueFactory(new PropertyValueFactory<>("nivelDeDificuldade"));
-        colunaProgressoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("progresso"));
+        //Removido
+        //colunaProgressoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("progresso"));
     }
 
     private void carregarTreinosPreDefinidos() {
@@ -132,9 +122,10 @@ public class TreinoController {
                 // Obtém o controlador da tela de edição
                 EdicaoTreinoController controller = loader.getController();
                 controller.setTreinoController(this);
+                controller.setMainController(mainController);
                 // Passa o treino selecionada para o controlador
                 controller.setTreino(treinoSelecionado);
-                controller.setMainController(mainController);
+
 
                 // Exibe a tela de edição
                 Stage stage = new Stage();
@@ -142,6 +133,16 @@ public class TreinoController {
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); // Exibe como um diálogo modal
 
+                // Atualiza o usuário logado *após* a edição:
+                if (mainController != null && mainController.getUsuarioLogado() != null) {
+                    try {
+                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                        mainController.setUsuarioLogado(usuarioAtualizado);
+                    } catch (UsuarioNaoEncontradoException e) {
+                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
+                                "O usuário logado não pôde ser encontrado após a edição do treino.");
+                    }
+                }
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -152,18 +153,29 @@ public class TreinoController {
         }
     }
 
+
+
     @FXML
     public void removerTreino() {
         Treino treinoSelecionado = tabelaTreinosUsuario.getSelectionModel().getSelectedItem();
         if (treinoSelecionado != null) {
             try {
-                fachada.removerTreino(treinoSelecionado.getId()); //  Chama remover da fachada
-                atualizarTabelaTreinosUsuario(); //  Atualiza a tabela
+                fachada.removerTreino(treinoSelecionado.getId());
+                atualizarTabelaTreinosUsuario();
                 mensagemTreino.setText("Treino removido com sucesso!");
-                if(mainController != null){
-                    mainController.atualizarDadosTelaPrincipal();
+
+                // Atualiza o usuário logado *após* a remoção:
+                if (mainController != null && mainController.getUsuarioLogado() != null) {
+                    try {
+                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                        mainController.setUsuarioLogado(usuarioAtualizado);
+                    } catch (UsuarioNaoEncontradoException e) {
+                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
+                                "O usuário logado não pôde ser encontrado após a remoção do treino.");
+                    }
                 }
-            } catch (TreinoNaoEncontradoException e) { // Captura a exceção
+
+            } catch (TreinoNaoEncontradoException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover treino", e.getMessage());
             }
         } else {
@@ -171,18 +183,18 @@ public class TreinoController {
                     "Por favor, selecione um treino para remover.");
         }
     }
+
     @FXML
     public void adicionarTreinoPreDefinido() {
         Treino treinoSelecionado = tabelaTreinosPreDefinidos.getSelectionModel().getSelectedItem();
         if (treinoSelecionado != null) {
             try {
-                // Cria uma nova instância, copiando os valores.
                 Treino novoTreino = new Treino(
                         treinoSelecionado.getNome(),
                         treinoSelecionado.getTipoDeTreino(),
                         treinoSelecionado.getDuracao(),
                         treinoSelecionado.getNivelDeDificuldade(),
-                        new ArrayList<>(treinoSelecionado.getExercicios()), // Copia a lista de exercícios
+                        new ArrayList<>(treinoSelecionado.getExercicios()),
                         treinoSelecionado.getCaloriasQueimadas(),
                         treinoSelecionado.getProgresso(),
                         treinoSelecionado.isConcluido()
@@ -192,9 +204,18 @@ public class TreinoController {
                         novoTreino.getNivelDeDificuldade());
                 atualizarTabelaTreinosUsuario();
                 mensagemTreino.setText("Treino adicionado com sucesso!");
-                if(mainController != null){
-                    mainController.atualizarDadosTelaPrincipal();
+
+                // Atualiza o usuário logado *após* a adição:
+                if (mainController != null && mainController.getUsuarioLogado() != null) {
+                    try {
+                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                        mainController.setUsuarioLogado(usuarioAtualizado);
+                    } catch (UsuarioNaoEncontradoException e) {
+                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
+                                "O usuário logado não pôde ser encontrado após a adição do treino.");
+                    }
                 }
+
             } catch (TreinoNaoEncontradoException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar treino", e.getMessage());
             }
@@ -203,39 +224,40 @@ public class TreinoController {
                     "Por favor, selecione um treino pré-definido para adicionar.");
         }
     }
-
-
-    private void atualizarTabelaTreinosUsuario() {
+    public void atualizarTabelaTreinosUsuario() {
         try {
             List<Treino> listaTreinos = fachada.listarTreinos();
             tabelaTreinosUsuario.setItems(FXCollections.observableArrayList(listaTreinos));
-        } catch (Exception e) {
+
+        }
+
+        catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar treinos", e.getMessage());
         }
     }
 
+
     private void exibirDetalhesTreino(Treino treino) {
         if (treino != null) {
-            labelNomeTreino.setText("Nome: " + treino.getNome());
-            labelTipoTreino.setText("Tipo: " + treino.getTipoDeTreino());
-            labelDuracaoTreino.setText("Duração: " + treino.getDuracao() + " min");
-            labelDificuldadeTreino.setText("Dificuldade: " + treino.getNivelDeDificuldade());
+            if(labelNomeTreino != null) labelNomeTreino.setText("Nome: " + treino.getNome());
+            if(labelTipoTreino != null) labelTipoTreino.setText("Tipo: " + treino.getTipoDeTreino());
+            if(labelDuracaoTreino != null) labelDuracaoTreino.setText("Duração: " + treino.getDuracao() + " min");
+            if(labelDificuldadeTreino != null) labelDificuldadeTreino.setText("Dificuldade: " + treino.getNivelDeDificuldade());
 
-            // Lista os exercícios do treino (melhorado)
             if (treino.getExercicios() != null && !treino.getExercicios().isEmpty()) {
                 String exerciciosStr = treino.getExercicios().stream()
                         .map(Exercicio::getNome)
                         .collect(Collectors.joining(", "));
-                labelExerciciosTreino.setText("Exercícios: " + exerciciosStr);
+                if(labelExerciciosTreino != null) labelExerciciosTreino.setText("Exercícios: " + exerciciosStr);
             } else {
-                labelExerciciosTreino.setText("Exercícios: Nenhum");
+                if(labelExerciciosTreino != null) labelExerciciosTreino.setText("Exercícios: Nenhum");
             }
         } else {
-            labelNomeTreino.setText("Nome: ");
-            labelTipoTreino.setText("Tipo: ");
-            labelDuracaoTreino.setText("Duração: ");
-            labelDificuldadeTreino.setText("Dificuldade: ");
-            labelExerciciosTreino.setText("Exercícios: ");
+            if(labelNomeTreino != null) labelNomeTreino.setText("Nome: ");
+            if(labelTipoTreino != null) labelTipoTreino.setText("Tipo: ");
+            if(labelDuracaoTreino != null) labelDuracaoTreino.setText("Duração: ");
+            if(labelDificuldadeTreino != null) labelDificuldadeTreino.setText("Dificuldade: ");
+            if(labelExerciciosTreino != null) labelExerciciosTreino.setText("Exercícios: ");
         }
     }
 
@@ -252,7 +274,6 @@ public class TreinoController {
         if (mainController != null) {
             mainController.mostrarTelaPrincipal();
         } else {
-            System.err.println("Erro: MainController não foi injetado!");
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "MainController não foi configurado corretamente.");
         }
     }

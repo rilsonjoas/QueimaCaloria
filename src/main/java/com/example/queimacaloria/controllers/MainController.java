@@ -1,3 +1,4 @@
+
 package com.example.queimacaloria.controllers;
 
 import javafx.fxml.FXML;
@@ -10,10 +11,14 @@ import java.io.IOException;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import com.example.queimacaloria.negocio.Usuario;
-import javafx.beans.binding.Bindings; // Importante para o binding
-import com.example.queimacaloria.negocio.Dieta; // Importante
-import com.example.queimacaloria.negocio.Refeicao;  //Importante
-import java.util.List;
+import javafx.beans.binding.Bindings;
+import com.example.queimacaloria.negocio.Dieta;
+import com.example.queimacaloria.negocio.Refeicao;
+//Adicione os imports
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import com.example.queimacaloria.negocio.Meta;
+import javafx.scene.control.ProgressBar; // Importante!
 
 
 public class MainController {
@@ -25,15 +30,13 @@ public class MainController {
     @FXML private Button buttonVerMaisExercicios;
     @FXML private Button buttonVerMaisDietas;
     @FXML private Button buttonVerMaisPerfil;
-
-    // NOVOS LABELS
     @FXML private Label labelPesoUsuario;
     @FXML private Label labelAlturaUsuario;
-    @FXML private Label labelIMCSituacao; // Label para a situação do IMC
-
-
-    //Label de Calorias do dia.
+    @FXML private Label labelIMCSituacao;
     @FXML private Label labelCaloriasDia;
+    //Adicionado
+    @FXML private ProgressBar barraProgressoMetas;
+    @FXML private Label labelProgressoMetas;
 
 
     private Parent telaDieta;
@@ -46,69 +49,74 @@ public class MainController {
     private Stage primaryStage;
     private Usuario usuarioLogado;
 
+    // NOVA PROPERTY:
+    private DoubleProperty progressoGeral = new SimpleDoubleProperty(0.0);
+
+
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
 
+    public Usuario getUsuarioLogado() {  // Getter para o usuário logado
+        return usuarioLogado;
+    }
+
     public void setUsuarioLogado(Usuario usuario) {
+        //System.out.println("MainController.setUsuarioLogado: Iniciando..."); // PRINT
         this.usuarioLogado = usuario;
 
         if (usuarioLogado != null) {
-            labelNomeUsuario.setText(usuarioLogado.getNome());
+            //System.out.println("MainController.setUsuarioLogado: Usuário logado: " + usuarioLogado.getEmail()); // PRINT
 
-            // Binding para Peso
-            labelPesoUsuario.textProperty().bind(Bindings.createStringBinding(
-                    () -> String.format("Peso: %.2f kg", usuarioLogado.getPeso()),
-                    usuarioLogado.pesoProperty()
-            ));
+            // Bindings (com verificações de nulidade)
+            if (labelNomeUsuario != null) labelNomeUsuario.setText(usuarioLogado.getNome());
+            if (labelPesoUsuario != null) labelPesoUsuario.textProperty().bind(Bindings.createStringBinding(() -> String.format("Peso: %.2f kg", usuarioLogado.getPeso()), usuarioLogado.pesoProperty()));
+            if (labelAlturaUsuario != null) labelAlturaUsuario.textProperty().bind(Bindings.createStringBinding(() -> String.format("Altura: %.2f m", usuarioLogado.getAltura()), usuarioLogado.alturaProperty()));
+            if (labelIMC != null) labelIMC.textProperty().bind(Bindings.createStringBinding(() -> String.format("IMC: %.2f", usuarioLogado.getImc()), usuarioLogado.imcProperty()));
+            if (labelIMCSituacao != null) labelIMCSituacao.textProperty().bind(Bindings.createStringBinding(() -> "Situação: " + getSituacaoIMC(usuarioLogado.getImc()), usuarioLogado.imcProperty()));
 
-            // Binding para Altura
-            labelAlturaUsuario.textProperty().bind(Bindings.createStringBinding(
-                    () -> String.format("Altura: %.2f m", usuarioLogado.getAltura()),
-                    usuarioLogado.alturaProperty()
-            ));
-
-            // Binding para IMC (agora com a situação)
-            labelIMC.textProperty().bind(Bindings.createStringBinding(
-                    () -> String.format("IMC: %.2f", usuarioLogado.getImc()),
-                    usuarioLogado.imcProperty()
-            ));
-
-            // Binding para a Situação do IMC *DENTRO* do binding do IMC
-            labelIMCSituacao.textProperty().bind(Bindings.createStringBinding(
-                    () -> "Situação: " + getSituacaoIMC(usuarioLogado.getImc()), // Chama o método para obter a situação
-                    usuarioLogado.imcProperty() // Atualiza quando o IMC mudar
-            ));
-
-            //  Chama o método para atualizar as calorias
             atualizarCalorias();
 
+            // BINDINGS para a barra de progresso e label:
+            if (barraProgressoMetas != null) {
+                barraProgressoMetas.progressProperty().bind(progressoGeral); // BINDING!
+            }
+            if(labelProgressoMetas != null){
+                labelProgressoMetas.textProperty().bind(Bindings.createStringBinding(
+                        () -> String.format("%.1f%% Completo", progressoGeral.get() * 100), // Formata como porcentagem
+                        progressoGeral
+                ));
+            }
 
         } else {
-            labelNomeUsuario.setText("Nome do Usuário");
-            labelPesoUsuario.setText("Peso: --"); // Valor padrão
-            labelAlturaUsuario.setText("Altura: --"); // Valor padrão
-            labelIMC.setText("IMC: --");
-            labelIMCSituacao.setText("Situação: --"); // Valor padrão
-            labelCaloriasDia.setText("Calorias: -- / --"); //Valor padrão
+            // System.out.println("MainController.setUsuarioLogado: Usuário logado é nulo."); // PRINT
+            if (labelNomeUsuario != null) labelNomeUsuario.setText("Nome do Usuário");
+            if (labelPesoUsuario != null) labelPesoUsuario.setText("Peso: --");
+            if (labelAlturaUsuario != null) labelAlturaUsuario.setText("Altura: --");
+            if (labelIMC != null) labelIMC.setText("IMC: --");
+            if (labelIMCSituacao != null) labelIMCSituacao.setText("Situação: --");
+            if (labelCaloriasDia != null) labelCaloriasDia.setText("Calorias: -- / --");
+            // Limpa a barra de progresso se não houver usuário
+            if (barraProgressoMetas != null) {
+                barraProgressoMetas.progressProperty().unbind(); // Desfaz o binding
+                barraProgressoMetas.setProgress(0.0);          // Define como 0
+            }
+            if(labelProgressoMetas != null){
+                labelProgressoMetas.setText("0.0% Completo");
+            }
         }
+
+        //System.out.println("MainController.setUsuarioLogado: Chamando atualizarDadosTelaPrincipal");
+        atualizarDadosTelaPrincipal(); //Chamada para inicializar a tabela, depois que o usuário está logado.
     }
 
-    // Método para determinar a situação do IMC (NOVO)
     private String getSituacaoIMC(float imc) {
-        if (imc < 18.5) {
-            return "Abaixo do peso";
-        } else if (imc < 25) {
-            return "Peso normal";
-        } else if (imc < 30) {
-            return "Sobrepeso";
-        } else if (imc < 35) {
-            return "Obesidade grau I";
-        } else if (imc < 40) {
-            return "Obesidade grau II";
-        } else {
-            return "Obesidade grau III";
-        }
+        if (imc < 18.5) return "Abaixo do peso";
+        else if (imc < 25) return "Peso normal";
+        else if (imc < 30) return "Sobrepeso";
+        else if (imc < 35) return "Obesidade grau I";
+        else if (imc < 40) return "Obesidade grau II";
+        else return "Obesidade grau III";
     }
 
     @FXML
@@ -126,10 +134,9 @@ public class MainController {
             ((MetaController) getController(telaMeta)).setMainController(this);
             ((RefeicaoController) getController(telaRefeicao)).setMainController(this);
             ((TreinoController) getController(telaTreino)).setMainController(this);
-            ((PerfilController) getController(telaPerfil)).setMainController(this); //isso garante que o main controller seja setado antes.
+            ((PerfilController) getController(telaPerfil)).setMainController(this);
 
             mostrarTelaPrincipal();
-
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -147,39 +154,19 @@ public class MainController {
         return root;
     }
 
-    @FXML
-    public void mostrarTelaDieta() {
-        areaConteudo.getChildren().setAll(telaDieta);
-    }
-
-    @FXML
-    public void mostrarTelaExercicio() {
-        areaConteudo.getChildren().setAll(telaExercicio);
-    }
-
-    @FXML
-    public void mostrarTelaMeta() {
-        areaConteudo.getChildren().setAll(telaMeta);
-    }
-
-    @FXML
-    public void mostrarTelaRefeicao() {
-        areaConteudo.getChildren().setAll(telaRefeicao);
-    }
-
-    @FXML
-    public void mostrarTelaTreino() {
-        areaConteudo.getChildren().setAll(telaTreino);
-    }
+    @FXML public void mostrarTelaDieta() { areaConteudo.getChildren().setAll(telaDieta); }
+    @FXML public void mostrarTelaExercicio() { areaConteudo.getChildren().setAll(telaExercicio); }
+    @FXML public void mostrarTelaMeta() { areaConteudo.getChildren().setAll(telaMeta); }
+    @FXML public void mostrarTelaRefeicao() { areaConteudo.getChildren().setAll(telaRefeicao); }
+    @FXML public void mostrarTelaTreino() { areaConteudo.getChildren().setAll(telaTreino); }
 
     @FXML
     public void mostrarTelaPerfil() {
         PerfilController perfilController = (PerfilController) getController(telaPerfil);
-
         perfilController.setUsuarioLogado(usuarioLogado);
-
         areaConteudo.getChildren().setAll(telaPerfil);
     }
+
 
     @FXML
     public void mostrarTelaPrincipal() {
@@ -188,106 +175,147 @@ public class MainController {
             Parent telaPrincipalContent = loader.load();
             areaConteudo.getChildren().setAll(telaPrincipalContent);
 
-            // Obtenção dos elementos gráficos *DEPOIS* de carregar o FXML
             labelNomeUsuario = (Label) telaPrincipalContent.lookup("#labelNomeUsuario");
-            labelIMC = (Label) telaPrincipalContent.lookup("#labelIMC");  // Certifique-se de que este ID está correto no FXML
-            labelPesoUsuario = (Label) telaPrincipalContent.lookup("#labelPesoUsuario"); // Adicionado
-            labelAlturaUsuario = (Label) telaPrincipalContent.lookup("#labelAlturaUsuario"); //Adicionado
-            labelIMCSituacao = (Label) telaPrincipalContent.lookup("#labelIMCSituacao"); // Adicionado
-            labelCaloriasDia = (Label) telaPrincipalContent.lookup("#labelCaloriasDia"); //  <--  Obtém a referência
+            labelIMC = (Label) telaPrincipalContent.lookup("#labelIMC");
+            labelPesoUsuario = (Label) telaPrincipalContent.lookup("#labelPesoUsuario");
+            labelAlturaUsuario = (Label) telaPrincipalContent.lookup("#labelAlturaUsuario");
+            labelIMCSituacao = (Label) telaPrincipalContent.lookup("#labelIMCSituacao");
+            labelCaloriasDia = (Label) telaPrincipalContent.lookup("#labelCaloriasDia");
             buttonVerMaisMetas = (Button) telaPrincipalContent.lookup("#buttonVerMaisMetas");
             buttonVerMaisExercicios = (Button) telaPrincipalContent.lookup("#buttonVerMaisExercicios");
             buttonVerMaisDietas = (Button) telaPrincipalContent.lookup("#buttonVerMaisDietas");
             buttonVerMaisPerfil = (Button) telaPrincipalContent.lookup("#buttonVerMaisPerfil");
+            // Obtém a referência à barra de progresso
+            barraProgressoMetas = (ProgressBar) telaPrincipalContent.lookup("#barraProgressoMetas");
+            labelProgressoMetas = (Label) telaPrincipalContent.lookup("#labelProgressoMetas");
 
-            // Configuração dos eventos dos botões
-            if (buttonVerMaisMetas != null) {
-                buttonVerMaisMetas.setOnAction(e -> mostrarTelaMeta());
-            }
-            if (buttonVerMaisExercicios != null) {
-                buttonVerMaisExercicios.setOnAction(e -> mostrarTelaExercicio());
-            }
-            if (buttonVerMaisDietas != null) {
-                buttonVerMaisDietas.setOnAction(e -> mostrarTelaDieta());
-            }
 
-            if (buttonVerMaisPerfil != null) {
-                buttonVerMaisPerfil.setOnAction(e -> mostrarTelaPerfil());
-            }
+            if (buttonVerMaisMetas != null) buttonVerMaisMetas.setOnAction(e -> mostrarTelaMeta());
+            if (buttonVerMaisExercicios != null) buttonVerMaisExercicios.setOnAction(e -> mostrarTelaExercicio());
+            if (buttonVerMaisDietas != null) buttonVerMaisDietas.setOnAction(e -> mostrarTelaDieta());
+            if (buttonVerMaisPerfil != null) buttonVerMaisPerfil.setOnAction(e -> mostrarTelaPerfil());
 
-            // Preenchimento dos labels, *SE* o usuário estiver logado
             if (usuarioLogado != null) {
-                setUsuarioLogado(usuarioLogado); //Chama o setUsuarioLogado para atualizar a interface.  DEPOIS de obter os labels!
+                setUsuarioLogado(usuarioLogado);
             }
-            else { // Caso não haja usuário logado.
-                labelNomeUsuario.setText("Nome do Usuário");
-                labelIMC.setText("IMC: --");
-                labelIMCSituacao.setText("Situação: --");
-                labelPesoUsuario.setText("Peso: --");
-                labelAlturaUsuario.setText("Altura: --");
-                labelCaloriasDia.setText("Calorias: -- / --");
+            else {
+                if(labelNomeUsuario != null) labelNomeUsuario.setText("Nome do Usuário");
+                if(labelIMC != null)  labelIMC.setText("IMC: --");
+                if(labelIMCSituacao != null) labelIMCSituacao.setText("Situação: --");
+                if(labelPesoUsuario != null) labelPesoUsuario.setText("Peso: --");
+                if(labelAlturaUsuario != null) labelAlturaUsuario.setText("Altura: --");
+                if(labelCaloriasDia != null) labelCaloriasDia.setText("Calorias: -- / --");
             }
 
 
         } catch (IOException e) {
             e.printStackTrace();
-            // Trate a exceção apropriadamente (ex: mostrar um alerta)
         }
     }
-
-    // Método para calcular o total de calorias consumidas pelo usuário
     private int calcularTotalCaloriasConsumidas() {
+        //System.out.println("MainController.calcularTotalCaloriasConsumidas: Iniciando..."); // PRINT
         int total = 0;
         if (usuarioLogado != null && usuarioLogado.getDietas() != null) {
+            //System.out.println("MainController.calcularTotalCaloriasConsumidas: Dietas do usuário: " + usuarioLogado.getDietas().size()); //PRINT
             for (Dieta dieta : usuarioLogado.getDietas()) {
                 total += calcularTotalCaloriasDieta(dieta);
             }
+        } else {
+            //System.out.println("MainController.calcularTotalCaloriasConsumidas: Usuário ou dietas nulas."); //PRINT
         }
+        //System.out.println("MainController.calcularTotalCaloriasConsumidas: Total: " + total); // PRINT
         return total;
     }
 
-    // Método auxiliar para calcular calorias em uma dieta
     private int calcularTotalCaloriasDieta(Dieta dieta) {
+        //System.out.println("MainController.calcularTotalCaloriasDieta: Iniciando para dieta: " + dieta.getNome()); //PRINT
         int total = 0;
         if (dieta.getRefeicoes() != null) {
+            //System.out.println("MainController.calcularTotalCaloriasDieta: Refeições na dieta: " + dieta.getRefeicoes().size()); //PRINT
             for (Refeicao refeicao : dieta.getRefeicoes()) {
                 total += refeicao.getCalorias();
             }
+        }else{
+            //System.out.println("MainController.calcularTotalCaloriasDieta: Refeições nulas.");//PRINT
         }
+        //System.out.println("MainController.calcularTotalCaloriasDieta: Total da dieta: " + total); // PRINT
         return total;
     }
 
-    // Método para obter a dieta atual do usuário
+
     private Dieta getDietaAtual() {
         if (usuarioLogado != null && usuarioLogado.getDietas() != null && !usuarioLogado.getDietas().isEmpty()) {
             return usuarioLogado.getDietas().get(0);
         }
         return null;
     }
-    // Método para atualizar o label de calorias
+
     private void atualizarCalorias() {
+        //System.out.println("MainController.atualizarCalorias: Iniciando...");
         if (usuarioLogado != null) {
             int caloriasConsumidas = calcularTotalCaloriasConsumidas();
-            Dieta dietaAtual = getDietaAtual(); // Pega a dieta
+            Dieta dietaAtual = getDietaAtual();
 
             if (dietaAtual != null) {
                 int caloriasDiarias = dietaAtual.getCaloriasDiarias();
-                labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias);
+                if(labelCaloriasDia != null) { //Verificação se o Label existe
+                    labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias);
+                }
             } else {
-                labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / --"); // Se não houver dieta
+                if(labelCaloriasDia != null) { //Verificação se o Label existe
+                    labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / --"); // Se não houver dieta
+                }
             }
         } else{
-            labelCaloriasDia.setText("Calorias: --/--");
+            if(labelCaloriasDia != null){  //Verificação se o Label existe
+                labelCaloriasDia.setText("Calorias: --/--");
+            }
+
         }
     }
+    public double calcularProgressoGeralUsuario() {
+        double progressoTotal = 0.0;
+        int contadorMetas = 0;
+
+        if (usuarioLogado != null && usuarioLogado.getMetas() != null) {
+            for (Meta meta : usuarioLogado.getMetas()) {
+                if (meta.getValorAlvo() > 0) { // Evita divisão por zero!
+                    progressoTotal += (meta.getProgressoAtual() / meta.getValorAlvo()) * 100.0; // Calcula a porcentagem *corretamente*
+                    contadorMetas++;
+                }
+            }
+        }
+
+        if (contadorMetas > 0) {
+            return progressoTotal / contadorMetas; // Média das *porcentagens*
+        } else {
+            return 0.0; // Se não houver metas, o progresso é 0.
+        }
+    }
+
 
     public void atualizarDadosTelaPrincipal() {
+        //System.out.println("MainController.atualizarDadosTelaPrincipal: Iniciando..."); // PRINT
         if (usuarioLogado != null) {
             atualizarCalorias();
+            //Muito Importante:
+            progressoGeral.set(calcularProgressoGeralUsuario()/100);
+
+            if (telaDieta != null)
+                ((DietaController) getController(telaDieta)).atualizarTabelaDietasUsuario();
+            if (telaExercicio != null)
+                ((ExercicioController) getController(telaExercicio)).atualizarTabelaExerciciosUsuario();
+            if (telaMeta != null)
+                ((MetaController) getController(telaMeta)).atualizarTabelaMetasUsuario();
+            if (telaRefeicao != null)
+                ((RefeicaoController) getController(telaRefeicao)).atualizarTabelaRefeicoesUsuario();
+            if (telaTreino != null)
+                ((TreinoController) getController(telaTreino)).atualizarTabelaTreinosUsuario();
+        } else{
+            //System.out.println("MainController.atualizarDadosTelaPrincipal: usuarioLogado NULO."); //PRINT
         }
     }
 
-    //Método logout
     @FXML
     public void logout() {
         try {
@@ -302,3 +330,5 @@ public class MainController {
         }
     }
 }
+
+    

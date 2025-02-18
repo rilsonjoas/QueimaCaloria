@@ -7,7 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.util.Duration; // Importante
+import javafx.util.Duration;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -64,7 +64,7 @@ public class RegistroController {
             PauseTransition delay = new PauseTransition(Duration.seconds(0.3)); // Atraso de menos de meio segundo
             delay.setOnFinished(event -> {
                 if (authController != null) {
-                    authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario); // Passa o novo usuário!
+                    authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario); // Passa o novo usuário
                 } else {
                     System.err.println("Erro: AuthController é nulo em RegistroController!");
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");
@@ -112,7 +112,6 @@ public class RegistroController {
 
     private Stage getPrimaryStage() {
         if (authController != null) {
-            // Forma correta de obter o Stage a partir de um componente da cena.
             return (Stage) campoEmail.getScene().getWindow();
         }
         return null;

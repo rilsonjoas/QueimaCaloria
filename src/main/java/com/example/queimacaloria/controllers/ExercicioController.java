@@ -1,10 +1,11 @@
-
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.InicializadorDados;
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,10 +15,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Setter;
+
 
 public class ExercicioController {
 
@@ -33,14 +35,14 @@ public class ExercicioController {
     @FXML private TableColumn<Exercicio, Integer> colunaTempoPreDefinido;
     @FXML private TableColumn<Exercicio, Double> colunaCaloriasQueimadasPreDefinido;
 
-
     @FXML private Label mensagemExercicio;
-
-
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private MainController mainController;
     private ObservableList<Exercicio> exerciciosPreDefinidos = FXCollections.observableArrayList();
+
+    @Setter
+    private ExercicioController exercicioController;
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
@@ -49,22 +51,11 @@ public class ExercicioController {
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
-        atualizarTabelaExerciciosUsuario();
-
+        //atualizarTabelaExerciciosUsuario();  // REMOVIDO
         configurarTabelaPreDefinida();
         carregarExerciciosPreDefinidos();
 
-        tabelaExerciciosUsuario.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                tabelaExerciciosPreDefinidos.getSelectionModel().clearSelection();
-            }
-        });
-
-        tabelaExerciciosPreDefinidos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                tabelaExerciciosUsuario.getSelectionModel().clearSelection();
-            }
-        });
+        //  Listeners REMOVIDOS
     }
 
     private void configurarTabelaUsuario() {
@@ -78,7 +69,7 @@ public class ExercicioController {
         colunaNomePreDefinido.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colunaTempoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("tempo"));
-        colunaCaloriasQueimadasPreDefinido.setCellValueFactory(new PropertyValueFactory<>("caloriasQueimadas"));
+        colunaCaloriasQueimadasPreDefinido.setCellValueFactory(cellData -> cellData.getValue().caloriasQueimadasProperty().asObject()); //CORRETO
     }
 
     private void carregarExerciciosPreDefinidos() {
@@ -152,7 +143,7 @@ public class ExercicioController {
         Exercicio exercicioSelecionado = tabelaExerciciosUsuario.getSelectionModel().getSelectedItem();
         if (exercicioSelecionado != null) {
             try {
-                fachada.removerExercicio(exercicioSelecionado.getId()); //  Chama remover da fachada
+                fachada.removerExercicio(exercicioSelecionado.getId());
                 atualizarTabelaExerciciosUsuario(); //  ATUALIZA A TABELA
                 mensagemExercicio.setText("Exercício removido com sucesso!");
                 //ADD
@@ -206,7 +197,7 @@ public class ExercicioController {
     }
 
 
-    private void atualizarTabelaExerciciosUsuario() {
+    public void atualizarTabelaExerciciosUsuario() {
         try {
             List<Exercicio> listaExercicios = fachada.listarExercicios();
             tabelaExerciciosUsuario.setItems(FXCollections.observableArrayList(listaExercicios));

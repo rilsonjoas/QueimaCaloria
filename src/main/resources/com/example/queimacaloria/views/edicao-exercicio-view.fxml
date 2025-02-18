@@ -21,10 +21,20 @@
                 <Insets bottom="15.0" />
             </VBox.margin>
         </Label>
+
+        <Label text="Nome do Exercício:" textFill="WHITE" /> <!-- Label adicionado -->
         <TextField fx:id="campoNome" promptText="Nome do Exercício" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
+        <Label text="Descrição:" textFill="WHITE" /> <!-- Label adicionado -->
         <TextField fx:id="campoDescricao" promptText="Descrição" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
+        <Label text="Tipo:" textFill="WHITE" /> <!-- Label adicionado -->
         <ChoiceBox fx:id="campoTipo" prefWidth="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
+        <Label text="Tempo (minutos):" textFill="WHITE" /> <!-- Label adicionado -->
         <TextField fx:id="campoTempo" promptText="Tempo (minutos)" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
+        <Label text="Calorias Queimadas/min:" textFill="WHITE" /> <!-- Label adicionado -->
         <TextField fx:id="campoCaloriasPorMinuto" promptText="Calorias Queimadas/min" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
 
         <HBox alignment="CENTER" spacing="10.0">

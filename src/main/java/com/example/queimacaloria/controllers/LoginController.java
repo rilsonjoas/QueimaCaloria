@@ -3,15 +3,11 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 import java.util.List;
 
 public class LoginController {
@@ -38,15 +34,13 @@ public class LoginController {
             for (Usuario usuario : usuarios) {
                 if (usuario.getEmail().equals(email) && usuario.getSenha().equals(password)) {
                     mensagemLogin.setText("Login efetuado com sucesso");
-
-                   // Passa o usuário!
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Bem-vindo!");
                     alert.setHeaderText("Login realizado com sucesso");
                     alert.setContentText("Olá,! Seja bem-vindo ao sistema.");
-                    alert.show(); // Exibe a caixa de diálogo e espera o usuário fechar
+                    alert.show();
                     authController.mostrarTelaPrincipal(getPrimaryStage(), usuario);
-                    return; // Sai do método após o login bem-sucedido.
+                    return; // Importante: Sai do método após o login bem-sucedido.
                 }
             }
 
@@ -57,7 +51,6 @@ public class LoginController {
             e.printStackTrace();
         }
     }
-
 
     @FXML
     public void irParaRegistro() {

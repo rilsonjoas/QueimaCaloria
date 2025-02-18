@@ -2,15 +2,15 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Refeicao;
+import com.example.queimacaloria.negocio.Usuario;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.util.HashMap;
 import java.util.Map;
 
-// Controller para a tela de criação de refeição
 public class CriacaoRefeicaoController {
 
     @FXML
@@ -30,9 +30,8 @@ public class CriacaoRefeicaoController {
 
     private RefeicaoController refeicaoController;
 
-    private MainController mainController; //ADD
+    private MainController mainController;
 
-    // Permite que o RefeicaoController seja acessado por esta classe
     public void setRefeicaoController(RefeicaoController refeicaoController) {
         this.refeicaoController = refeicaoController;
     }
@@ -42,13 +41,11 @@ public class CriacaoRefeicaoController {
     }
 
     @FXML
-    // Método chamado ao clicar no botão "Criar Refeição"
     public void criarRefeicao() {
         try {
             String nome = campoNome.getText();
             String descricao = campoDescricao.getText();
 
-            // Coleta os macronutrientes
             Map<String, Double> macronutrientes = new HashMap<>();
             macronutrientes.put("Proteínas", Double.parseDouble(campoProteinas.getText()));
             macronutrientes.put("Carboidratos", Double.parseDouble(campoCarboidratos.getText()));
@@ -59,12 +56,19 @@ public class CriacaoRefeicaoController {
 
             mensagemErro.setText("Refeição criada com sucesso!");
 
-            // Atualiza a tabela de refeições no RefeicaoController
-            if (refeicaoController != null) {
-                refeicaoController.initialize();
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                try {
+                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                    mainController.setUsuarioLogado(usuarioAtualizado);
+                } catch (UsuarioNaoEncontradoException e) {
+                    mensagemErro.setText("Erro ao atualizar usuário");
+                }
             }
 
-            //Adicionado
+
+            if (refeicaoController != null) {
+                refeicaoController.atualizarTabelaRefeicoesUsuario(); //Isso aqui não é bom.
+            }
             if(mainController != null){
                 mainController.atualizarDadosTelaPrincipal();
             }
@@ -79,7 +83,6 @@ public class CriacaoRefeicaoController {
     }
 
     @FXML
-    // Fecha a janela atual
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();

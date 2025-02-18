@@ -21,10 +21,19 @@
                 <Insets bottom="15.0" />
             </VBox.margin>
         </Label>
+
+        <Label text="Descrição:" textFill="WHITE"/>
         <TextField fx:id="campoDescricao" promptText="Descrição" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
+        <Label text="Tipo:" textFill="WHITE"/>
         <ChoiceBox fx:id="campoTipo" prefWidth="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
+        <Label text="Valor Alvo:" textFill="WHITE"/>
         <TextField fx:id="campoValorAlvo" promptText="Valor Alvo" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
+        <Label text="Progresso Atual:" textFill="WHITE"/>
         <TextField fx:id="campoProgressoAtual" promptText="Progresso Atual" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+
         <Label fx:id="labelDataConclusao" text="Data de Conclusão: --" textFill="WHITE" />
         <Button fx:id="buttonConcluirMeta" onAction="#concluirMeta" text="Concluir Meta" style="-fx-background-color: #55c5f5;"/>
 

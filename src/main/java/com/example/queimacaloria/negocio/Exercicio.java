@@ -34,8 +34,9 @@ public class Exercicio {
     private double caloriasQueimadasPorMinuto;
     @Setter
     private boolean concluido;
-    @Setter
-    private double caloriasQueimadas;
+
+    //MUDANÇA CRUCIAL AQUI:
+    private DoubleProperty caloriasQueimadas = new SimpleDoubleProperty(0.0); // Agora é uma Property, inicializada.
 
     public enum TipoExercicio {
         FORCA,
@@ -50,6 +51,8 @@ public class Exercicio {
         this.id = UUID.randomUUID();
         this.musculosTrabalhados = new ArrayList<>();
         this.concluido = false;
+        //Removido, agora é inicializado na declaração
+        //this.caloriasQueimadas = 0.0;
     }
 
     // Construtor que trata corretamente o caso de musculosTrabalhados ser nulo.
@@ -63,7 +66,7 @@ public class Exercicio {
         this.tempo = tempo;
         this.caloriasQueimadasPorMinuto = caloriasQueimadasPorMinuto;
         this.concluido = concluido;
-        this.caloriasQueimadas = caloriasQueimadas;
+        this.caloriasQueimadas.set(caloriasQueimadas); //Usa o set para setar o valor na property.
     }
 
     public StringProperty nomeProperty() {
@@ -78,8 +81,17 @@ public class Exercicio {
         return new SimpleIntegerProperty(tempo);
     }
 
+    //Não precisa mais criar um objeto novo, já que agora ele é um atributo da classe
     public DoubleProperty caloriasQueimadasProperty() {
-        return new SimpleDoubleProperty(caloriasQueimadas);
+        return caloriasQueimadas;
     }
 
+    //Getter e setter para acessar o valor da property.
+    public double getCaloriasQueimadas() {
+        return caloriasQueimadas.get();
+    }
+
+    public void setCaloriasQueimadas(double caloriasQueimadas) {
+        this.caloriasQueimadas.set(caloriasQueimadas); //Usa o set para setar o valor na property
+    }
 }

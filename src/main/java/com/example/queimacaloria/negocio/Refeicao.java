@@ -52,6 +52,24 @@ public class Refeicao {
         return new SimpleIntegerProperty(calorias);
     }
 
+    public String getMacronutrientesFormatados() {
+        if (macronutrientes == null || macronutrientes.isEmpty()) {
+            return ""; // Ou "N/A", ou o que você preferir para indicar ausência de dados.
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Double> entry : macronutrientes.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(String.format("%.1f", entry.getValue())).append("g, ");
+        }
+
+        // Remove a última vírgula e espaço:
+        if (sb.length() > 2) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+
+        return sb.toString();
+    }
+
     public ObjectProperty<Map<String, Double>> macronutrientesProperty() {
         return new SimpleObjectProperty<>(macronutrientes);
     }

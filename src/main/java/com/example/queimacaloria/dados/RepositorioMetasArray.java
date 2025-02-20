@@ -49,7 +49,9 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         if (meta == null) throw new IllegalArgumentException("Meta não pode ser nula.");
         int indice = procurarIndice(meta.getId());
         if (indice < proximoIndice) {
+            System.out.println("RepositorioMetasArray.salvar: Antes da atualização: " + metas[indice]); //PRINT
             metas[indice] = meta;
+            System.out.println("RepositorioMetasArray.salvar: Depois da atualização: " + metas[indice]); //PRINT
         } else {
             throw new MetaNaoEncontradaException("Meta não encontrada.");
         }

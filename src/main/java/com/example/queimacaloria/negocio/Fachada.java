@@ -158,6 +158,14 @@ public class Fachada {
     // Métodos de Meta
     public void configurarMeta(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
                                LocalDate dataConclusao) throws MetaNaoEncontradaException {
+        System.out.println("Fachada.configurarMeta:");
+        System.out.println("  Meta ID: " + meta.getId());
+        System.out.println("  Descrição: " + descricao);
+        System.out.println("  Tipo: " + tipo);
+        System.out.println("  Valor Alvo: " + valorAlvo);
+        System.out.println("  Progresso Atual: " + progressoAtual);
+        System.out.println("  Data Conclusão: " + dataConclusao); // Data
+
         controladorMeta.inicializar(meta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
     }
 

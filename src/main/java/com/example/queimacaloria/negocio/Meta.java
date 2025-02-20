@@ -17,18 +17,13 @@ import java.util.UUID;
 @ToString
 public class Meta {
     private final UUID id;
-    @Setter
-    private String descricao;
-    @Setter
-    private Tipo tipo;
-    @Setter
-    private double valorAlvo;
-    @Setter
-    private double progressoAtual;
-    @Setter
-    private LocalDate dataCriacao;
-    @Setter
-    private LocalDate dataConclusao;
+    private StringProperty descricao = new SimpleStringProperty(); // Usando StringProperty
+    private ObjectProperty<Tipo> tipo = new SimpleObjectProperty<>(); // Usando ObjectProperty
+    private DoubleProperty valorAlvo = new SimpleDoubleProperty(); // DoubleProperty
+    private DoubleProperty progressoAtual = new SimpleDoubleProperty(); // DoubleProperty!
+    private ObjectProperty<LocalDate> dataCriacao = new SimpleObjectProperty<>(); // ObjectProperty
+    private ObjectProperty<LocalDate> dataConclusao = new SimpleObjectProperty<>();  // ObjectProperty!
+
 
     public enum Tipo {
         PERDA_DE_PESO, GANHO_DE_MASSA
@@ -36,34 +31,92 @@ public class Meta {
 
     public Meta() {
         this.id = UUID.randomUUID();
-        this.dataCriacao = LocalDate.now();
+        this.dataCriacao.set(LocalDate.now()); // Use o set, não o campo diretamente
     }
 
     public Meta(String descricao, Tipo tipo, double valorAlvo, double progressoAtual, LocalDate dataCriacao, // Alterado
                 LocalDate dataConclusao) {
         this.id = UUID.randomUUID();
-        this.descricao = descricao;
-        this.tipo = tipo;
-        this.valorAlvo = valorAlvo;
-        this.progressoAtual = progressoAtual;
-        this.dataCriacao = dataCriacao;
-        this.dataConclusao = dataConclusao;
+        this.descricao.set(descricao);  // Usando os métodos set!
+        this.tipo.set(tipo);
+        this.valorAlvo.set(valorAlvo);
+        this.progressoAtual.set(progressoAtual);
+        this.dataCriacao.set(dataCriacao);
+        this.dataConclusao.set(dataConclusao);
     }
 
+    // Métodos Property (já corrigidos, mas mostrando novamente para ficar completo):
     public StringProperty descricaoProperty() {
-        return new SimpleStringProperty(descricao);
+        return this.descricao; // Retorna a *property*, não o valor.
     }
 
     public ObjectProperty<Tipo> tipoProperty() {
-        return new SimpleObjectProperty<>(tipo);
+        return this.tipo; // Retorna a *property*, não o valor.
     }
 
-    public DoubleProperty progressoProperty() {
-        return new SimpleDoubleProperty(progressoAtual);
+    // Adicione os métodos property que faltavam:
+
+    public DoubleProperty valorAlvoProperty(){
+        return this.valorAlvo;
+    }
+
+    public DoubleProperty progressoAtualProperty() {
+        return this.progressoAtual; // Corrigido!
+    }
+
+    public ObjectProperty<LocalDate> dataCriacaoProperty() {
+        return this.dataCriacao;
     }
 
     public ObjectProperty<LocalDate> dataConclusaoProperty() {
-        return new SimpleObjectProperty<>(dataConclusao);
+        return this.dataConclusao; // Corrigido!
+    }
+
+
+    public void setDescricao(String descricao) {
+        this.descricao.set(descricao);
+    }
+
+    public void setTipo(Tipo tipo) {
+        this.tipo.set(tipo);
+    }
+
+    public void setValorAlvo(double valorAlvo) {
+        this.valorAlvo.set(valorAlvo);
+    }
+
+    public void setProgressoAtual(double progressoAtual) {
+        this.progressoAtual.set(progressoAtual);
+    }
+    public void setDataCriacao(LocalDate dataCriacao) {
+        this.dataCriacao.set(dataCriacao);
+    }
+
+    public void setDataConclusao(LocalDate dataConclusao) {
+        this.dataConclusao.set(dataConclusao);
+    }
+
+    public String getDescricao() {
+        return descricao.get();
+    }
+
+    public Tipo getTipo() {
+        return tipo.get();
+    }
+
+    public double getValorAlvo() {
+        return valorAlvo.get();
+    }
+
+    public double getProgressoAtual() {
+        return progressoAtual.get();
+    }
+    public LocalDate getDataCriacao() {
+        return dataCriacao.get();
+    }
+
+    public LocalDate getDataConclusao() {
+        return dataConclusao.get();
     }
 
 }

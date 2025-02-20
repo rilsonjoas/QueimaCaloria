@@ -23,7 +23,7 @@
                     <TableColumn fx:id="colunaNomeUsuario" prefWidth="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Nome" />
                     <TableColumn fx:id="colunaObjetivoUsuario" prefWidth="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Objetivo" />
                     <TableColumn fx:id="colunaCaloriasUsuario" prefWidth="100.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Calorias" />
-                    <TableColumn fx:id="colunaProgressoUsuario" prefWidth="100.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Progresso" />
+                    <TableColumn fx:id="colunaProgressoUsuario" prefWidth="100.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Progresso (em porcentagem)" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

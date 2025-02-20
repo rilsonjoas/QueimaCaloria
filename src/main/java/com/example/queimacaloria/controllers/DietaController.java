@@ -2,11 +2,10 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
-import com.example.queimacaloria.negocio.Dieta;
-import com.example.queimacaloria.negocio.Fachada;
-import com.example.queimacaloria.negocio.InicializadorDados;
+import com.example.queimacaloria.negocio.*;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import com.example.queimacaloria.negocio.Usuario;
+
 import java.util.HashMap;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +41,9 @@ public class DietaController {
     @FXML private Label labelCaloriasDieta;
     @FXML private Label labelProgressoDieta;
 
+
+    private Dieta dietaSelecionada;
+
     private Fachada fachada = Fachada.getInstanciaUnica();
     private MainController mainController;
     private ObservableList<Dieta> dietasPreDefinidas = FXCollections.observableArrayList();
@@ -63,8 +65,20 @@ public class DietaController {
         colunaCaloriasUsuario.setCellValueFactory(new PropertyValueFactory<>("caloriasDiarias"));
         colunaProgressoUsuario.setCellValueFactory(cellData -> {
             Dieta dieta = cellData.getValue();
-            return new SimpleDoubleProperty(dieta.calcularProgresso()).asObject();
+            double progresso = (dieta.getCaloriasDiarias() > 0) ? (fachada.calcularTotalCaloriasDieta(dieta)*100.0)/dieta.getCaloriasDiarias() : 0.0;
+            return new SimpleDoubleProperty(progresso).asObject();
         });
+
+        // Adicione um listener de SELEÇÃO à tabela:
+        tabelaDietasUsuario.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    dietaSelecionada = newValue;  // Guarda a dieta selecionada
+                    if (mainController != null) {
+                        mainController.setDietaSelecionada(newValue); // Define no MainController
+                    }
+                    exibirDetalhesDieta(newValue); //Se clicar em outra dieta da tabela, atualiza os detalhes.
+                }
+        );
     }
 
     private void configurarTabelaPreDefinida() {
@@ -216,36 +230,64 @@ public class DietaController {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", e.getMessage());
         }
     }
+
     public void atualizarTabelaDietasUsuario() {
         System.out.println("DietaController.atualizarTabelaDietasUsuario: Iniciando...");
         try {
             List<Dieta> listaDietas = fachada.listarDietas();
 
-            if(mainController != null && mainController.getUsuarioLogado() != null){
-                System.out.println("DietaController.atualizarTabelaDietasUsuario: Filtrando dietas para o usuário: " + mainController.getUsuarioLogado().getEmail()); //PRINT
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                System.out.println("DietaController.atualizarTabelaDietasUsuario: Filtrando dietas para o usuário: " + mainController.getUsuarioLogado().getEmail());
                 List<Dieta> dietasDoUsuario = listaDietas.stream()
                         .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(mainController.getUsuarioLogado().getId()))
                         .collect(Collectors.toList());
 
-                tabelaDietasUsuario.setItems(FXCollections.observableArrayList(dietasDoUsuario));
-            } else{
-                System.out.println("DietaController.atualizarTabelaDietasUsuario: Usuário logado é nulo. Exibindo lista vazia."); //PRINT
-                tabelaDietasUsuario.setItems(FXCollections.observableArrayList()); //Define uma lista vazia.
+                System.out.println("Dietas do usuário (antes do observable): " + dietasDoUsuario); // PRINT: Dietas *antes* do observable
+
+                ObservableList<Dieta> observableDietas = FXCollections.observableArrayList(dietasDoUsuario);
+                tabelaDietasUsuario.setItems(observableDietas);
+
+                System.out.println("Dietas na ObservableList: " + observableDietas); // PRINT: Dietas *na* ObservableList
+
+                // Adiciona o listener *para cada dieta*
+                for (Dieta dieta : observableDietas) {
+                    // Print para verificar se estamos entrando no loop
+                    System.out.println("Adicionando listener para dieta: " + dieta.getNome() + ", ID: " + dieta.getId());
+
+                    dieta.getRefeicoes().addListener((ListChangeListener.Change<? extends Refeicao> change) -> {
+                        System.out.println("Listener de refeições disparado para dieta: " + dieta.getNome() + ", ID: " + dieta.getId());
+
+                        // Adicione mais prints *dentro* do listener para verificar o estado *imediatamente antes* do refresh:
+                        System.out.println("  Refeições da dieta (dentro do listener): " + dieta.getRefeicoes());
+                        System.out.println("  Calorias diárias da dieta (dentro do listener): " + dieta.getCaloriasDiarias());
+                        try {
+                            System.out.println("  Progresso calculado (dentro do listener): " + fachada.calcularProgressoDieta(dieta));
+                        } catch (Exception e) {
+                            System.out.println("  Erro ao calcular progresso dentro do listener: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+
+                        tabelaDietasUsuario.refresh(); // Atualiza a tabela!
+                    });
+                }
+
+            } else {
+                System.out.println("DietaController.atualizarTabelaDietasUsuario: Usuário logado é nulo. Exibindo lista vazia.");
+                tabelaDietasUsuario.setItems(FXCollections.observableArrayList());
             }
 
             if (!tabelaDietasUsuario.getItems().isEmpty()) {
                 tabelaDietasUsuario.getSelectionModel().select(0);
-                exibirDetalhesDieta(tabelaDietasUsuario.getItems().get(0)); //Mostra detalhes
+                exibirDetalhesDieta(tabelaDietasUsuario.getItems().get(0));
             } else {
-                exibirDetalhesDieta(null); // Limpa os detalhes.
+                exibirDetalhesDieta(null);
             }
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar dietas", e.getMessage());
-            e.printStackTrace(); //  Imprime o stack trace
+            e.printStackTrace();
         }
     }
-
 
 
     private void exibirDetalhesDieta(Dieta dieta) {

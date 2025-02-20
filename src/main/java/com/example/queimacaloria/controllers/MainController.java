@@ -1,4 +1,3 @@
-
 package com.example.queimacaloria.controllers;
 
 import javafx.fxml.FXML;
@@ -48,6 +47,7 @@ public class MainController {
 
     private Stage primaryStage;
     private Usuario usuarioLogado;
+    private Dieta dietaSelecionada;
 
     // NOVA PROPERTY:
     private DoubleProperty progressoGeral = new SimpleDoubleProperty(0.0);
@@ -167,6 +167,14 @@ public class MainController {
         areaConteudo.getChildren().setAll(telaPerfil);
     }
 
+    public void setDietaSelecionada(Dieta dieta) {
+        this.dietaSelecionada = dieta;
+        System.out.println("MainController: Dieta selecionada: " + (dieta != null ? dieta.getNome() : "Nenhuma")); // PRINT
+    }
+
+    public Dieta getDietaSelecionada(){
+        return this.dietaSelecionada;
+    }
 
     @FXML
     public void mostrarTelaPrincipal() {
@@ -213,32 +221,34 @@ public class MainController {
         }
     }
     private int calcularTotalCaloriasConsumidas() {
-        //System.out.println("MainController.calcularTotalCaloriasConsumidas: Iniciando..."); // PRINT
+        System.out.println("MainController.calcularTotalCaloriasConsumidas: Iniciando...");
         int total = 0;
         if (usuarioLogado != null && usuarioLogado.getDietas() != null) {
-            //System.out.println("MainController.calcularTotalCaloriasConsumidas: Dietas do usuário: " + usuarioLogado.getDietas().size()); //PRINT
+            System.out.println("MainController.calcularTotalCaloriasConsumidas: Dietas do usuário: " + usuarioLogado.getDietas().size());
             for (Dieta dieta : usuarioLogado.getDietas()) {
+                System.out.println("  Dieta: " + dieta.getNome() + ", Refeições: " + dieta.getRefeicoes()); // PRINT
                 total += calcularTotalCaloriasDieta(dieta);
             }
         } else {
-            //System.out.println("MainController.calcularTotalCaloriasConsumidas: Usuário ou dietas nulas."); //PRINT
+            System.out.println("MainController.calcularTotalCaloriasConsumidas: Usuário ou dietas nulas.");
         }
-        //System.out.println("MainController.calcularTotalCaloriasConsumidas: Total: " + total); // PRINT
+        System.out.println("MainController.calcularTotalCaloriasConsumidas: Total: " + total);
         return total;
     }
 
     private int calcularTotalCaloriasDieta(Dieta dieta) {
-        //System.out.println("MainController.calcularTotalCaloriasDieta: Iniciando para dieta: " + dieta.getNome()); //PRINT
+        System.out.println("MainController.calcularTotalCaloriasDieta: Iniciando para dieta: " + dieta.getNome()); //PRINT
         int total = 0;
         if (dieta.getRefeicoes() != null) {
-            //System.out.println("MainController.calcularTotalCaloriasDieta: Refeições na dieta: " + dieta.getRefeicoes().size()); //PRINT
+            System.out.println("MainController.calcularTotalCaloriasDieta: Refeições na dieta: " + dieta.getRefeicoes().size()); //PRINT
             for (Refeicao refeicao : dieta.getRefeicoes()) {
+                System.out.println("    Refeição: " + refeicao.getNome() + ", Calorias: " + refeicao.getCalorias()); // PRINT
                 total += refeicao.getCalorias();
             }
         }else{
-            //System.out.println("MainController.calcularTotalCaloriasDieta: Refeições nulas.");//PRINT
+            System.out.println("MainController.calcularTotalCaloriasDieta: Refeições nulas.");//PRINT
         }
-        //System.out.println("MainController.calcularTotalCaloriasDieta: Total da dieta: " + total); // PRINT
+        System.out.println("MainController.calcularTotalCaloriasDieta: Total da dieta: " + total); // PRINT
         return total;
     }
 
@@ -251,28 +261,41 @@ public class MainController {
     }
 
     private void atualizarCalorias() {
-        //System.out.println("MainController.atualizarCalorias: Iniciando...");
+        System.out.println("MainController.atualizarCalorias: Iniciando...");
         if (usuarioLogado != null) {
+            System.out.println("  Usuário logado: " + usuarioLogado.getEmail()); // PRINT
             int caloriasConsumidas = calcularTotalCaloriasConsumidas();
             Dieta dietaAtual = getDietaAtual();
 
+            System.out.println("  Calorias Consumidas: " + caloriasConsumidas); // PRINT
+            System.out.println("  Dieta Atual: " + (dietaAtual != null ? dietaAtual.getNome() : "Nenhuma")); // PRINT
+
             if (dietaAtual != null) {
                 int caloriasDiarias = dietaAtual.getCaloriasDiarias();
-                if(labelCaloriasDia != null) { //Verificação se o Label existe
+                System.out.println("  Calorias Diárias da Dieta: " + caloriasDiarias); // PRINT
+                if (labelCaloriasDia != null) { //Verificação se o Label existe
                     labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias);
+                } else {
+                    System.out.println("    ERRO: labelCaloriasDia é nulo!"); // PRINT
                 }
             } else {
-                if(labelCaloriasDia != null) { //Verificação se o Label existe
+                if (labelCaloriasDia != null) { //Verificação se o Label existe
                     labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / --"); // Se não houver dieta
+                } else {
+                    System.out.println("    ERRO: labelCaloriasDia é nulo!");// PRINT
                 }
             }
-        } else{
-            if(labelCaloriasDia != null){  //Verificação se o Label existe
+        } else {
+            System.out.println("  Usuário logado é nulo."); // PRINT
+            if (labelCaloriasDia != null) {  //Verificação se o Label existe
                 labelCaloriasDia.setText("Calorias: --/--");
+            }else{
+                System.out.println("    ERRO: labelCaloriasDia é nulo!"); // PRINT
             }
 
         }
     }
+
     public double calcularProgressoGeralUsuario() {
         double progressoTotal = 0.0;
         int contadorMetas = 0;
@@ -330,5 +353,3 @@ public class MainController {
         }
     }
 }
-
-    

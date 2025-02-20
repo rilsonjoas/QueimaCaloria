@@ -60,20 +60,17 @@ public class EdicaoMetaController {
 
     private void preencherCampos() {
         if (meta != null) {
-            campoDescricao.setText(meta.getDescricao());
-            campoTipo.setValue(meta.getTipo());
-            //CORREÇÃO AQUI:
-            campoValorAlvo.setText(String.valueOf(meta.getValorAlvo())); // Valor Alvo
-            campoProgressoAtual.setText(String.valueOf(meta.getProgressoAtual())); // Progresso Atual
+            campoDescricao.setText(meta.getDescricao()); // Correto
+            campoTipo.setValue(meta.getTipo());          // Correto
+            campoValorAlvo.setText(String.valueOf(meta.getValorAlvo())); // Correto
+            campoProgressoAtual.setText(String.valueOf(meta.getProgressoAtual())); // Correto
 
-            // Data de conclusão: formata e exibe, mas não é editável
             if (meta.getDataConclusao() != null) {
-                labelDataConclusao.setText("Concluída em: " + meta.getDataConclusao().toString());
+                labelDataConclusao.setText("Concluída em: " + meta.getDataConclusao().toString()); // Correto
             } else {
                 labelDataConclusao.setText("Meta não concluída");
             }
 
-            // Desabilitar o botão se já estiver concluída
             if (meta.getDataConclusao() != null) {
                 buttonConcluirMeta.setDisable(true);
             }
@@ -88,9 +85,19 @@ public class EdicaoMetaController {
             double valorAlvo = Double.parseDouble(campoValorAlvo.getText());
             double progressoAtual = Double.parseDouble(campoProgressoAtual.getText());
 
+            System.out.println("EdicaoMetaController.atualizarMeta:");
+            System.out.println("  Descrição: " + descricao);
+            System.out.println("  Tipo: " + tipo);
+            System.out.println("  Valor Alvo: " + valorAlvo);
+            System.out.println("  Progresso Atual: " + progressoAtual);
+            System.out.println("  Data Conclusão (antes): " + meta.getDataConclusao()); // Usando getDataConclusao()
+
             // Atualiza os dados da meta através da fachada.
+            //fachada.configurarMeta(meta, descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao());//getDataConclusao()
             fachada.configurarMeta(meta, descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao());
             mensagemErro.setText("Meta atualizada com sucesso!");
+
+            System.out.println("  Data Conclusão (depois): " + meta.getDataConclusao());// getDataConclusao
 
             // Atualiza o usuário logado e a tela principal *após* a modificação:
             if (mainController != null && mainController.getUsuarioLogado() != null) {
@@ -108,9 +115,12 @@ public class EdicaoMetaController {
 
         }  catch (NumberFormatException | MetaNaoEncontradaException e) { //Captura apenas o que pode ocorrer.
             mensagemErro.setText("Erro: " + e.getMessage());
+            System.out.println("Exceção em atualizarMeta: " + e.getMessage()); // PRINT DA EXCEÇÃO
+            e.printStackTrace();
 
         } catch (Exception e) { //Captura genérica, para outros erros.
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
+            System.out.println("Exceção inesperada em atualizarMeta: " + e.getMessage()); // PRINT
             e.printStackTrace();
         }
     }
@@ -118,17 +128,17 @@ public class EdicaoMetaController {
     @FXML
     public void concluirMeta() {
         try {
-            meta.setDataConclusao(LocalDate.now()); // Define a data de conclusão
-            meta.setProgressoAtual(meta.getValorAlvo()); // Define o progresso como 100%
-            fachada.configurarMeta(meta, meta.getDescricao(), meta.getTipo(), meta.getValorAlvo(), meta.getProgressoAtual(), meta.getDataConclusao());// Salva
-            labelDataConclusao.setText("Concluída em: " + meta.getDataConclusao().toString()); // Atualiza a exibição
-            buttonConcluirMeta.setDisable(true); // Desabilita o botão
+            meta.setDataConclusao(LocalDate.now()); // Define a data de conclusão CORRETO
+            meta.setProgressoAtual(meta.getValorAlvo()); // Define o progresso como 100% CORRETO
+            fachada.configurarMeta(meta, meta.getDescricao(), meta.getTipo(), meta.getValorAlvo(), meta.getProgressoAtual(), meta.getDataConclusao());// Salva CORRETO
+            labelDataConclusao.setText("Concluída em: " + meta.getDataConclusao().toString()); // Atualiza a exibição CORRETO
+            buttonConcluirMeta.setDisable(true); // Desabilita o botão CORRETO
 
             if (metaController != null) {
-                metaController.atualizarTabelaMetasUsuario(); // Atualiza a tabela.
+                metaController.atualizarTabelaMetasUsuario(); // Atualiza a tabela. CORRETO
             }
 
-            // Atualiza o usuário logado *após* a modificação:
+            //Atualiza o usuário logado *após* a modificação:
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());

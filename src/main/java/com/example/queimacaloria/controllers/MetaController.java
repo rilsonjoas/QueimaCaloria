@@ -19,11 +19,12 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-//Importe essa classe
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 //Importe ReadOnlyObjectWrapper
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 
 public class MetaController {
@@ -37,9 +38,6 @@ public class MetaController {
     @FXML private TableView<Meta> tabelaMetasPreDefinidas;
     @FXML private TableColumn<Meta, String> colunaDescricaoPreDefinida;
     @FXML private TableColumn<Meta, Meta.Tipo> colunaTipoPreDefinida;
-    //Removidas as declarações das colunas
-    //@FXML private TableColumn<Meta, Double> colunaProgressoPreDefinida;
-    //@FXML private TableColumn<Meta, LocalDate> colunaDataConclusaoPreDefinida;
 
     @FXML private Label mensagemMeta;
 
@@ -65,35 +63,57 @@ public class MetaController {
     private void configurarTabelaUsuario() {
         colunaDescricaoUsuario.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaTipoUsuario.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        colunaProgressoUsuario.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getProgressoAtual()).asObject());
 
-        // CORREÇÃO: Usar ReadOnlyObjectWrapper
+        colunaProgressoUsuario.setCellValueFactory(cellData -> {
+            Meta meta = cellData.getValue();
+            double progresso = (meta.getValorAlvo() > 0) ? (meta.getProgressoAtual()/meta.getValorAlvo())*100 : 0.0;
+            return new SimpleDoubleProperty(progresso).asObject();
+        });
+
+
+        // CORREÇÃO: Usar ReadOnlyObjectWrapper + Listener
         colunaDataConclusaoUsuario.setCellValueFactory(cellData -> {
             Meta meta = cellData.getValue();
             return new ReadOnlyObjectWrapper<>(meta.getDataConclusao());
         });
 
-
-
-        // Usar um cellFactory para customizar a exibição:
+        // Listener para atualizar a exibição da data de conclusão
         colunaDataConclusaoUsuario.setCellFactory(column -> {
             return new TableCell<Meta, LocalDate>() {
                 @Override
                 protected void updateItem(LocalDate date, boolean empty) {
                     super.updateItem(date, empty);
 
-                    if (empty) { // CASO 1: Célula vazia
-                        setText(null);  // Sem texto
-                        setStyle("");   // Sem estilo
-                    } else if (date == null) { // CASO 2: Meta não concluída
-                        setText("Continue avançando!");
-                        setStyle("-fx-alignment: CENTER;"); // Mantém o estilo (opcional)
-                    } else { // CASO 3: Meta concluída
-                        setText(date.toString()); // Formata a data
-                        setStyle("-fx-alignment: CENTER;"); // Mantém o estilo (opcional)
+                    if (empty) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        Meta meta = getTableView().getItems().get(getIndex());
+                        // Verifica se a meta não é nula e se a data de conclusão não é nula
+                        if (meta != null && meta.getDataConclusao() != null) {
+                            setText(meta.getDataConclusao().toString());
+                            setStyle("-fx-alignment: CENTER;");
+                        } else {
+                            setText("Continue avançando!");
+                            setStyle("-fx-alignment: CENTER;");
+                        }
+
                     }
                 }
             };
+        });
+
+        // Adiciona um listener para *cada meta* na tabela.  ESSENCIAL!
+        tabelaMetasUsuario.getItems().addListener((javafx.collections.ListChangeListener<Meta>) change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    for (Meta meta : change.getAddedSubList()) {
+                        meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
+                            tabelaMetasUsuario.refresh(); // Atualiza a tabela!
+                        });
+                    }
+                }
+            }
         });
     }
     private void configurarTabelaPreDefinida() {
@@ -247,9 +267,27 @@ public class MetaController {
 
 
     public void atualizarTabelaMetasUsuario() {
+        System.out.println("MetaController.atualizarTabelaMetasUsuario() chamado."); // PRINT
         try {
             List<Meta> listaMetas = fachada.listarMetas();
             tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas));
+
+            // Adiciona o listener DENTRO de atualizarTabelaMetasUsuario
+            for (Meta meta : tabelaMetasUsuario.getItems()) {
+                // Listener para dataConclusaoProperty
+                meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
+                    System.out.println("Listener de dataConclusaoProperty disparado! Meta ID: " + meta.getId()); //PRINT
+                    tabelaMetasUsuario.refresh(); // Atualiza a tabela quando a data de conclusão mudar.
+                });
+
+                // Listener para progressoAtualProperty  --  ADICIONAR AQUI!
+                meta.progressoAtualProperty().addListener((obs, oldVal, newVal) -> {
+                    System.out.println("Listener de progressoAtualProperty disparado! Meta ID: " + meta.getId()); //PRINT
+                    tabelaMetasUsuario.refresh();
+                });
+            }
+
+
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar metas", e.getMessage());
         }

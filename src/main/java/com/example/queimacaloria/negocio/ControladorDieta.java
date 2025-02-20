@@ -43,15 +43,18 @@ public class ControladorDieta {
 
     // Insere uma refeição na dieta.
     public void inserirRefeicao(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
+        System.out.println("ControladorDieta.inserirRefeicao() chamado. Dieta: " + dieta.getNome() + ", Refeicao: " + refeicao.getNome()); //PRINT
         if (refeicao != null && !dieta.getRefeicoes().contains(refeicao)) {
             dieta.getRefeicoes().add(refeicao);
+            System.out.println("Refeicao adicionada. Nova lista de refeições: " + dieta.getRefeicoes()); // PRINT
             repositorio.salvar(dieta); // Salva após adicionar.
         }
     }
 
-    // Exclui uma refeição da dieta.
     public void excluirRefeicao(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
+        System.out.println("ControladorDieta.excluirRefeicao() chamado. Dieta: " + dieta.getNome() + ", Refeicao: " + refeicao.getNome()); //PRINT
         dieta.getRefeicoes().remove(refeicao);
+        System.out.println("Refeicao removida. Nova lista de refeições: " + dieta.getRefeicoes()); // PRINT
         repositorio.salvar(dieta); // Salva após remover.
     }
 
@@ -80,12 +83,22 @@ public class ControladorDieta {
     }
 
     // Calcula o progresso da dieta (em porcentagem).
+
     public double calcularProgresso(Dieta dieta) {
+        System.out.println("ControladorDieta.calcularProgresso() chamado para dieta: " + dieta.getNome()); // PRINT
+        System.out.println("  Calorias Diárias: " + dieta.getCaloriasDiarias()); // PRINT
+        System.out.println("  Refeições: " + dieta.getRefeicoes()); //PRINT
+
         if (dieta.getCaloriasDiarias() == 0) {
+            System.out.println("  Calorias Diárias = 0, retornando 0"); // PRINT
             return 0; // Evita divisão por zero.
         }
-        return (double) calcularTotalCalorias(dieta) / dieta.getCaloriasDiarias() * 100;
+        double progresso = (double) calcularTotalCalorias(dieta) / dieta.getCaloriasDiarias() * 100;
+        System.out.println("  Progresso calculado: " + progresso); // PRINT
+        return progresso;
     }
+
+
 
     // Verifica se a dieta foi concluída.
     public boolean verificarDietaConcluida(Dieta dieta) {

@@ -25,7 +25,7 @@
                 <columns>
                     <TableColumn fx:id="colunaDescricaoUsuario" prefWidth="150.0" styleClass="tabela-escura-coluna" text="Descrição" />
                     <TableColumn fx:id="colunaTipoUsuario" prefWidth="100.0" styleClass="tabela-escura-coluna" text="Tipo" />
-                    <TableColumn fx:id="colunaProgressoUsuario" prefWidth="100.0" styleClass="tabela-escura-coluna" text="Progresso" />
+                    <TableColumn fx:id="colunaProgressoUsuario" prefWidth="100.0" styleClass="tabela-escura-coluna" text="Progresso (em porcentagem)" />
                     <TableColumn fx:id="colunaDataConclusaoUsuario" prefWidth="100.0" styleClass="tabela-escura-coluna, coluna-conclusao" text="Conclusão" />
                 </columns>
                 <columnResizePolicy>

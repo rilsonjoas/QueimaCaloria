@@ -24,7 +24,6 @@
                     <TableColumn fx:id="colunaTipoTreinoUsuario" prefWidth="100.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Tipo" />
                     <TableColumn fx:id="colunaDuracaoUsuario" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Duração" />
                     <TableColumn fx:id="colunaNivelDificuldadeUsuario" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Dificuldade" />
-                    <TableColumn fx:id="colunaProgressoUsuario" prefWidth="75.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" text="Progresso" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

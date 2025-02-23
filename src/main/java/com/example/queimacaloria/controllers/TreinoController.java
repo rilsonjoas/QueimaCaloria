@@ -22,6 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//imports novos
+import javafx.beans.property.SimpleDoubleProperty; //Muito importante
+//import javafx.scene.control.cell.ProgressBarTableCell; //Muito importante
+
+
 public class TreinoController {
 
     @FXML private TableView<Treino> tabelaTreinosUsuario;
@@ -29,7 +34,6 @@ public class TreinoController {
     @FXML private TableColumn<Treino, String> colunaTipoTreinoUsuario;
     @FXML private TableColumn<Treino, Integer> colunaDuracaoUsuario;
     @FXML private TableColumn<Treino, Integer> colunaNivelDificuldadeUsuario;
-    @FXML private TableColumn<Treino, Double> colunaProgressoUsuario;
 
     @FXML private TableView<Treino> tabelaTreinosPreDefinidos;
     @FXML private TableColumn<Treino, String> colunaNomePreDefinido;
@@ -37,7 +41,6 @@ public class TreinoController {
     @FXML private TableColumn<Treino, Integer> colunaDuracaoPreDefinido;
     @FXML private TableColumn<Treino, Integer> colunaNivelDificuldadePreDefinido;
     //Removido
-    //@FXML private TableColumn<Treino, Double> colunaProgressoPreDefinido;
 
     @FXML private Label mensagemTreino;
     @FXML private Label labelNomeTreino;
@@ -58,9 +61,15 @@ public class TreinoController {
     public void initialize() {
         configurarTabelaUsuario();
         atualizarTabelaTreinosUsuario();
-
         configurarTabelaPreDefinida();
         carregarTreinosPreDefinidos();
+
+        // Adiciona um listener de SELEÇÃO à tabela:
+        tabelaTreinosUsuario.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    exibirDetalhesTreino(newValue); //Se clicar em outra dieta da tabela, atualiza os detalhes.
+                }
+        );
     }
 
     private void configurarTabelaUsuario() {
@@ -68,7 +77,6 @@ public class TreinoController {
         colunaTipoTreinoUsuario.setCellValueFactory(new PropertyValueFactory<>("tipoDeTreino"));
         colunaDuracaoUsuario.setCellValueFactory(new PropertyValueFactory<>("duracao"));
         colunaNivelDificuldadeUsuario.setCellValueFactory(new PropertyValueFactory<>("nivelDeDificuldade"));
-        colunaProgressoUsuario.setCellValueFactory(new PropertyValueFactory<>("progresso"));
     }
 
     private void configurarTabelaPreDefinida() {
@@ -112,6 +120,8 @@ public class TreinoController {
 
     @FXML
     public void atualizarTreino() {
+        //A LOGICA DE ATUALIZAR FOI REMOVIDA DAQUI
+        //E COLOCADA NO EdicaoTreinoController
         Treino treinoSelecionado = tabelaTreinosUsuario.getSelectionModel().getSelectedItem();
         if (treinoSelecionado != null) {
             try {
@@ -124,6 +134,7 @@ public class TreinoController {
                 controller.setTreinoController(this);
                 controller.setMainController(mainController);
                 // Passa o treino selecionada para o controlador
+                System.out.println("TreinoController.atualizarTreino(): Treino selecionado ID: " + treinoSelecionado.getId());
                 controller.setTreino(treinoSelecionado);
 
 
@@ -133,16 +144,7 @@ public class TreinoController {
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); // Exibe como um diálogo modal
 
-                // Atualiza o usuário logado *após* a edição:
-                if (mainController != null && mainController.getUsuarioLogado() != null) {
-                    try {
-                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                        mainController.setUsuarioLogado(usuarioAtualizado);
-                    } catch (UsuarioNaoEncontradoException e) {
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
-                                "O usuário logado não pôde ser encontrado após a edição do treino.");
-                    }
-                }
+                //QUALQUER ATUALIZAÇÃO AGORA É FEITA NO EdicaoTreinoController
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -228,6 +230,15 @@ public class TreinoController {
         try {
             List<Treino> listaTreinos = fachada.listarTreinos();
             tabelaTreinosUsuario.setItems(FXCollections.observableArrayList(listaTreinos));
+            //  Atualiza a tabela!  Muito importante.
+            tabelaTreinosUsuario.refresh();
+
+            if (!tabelaTreinosUsuario.getItems().isEmpty()) {
+                tabelaTreinosUsuario.getSelectionModel().select(0);
+                exibirDetalhesTreino(tabelaTreinosUsuario.getItems().get(0));
+            } else {
+                exibirDetalhesTreino(null); //Limpa, se a tabela estiver vazia
+            }
 
         }
 
@@ -235,6 +246,7 @@ public class TreinoController {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar treinos", e.getMessage());
         }
     }
+
 
 
     private void exibirDetalhesTreino(Treino treino) {

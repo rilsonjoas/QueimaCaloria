@@ -16,6 +16,10 @@ import java.util.UUID;
 // Importe a classe correta
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+//Novos imports:
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 
 @ToString
 @Getter
@@ -31,12 +35,15 @@ public class Usuario {
     private FloatProperty imc = new SimpleFloatProperty();
 
     @Setter
-    // Use ObservableList desde o início!
     private ObservableList<Meta> metas = FXCollections.observableArrayList();
     @Setter
     private ObservableList<Treino> treinos = FXCollections.observableArrayList();
     @Setter
     private ObservableList<Dieta> dietas = FXCollections.observableArrayList();
+
+    // Nova propriedade para a pontuação
+    private IntegerProperty pontuacao = new SimpleIntegerProperty(0);
+
 
     public enum Sexo {
         MASCULINO,
@@ -45,14 +52,13 @@ public class Usuario {
 
     public Usuario() {
         this.id = UUID.randomUUID();
-        // Não precisa mais inicializar aqui, já foi feito na declaração
     }
 
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura) {
-        this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList()); // Use listas observáveis
+        this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList());
     }
 
-    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas) { //CORRETO
+    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas) {
         this.id = UUID.randomUUID();
         this.nome.set(nome);
         this.email.set(email);
@@ -60,10 +66,11 @@ public class Usuario {
         this.sexo.set(sexo);
         this.peso.set(peso);
         this.altura.set(altura);
-        // Corrigido: Use setAll para adicionar os elementos, não substitua a lista
         this.metas.setAll(metas);
         this.treinos.setAll(treinos);
         this.dietas.setAll(dietas);
+        //Importante, inicializa com zero.
+        this.pontuacao.set(0);
     }
     //Restante do código
     public String getNome() {
@@ -136,7 +143,7 @@ public class Usuario {
 
     public void setPeso(float peso) {
         this.peso.set(peso);
-        calcularEAtualizarIMC(); // Chama o método para calcular o IMC
+        calcularEAtualizarIMC();
     }
 
     public float getAltura() {
@@ -149,7 +156,7 @@ public class Usuario {
 
     public void setAltura(float altura) {
         this.altura.set(altura);
-        calcularEAtualizarIMC(); // Chama o método para calcular o IMC
+        calcularEAtualizarIMC();
     }
 
     public float getImc() {
@@ -169,8 +176,25 @@ public class Usuario {
             float imc = this.getPeso() / (this.getAltura() * this.getAltura());
             this.imc.set(imc);
         } else {
-            this.imc.set(0); // Mantém 0 se altura ou peso forem inválidos.
+            this.imc.set(0);
         }
     }
 
+    // Getter e Setter para a pontuação:
+    public int getPontuacao() {
+        return pontuacao.get();
+    }
+
+    public IntegerProperty pontuacaoProperty() {
+        return pontuacao;
+    }
+
+    public void setPontuacao(int pontuacao) {
+        this.pontuacao.set(pontuacao);
+    }
+
+    //Método para adicionar a pontuação
+    public void adicionarPontuacao(int pontos) {
+        this.pontuacao.set(this.pontuacao.get() + pontos);
+    }
 }

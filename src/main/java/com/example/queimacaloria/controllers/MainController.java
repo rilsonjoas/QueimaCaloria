@@ -1,5 +1,6 @@
 package com.example.queimacaloria.controllers;
 
+// ... (imports - você já tem todos os necessários)
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
 import javafx.fxml.FXML;
@@ -24,7 +25,8 @@ import javafx.collections.ListChangeListener;
 import com.example.queimacaloria.negocio.Exercicio;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ListView;  // Importante!
+//import javafx.scene.control.ListView; Removido
+import javafx.beans.binding.StringBinding; // Importante para o binding da pontuação
 
 
 public class MainController {
@@ -42,9 +44,13 @@ public class MainController {
     @FXML private Label labelCaloriasDia;
     @FXML private ProgressBar barraProgressoMetas;
     @FXML private Label labelProgressoMetas;
-    //Novo atributo
+    //@FXML private ListView<String> listViewAtividadesRecentes; Removido
+    //Novo label
     @FXML
-    private ListView<String> listViewAtividadesRecentes;
+    private Label labelPontuacao;
+    //Label para as atividades recentes
+    @FXML
+    private Label labelAtividadesRecentes;
 
 
     private Parent telaDieta;
@@ -58,11 +64,7 @@ public class MainController {
     private Usuario usuarioLogado;
     private Dieta dietaSelecionada;
     private DoubleProperty progressoGeral = new SimpleDoubleProperty(0.0);
-
-    //Nova lista
     private ObservableList<String> atividadesRecentes = FXCollections.observableArrayList();
-
-
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -71,8 +73,15 @@ public class MainController {
     public Usuario getUsuarioLogado() {
         return usuarioLogado;
     }
+    //Getter modificado
+    public ObservableList<String> getAtividadesRecentes(){
+        return this.atividadesRecentes;
+    }
 
     public void setUsuarioLogado(Usuario usuario) {
+        // ... (código existente do setUsuarioLogado) ...
+        //Mantém todo o código que já tem aqui.
+
         System.out.println("MainController.setUsuarioLogado: Iniciando...");
         this.usuarioLogado = usuario;
 
@@ -95,6 +104,13 @@ public class MainController {
                 labelProgressoMetas.textProperty().bind(Bindings.createStringBinding(
                         () -> String.format("%.1f%% Completo", progressoGeral.get() * 100),
                         progressoGeral
+                ));
+            }
+            //Novo binding
+            if(labelPontuacao != null){
+                labelPontuacao.textProperty().bind(Bindings.createStringBinding(
+                        () -> "Pontuação: " + usuarioLogado.getPontuacao(), // Formatação
+                        usuarioLogado.pontuacaoProperty() // A propriedade!
                 ));
             }
 
@@ -123,10 +139,15 @@ public class MainController {
             if(labelProgressoMetas != null){
                 labelProgressoMetas.setText("0.0% Completo");
             }
+            //Se o usuário não estiver logado, a pontuação some.
+            if(labelPontuacao != null){
+                labelPontuacao.setText("Pontuação: --");
+            }
         }
 
         System.out.println("MainController.setUsuarioLogado: Chamando atualizarDadosTelaPrincipal");
-        atualizarDadosTelaPrincipal();
+        atualizarDadosTelaPrincipal(); //  <-  Chamada aqui!
+
     }
 
     private String getSituacaoIMC(float imc) {
@@ -140,6 +161,7 @@ public class MainController {
 
     @FXML
     public void initialize() {
+        // ... (código existente do initialize - carregar telas, etc.)
         try {
             telaDieta = carregarTela("/com/example/queimacaloria/views/dieta-view.fxml");
             telaExercicio = carregarTela("/com/example/queimacaloria/views/exercicio-view.fxml");
@@ -158,11 +180,7 @@ public class MainController {
 
             mostrarTelaPrincipal();
 
-            // Inicializa a ListView (mesmo que esteja vazia no começo)
-            if (listViewAtividadesRecentes != null) {
-                listViewAtividadesRecentes.setItems(atividadesRecentes);
-            }
-
+            //REMOVIDO
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -204,6 +222,7 @@ public class MainController {
 
     @FXML
     public void mostrarTelaPrincipal() {
+        // ... (seu código para obter referências aos elementos do FXML)
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-screen-content.fxml"));
             Parent telaPrincipalContent = loader.load();
@@ -221,8 +240,10 @@ public class MainController {
             buttonVerMaisPerfil = (Button) telaPrincipalContent.lookup("#buttonVerMaisPerfil");
             barraProgressoMetas = (ProgressBar) telaPrincipalContent.lookup("#barraProgressoMetas");
             labelProgressoMetas = (Label) telaPrincipalContent.lookup("#labelProgressoMetas");
-            //  Obtém a referência à ListView
-            listViewAtividadesRecentes = (ListView<String>) telaPrincipalContent.lookup("#listViewAtividadesRecentes");
+            //listViewAtividadesRecentes = (ListView<String>) telaPrincipalContent.lookup("#listViewAtividadesRecentes"); Removido
+            //Nova label
+            labelPontuacao = (Label) telaPrincipalContent.lookup("#labelPontuacao");
+            labelAtividadesRecentes = (Label) telaPrincipalContent.lookup("#labelAtividadesRecentes"); //Obtém a nova label.
 
 
             if (buttonVerMaisMetas != null) buttonVerMaisMetas.setOnAction(e -> mostrarTelaMeta());
@@ -240,22 +261,26 @@ public class MainController {
                 if(labelPesoUsuario != null) labelPesoUsuario.setText("Peso: --");
                 if(labelAlturaUsuario != null) labelAlturaUsuario.setText("Altura: --");
                 if(labelCaloriasDia != null) labelCaloriasDia.setText("Calorias: -- / --");
-                //Adicionei essa verificação, pois estava dando erro:
                 if (barraProgressoMetas != null) {
-                    barraProgressoMetas.progressProperty().unbind(); // Desfaz o binding
-                    barraProgressoMetas.setProgress(0.0);          // Define como 0
+                    barraProgressoMetas.progressProperty().unbind();
+                    barraProgressoMetas.setProgress(0.0);
+                }
+                //Se o usuário não estiver logado, a pontuação some.
+                if(labelPontuacao != null){
+                    labelPontuacao.setText("Pontuação: --");
                 }
             }
-            if (listViewAtividadesRecentes != null) {
-                listViewAtividadesRecentes.setItems(atividadesRecentes);
-            }
+            //REMOVIDO if (listViewAtividadesRecentes != null) {listViewAtividadesRecentes.setItems(atividadesRecentes);}
+            atualizarAtividadesRecentes(); //Inicializa a lista na tela.
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+
     private int calcularTotalCaloriasConsumidas() {
+        // ... (seu código para calcularTotalCaloriasConsumidas - não muda)
         System.out.println("MainController.calcularTotalCaloriasConsumidas: Iniciando...");
         int total = 0;
         if (usuarioLogado != null && usuarioLogado.getDietas() != null) {
@@ -269,9 +294,11 @@ public class MainController {
         }
         System.out.println("MainController.calcularTotalCaloriasConsumidas: Total: " + total);
         return total;
+
     }
 
     private int calcularTotalCaloriasDieta(Dieta dieta) {
+        // ... (seu código para calcularTotalCaloriasDieta - não muda)
         System.out.println("MainController.calcularTotalCaloriasDieta: Iniciando para dieta: " + dieta.getNome());
         int total = 0;
         if (dieta.getRefeicoes() != null) {
@@ -289,17 +316,17 @@ public class MainController {
 
 
     private Dieta getDietaAtual() {
+        // ... (seu código para getDietaAtual - não muda)
         if (usuarioLogado != null && usuarioLogado.getDietas() != null && !usuarioLogado.getDietas().isEmpty()) {
             return usuarioLogado.getDietas().get(0);
         }
         return null;
     }
 
-    public ObservableList<String> getAtividadesRecentes(){
-        return this.atividadesRecentes;
-    }
+
 
     private void atualizarCalorias() {
+        // ... (seu código para atualizarCalorias - não muda)
         System.out.println("MainController.atualizarCalorias: Iniciando...");
         if (usuarioLogado != null) {
             System.out.println("  Usuário logado: " + usuarioLogado.getEmail());
@@ -333,8 +360,11 @@ public class MainController {
             }
 
         }
+
     }
+
     public double calcularProgressoGeralUsuario() {
+        // ... (seu código para calcularProgressoGeralUsuario - não muda)
         double progressoTotal = 0.0;
         int contadorMetas = 0;
 
@@ -367,23 +397,42 @@ public class MainController {
             System.out.println("  Nenhuma meta válida encontrada. Retornando 0.");
             return 0.0;
         }
+
     }
 
     //Adiciona um exercício a lista
     public void adicionarExercicioRecente(Exercicio exercicio) {
+        // ... (seu código para adicionarExercicioRecente - MUDANÇAS AQUI)
+
         String nomeExercicio = exercicio.getNome();
 
         //Remove o exercício se ele já existir na lista.
         atividadesRecentes.remove(nomeExercicio);
-        atividadesRecentes.add(0, nomeExercicio); //Adiciona no começo da lista
+        atividadesRecentes.add(0, nomeExercicio);
 
-        if(atividadesRecentes.size() > 5){
-            atividadesRecentes.remove(5, atividadesRecentes.size()); //Mantém no máximo 5 elementos
+        if(atividadesRecentes.size() > 3){ // Agora, no máximo 3
+            atividadesRecentes.remove(3); // Remove a partir do índice 3
+        }
+        atualizarAtividadesRecentes(); //Chama o metodo de atualizar a label
+
+    }
+
+    //Novo método para atualizar o texto na label:
+    private void atualizarAtividadesRecentes() {
+        if (labelAtividadesRecentes != null) {
+            if (atividadesRecentes.isEmpty()) {
+                labelAtividadesRecentes.setText("Nenhuma atividade recente.");
+            } else {
+                // Junta os nomes dos exercícios com vírgulas
+                String texto = String.join(", ", atividadesRecentes); // <-- Mudança aqui
+                labelAtividadesRecentes.setText(texto);
+            }
         }
     }
 
 
     public void atualizarDadosTelaPrincipal() {
+        // ... (seu código existente para atualizarDadosTelaPrincipal - não muda)
         System.out.println("MainController.atualizarDadosTelaPrincipal: Iniciando...");
         if (usuarioLogado != null) {
             System.out.println("MainController: Metas do usuário (dentro de atualizarDadosTelaPrincipal): " + usuarioLogado.getMetas());
@@ -403,10 +452,12 @@ public class MainController {
         } else {
             System.out.println("MainController.atualizarDadosTelaPrincipal: usuarioLogado NULO.");
         }
+
     }
 
     @FXML
     public void logout() {
+        // ... (seu código existente para logout - não muda)
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/auth-view.fxml"));
             Parent authView = loader.load();

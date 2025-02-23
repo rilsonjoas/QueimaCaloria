@@ -14,8 +14,6 @@ public class ControladorExercicio {
         repositorio = RepositorioExerciciosArray.getInstanciaUnica();
     }
 
-    // Inicializa um exercício, atualizando ou adicionando ao repositório.
-    // SIMPLIFICADO: Agora caloriasQueimadas já é a taxa por minuto.
     public void inicializar(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
                             int tempo, double caloriasQueimadas) throws ExercicioNaoEncontradoException {
         exercicio.setNome(nome);

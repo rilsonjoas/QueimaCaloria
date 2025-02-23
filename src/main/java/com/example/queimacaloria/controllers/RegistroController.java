@@ -26,20 +26,18 @@ public class RegistroController {
     private Fachada fachada = Fachada.getInstanciaUnica();
     @FXML private AuthController authController;
 
-    // Define o controlador de autenticação.
     public void setAuthController(AuthController authController) {
         this.authController = authController;
     }
 
-    // Inicializa o controlador, configurando o ComboBox de sexo.
     @FXML
     public void initialize() {
         campoSexo.setItems(FXCollections.observableArrayList(Usuario.Sexo.values()));
     }
 
-    // Registra um novo usuário.
     @FXML
     public void registrar() {
+        // ... (código de validação e criação do usuário, como você já tem) ...
         String nome = campoNome.getText();
         String email = campoEmail.getText();
         String password = campoSenha.getText();
@@ -56,20 +54,34 @@ public class RegistroController {
             return;
         }
 
+
         try {
             Usuario novoUsuario = fachada.cadastrarUsuario(nome, email, password, dataNascimento, sexo, peso, altura);
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
 
-            PauseTransition delay = new PauseTransition(Duration.seconds(0.3));
+            // Pausa ANTES de mostrar a tela principal e exibir o lembrete.
+            PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
             delay.setOnFinished(event -> {
                 if (authController != null) {
                     authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario);
+
+                    // Lembrete de água (depois de mostrar a tela principal).
+                    Alert waterAlert = new Alert(Alert.AlertType.INFORMATION);
+                    waterAlert.setTitle("Lembrete!");
+                    waterAlert.setHeaderText(null);  // Sem cabeçalho para ser mais direto.
+                    waterAlert.setContentText("Lembre-se de beber água para se manter hidratado!");
+
+                    // Pausa para o lembrete da água.
+                    PauseTransition waterDelay = new PauseTransition(Duration.seconds(5));
+                    waterDelay.setOnFinished(e -> waterAlert.close());  // Fecha o alerta após 5 segundos.
+                    waterAlert.show();  // Mostra o alerta.
+                    waterDelay.play(); // Inicia a contagem regressiva.
+
                 } else {
-                    System.err.println("Erro: AuthController é nulo em RegistroController!");
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");
+                    //erro
                 }
             });
-            delay.play();
+            delay.play(); // Inicia a primeira pausa.
 
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao cadastrar usuário", e.getMessage());
@@ -79,7 +91,6 @@ public class RegistroController {
         }
     }
 
-    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -88,11 +99,11 @@ public class RegistroController {
         alert.showAndWait();
     }
 
-    // Navega para a tela de login.
     @FXML
     public void irParaLogin() {
         if (authController != null) {
             authController.mostrarTelaLogin();
+            // Limpar os campos, se desejar.
             campoNome.clear();
             campoSenha.clear();
             campoAltura.clear();
@@ -101,13 +112,14 @@ public class RegistroController {
             campoSexo.setValue(null);
             campoDataNascimento.setValue(null);
             mensagemRegistro.setText(null);
+
+
         } else {
             System.err.println("Erro: AuthController não foi injetado!");
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");
         }
     }
 
-    // Obtém o palco principal da aplicação.
     private Stage getPrimaryStage() {
         if (authController != null) {
             return (Stage) campoEmail.getScene().getWindow();

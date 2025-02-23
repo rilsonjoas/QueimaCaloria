@@ -199,6 +199,7 @@ public class TreinoController {
                 if (mainController != null && mainController.getUsuarioLogado() != null) {
                     try {
                         Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                        fachada.adicionarTreinoAoUsuario(usuarioAtualizado, novoTreino);
                         mainController.setUsuarioLogado(usuarioAtualizado);
                     } catch (UsuarioNaoEncontradoException e) {
                         showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",

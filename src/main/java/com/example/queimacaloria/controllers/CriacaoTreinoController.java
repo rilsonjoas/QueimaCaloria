@@ -61,6 +61,7 @@ public class CriacaoTreinoController {
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                    fachada.adicionarTreinoAoUsuario(usuarioAtualizado, novoTreino);
                     mainController.setUsuarioLogado(usuarioAtualizado);
 
                     if (concluido) {

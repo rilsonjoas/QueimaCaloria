@@ -62,6 +62,7 @@ public class CriacaoExercicioController {
             }
 
             if(mainController != null){
+                mainController.getUsuarioLogado().getExercicios().add(novoExercicio);
                 mainController.atualizarDadosTelaPrincipal();
             }
 

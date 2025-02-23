@@ -183,6 +183,7 @@ public class ExercicioController {
                 mensagemExercicio.setText("Exercício adicionado com sucesso!");
 
                 if (mainController != null) {
+                    mainController.getUsuarioLogado().getExercicios().add(novoExercicio);
                     mainController.atualizarDadosTelaPrincipal();
                 }
             } catch (ExercicioNaoEncontradoException e) {

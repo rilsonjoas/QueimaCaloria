@@ -20,7 +20,7 @@ public class GeradorPDF {
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
-            document.add(new Paragraph("Relatório de Dietas").setFontSize(18).setBold());
+            document.add(new Paragraph("Relatório de Dietas").setFontSize(18));
 
             if (dietas != null && !dietas.isEmpty()) {
                 adicionarSecaoDietas(document, dietas);
@@ -36,7 +36,7 @@ public class GeradorPDF {
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
-            document.add(new Paragraph("Relatório de Exercícios").setFontSize(18).setBold());
+            document.add(new Paragraph("Relatório de Exercícios").setFontSize(18));
 
             if (exercicios != null && !exercicios.isEmpty()) {
                 adicionarSecaoExercicios(document, exercicios);
@@ -52,7 +52,7 @@ public class GeradorPDF {
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
-            document.add(new Paragraph("Relatório de Metas").setFontSize(18).setBold());
+            document.add(new Paragraph("Relatório de Metas").setFontSize(18));
 
             if (metas != null && !metas.isEmpty()) {
                 adicionarSecaoMetas(document, metas);
@@ -67,7 +67,7 @@ public class GeradorPDF {
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
-            document.add(new Paragraph("Relatório de Refeições").setFontSize(18).setBold());
+            document.add(new Paragraph("Relatório de Refeições").setFontSize(18));
 
             if (refeicoes != null && !refeicoes.isEmpty()) {
                 adicionarSecaoRefeicoes(document, refeicoes);
@@ -84,7 +84,7 @@ public class GeradorPDF {
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
-            document.add(new Paragraph("Relatório de Treinos").setFontSize(18).setBold());
+            document.add(new Paragraph("Relatório de Treinos").setFontSize(18));
 
             if (treinos != null && !treinos.isEmpty()) {
                 adicionarSecaoTreinos(document, treinos);
@@ -96,14 +96,14 @@ public class GeradorPDF {
 
     // Métodos auxiliares para criar as seções (já existiam, mas precisam ser adaptados/chamados)
     private static void adicionarSecaoMetas(Document document, List<Meta> metas) {
-        document.add(new Paragraph("Metas:").setFontSize(14).setBold());
+        document.add(new Paragraph("Metas:").setFontSize(14));
 
         Table tabela = new Table(UnitValue.createPercentArray(new float[]{50, 30, 20}))
                 .useAllAvailableWidth();
 
-        tabela.addHeaderCell(new Paragraph("Descrição").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Tipo").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Progresso").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Descrição").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Tipo").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Progresso").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
 
 
         for (Meta meta : metas) {
@@ -123,14 +123,14 @@ public class GeradorPDF {
 
 
     private static void adicionarSecaoDietas(Document document, List<Dieta> dietas) {
-        document.add(new Paragraph("Dietas:").setFontSize(14).setBold());
+        document.add(new Paragraph("Dietas:").setFontSize(14));
 
         Table tabela = new Table(UnitValue.createPercentArray(new float[]{50, 30, 20}))
                 .useAllAvailableWidth();
 
-        tabela.addHeaderCell(new Paragraph("Nome").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Objetivo").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Calorias Diárias").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Nome").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Objetivo").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Calorias Diárias").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
 
         for (Dieta dieta : dietas) {
             tabela.addCell(new Paragraph(dieta.getNome()));
@@ -141,15 +141,15 @@ public class GeradorPDF {
         document.add(tabela);
     }
     private static void adicionarSecaoExercicios(Document document, List<Exercicio> exercicios) {
-        document.add(new Paragraph("Exercícios:").setFontSize(14).setBold());
+        document.add(new Paragraph("Exercícios:").setFontSize(14));
 
         Table tabela = new Table(UnitValue.createPercentArray(new float[]{40, 30, 15, 15}))
                 .useAllAvailableWidth();
 
-        tabela.addHeaderCell(new Paragraph("Nome").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Tipo").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Tempo (min)").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Calorias Queimadas/min").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Nome").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Tipo").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Tempo (min)").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Calorias Queimadas/min").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
 
         for (Exercicio exercicio : exercicios) {
             tabela.addCell(new Paragraph(exercicio.getNome()));
@@ -162,14 +162,14 @@ public class GeradorPDF {
     }
 
     private static void adicionarSecaoRefeicoes(Document document, List<Refeicao> refeicoes) {
-        document.add(new Paragraph("Refeições:").setFontSize(14).setBold());
+        document.add(new Paragraph("Refeições:").setFontSize(14));
 
         Table tabela = new Table(UnitValue.createPercentArray(new float[]{40, 40, 20})) // Ajuste as larguras conforme necessário
                 .useAllAvailableWidth();
 
-        tabela.addHeaderCell(new Paragraph("Nome").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Descrição").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Calorias").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Nome").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Descrição").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Calorias").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
 
         for (Refeicao refeicao : refeicoes) {
             tabela.addCell(new Paragraph(refeicao.getNome()));
@@ -180,15 +180,15 @@ public class GeradorPDF {
         document.add(tabela);
     }
     private static void adicionarSecaoTreinos(Document document, List<Treino> treinos) {
-        document.add(new Paragraph("Treinos:").setFontSize(14).setBold());
+        document.add(new Paragraph("Treinos:").setFontSize(14));
 
         Table tabela = new Table(UnitValue.createPercentArray(new float[]{40, 30, 15, 15}))
                 .useAllAvailableWidth();
 
-        tabela.addHeaderCell(new Paragraph("Nome").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Tipo").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Duração (min)").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
-        tabela.addHeaderCell(new Paragraph("Dificuldade").setBold().setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Nome").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Tipo").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Duração (min)").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
+        tabela.addHeaderCell(new Paragraph("Dificuldade").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
 
         for (Treino treino : treinos) {
             tabela.addCell(new Paragraph(treino.getNome()));

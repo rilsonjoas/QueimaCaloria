@@ -13,6 +13,9 @@ import lombok.ToString;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
+// Importe a classe correta
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 @ToString
 @Getter
@@ -28,11 +31,12 @@ public class Usuario {
     private FloatProperty imc = new SimpleFloatProperty();
 
     @Setter
-    private ArrayList<Meta> metas;
+    // Use ObservableList desde o início!
+    private ObservableList<Meta> metas = FXCollections.observableArrayList();
     @Setter
-    private ArrayList<Treino> treinos;
+    private ObservableList<Treino> treinos = FXCollections.observableArrayList();
     @Setter
-    private ArrayList<Dieta> dietas;
+    private ObservableList<Dieta> dietas = FXCollections.observableArrayList();
 
     public enum Sexo {
         MASCULINO,
@@ -41,16 +45,14 @@ public class Usuario {
 
     public Usuario() {
         this.id = UUID.randomUUID();
-        this.metas = new ArrayList<>();
-        this.treinos = new ArrayList<>();
-        this.dietas = new ArrayList<>();
+        // Não precisa mais inicializar aqui, já foi feito na declaração
     }
 
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura) {
-        this(nome, email, dataNascimento, sexo, peso, altura, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList()); // Use listas observáveis
     }
 
-    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ArrayList<Meta> metas, ArrayList<Treino> treinos, ArrayList<Dieta> dietas) {
+    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas) { //CORRETO
         this.id = UUID.randomUUID();
         this.nome.set(nome);
         this.email.set(email);
@@ -58,11 +60,12 @@ public class Usuario {
         this.sexo.set(sexo);
         this.peso.set(peso);
         this.altura.set(altura);
-        this.metas = metas;
-        this.treinos = treinos;
-        this.dietas = dietas;
+        // Corrigido: Use setAll para adicionar os elementos, não substitua a lista
+        this.metas.setAll(metas);
+        this.treinos.setAll(treinos);
+        this.dietas.setAll(dietas);
     }
-
+    //Restante do código
     public String getNome() {
         return nome.get();
     }

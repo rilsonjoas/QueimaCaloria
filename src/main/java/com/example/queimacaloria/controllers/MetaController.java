@@ -176,7 +176,10 @@ public class MetaController {
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); // Exibe como um diálogo modal
 
-                // Atualiza o usuário logado *após* a edição:
+                atualizarTabelaMetasUsuario(); // Atualiza a tabela *após* a edição
+
+                // Atualiza o usuário logado *após* a edição: Removido, a fachada agora cuida disso
+                /*
                 if (mainController != null && mainController.getUsuarioLogado() != null) {
                     try {
                         Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
@@ -186,6 +189,8 @@ public class MetaController {
                                 "O usuário logado não pôde ser encontrado após a edição da meta.");
                     }
                 }
+
+                 */
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -205,6 +210,7 @@ public class MetaController {
                 atualizarTabelaMetasUsuario(); //  Atualiza a tabela
                 mensagemMeta.setText("Meta removida com sucesso!");
 
+               /* Removido: A fachada agora cuida de atualizar o usuário
                 // Atualiza o usuário logado *após* a remoção:
                 if (mainController != null && mainController.getUsuarioLogado() != null) {
                     try {
@@ -215,6 +221,8 @@ public class MetaController {
                                 "O usuário logado não pôde ser encontrado após a remoção da meta.");
                     }
                 }
+                */
+
 
             } catch (MetaNaoEncontradaException e) { // Captura a exceção
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover meta", e.getMessage());
@@ -241,19 +249,10 @@ public class MetaController {
                 );
                 fachada.configurarMeta(novaMeta, novaMeta.getDescricao(), novaMeta.getTipo(),
                         novaMeta.getValorAlvo(), novaMeta.getProgressoAtual(), novaMeta.getDataConclusao());
-                atualizarTabelaMetasUsuario();
+
+                atualizarTabelaMetasUsuario(); //  ATUALIZA A TABELA *APÓS* ADICIONAR, E REMOVIDO A ATUALIZAÇÃO DO USUÁRIO
                 mensagemMeta.setText("Meta adicionada com sucesso!");
 
-                // Atualiza o usuário logado *após* a adição:
-                if (mainController != null && mainController.getUsuarioLogado() != null) {
-                    try {
-                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                        mainController.setUsuarioLogado(usuarioAtualizado);
-                    } catch (UsuarioNaoEncontradoException e) {
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
-                                "O usuário logado não pôde ser encontrado após a adição da meta.");
-                    }
-                }
 
 
             } catch (MetaNaoEncontradaException e) {

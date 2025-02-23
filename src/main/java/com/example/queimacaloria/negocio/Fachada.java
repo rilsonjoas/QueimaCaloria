@@ -1,5 +1,6 @@
 package com.example.queimacaloria.negocio;
 
+import com.example.queimacaloria.controllers.MainController;
 import com.example.queimacaloria.dados.RepositorioUsuariosArray;
 import com.example.queimacaloria.excecoes.*;
 
@@ -19,6 +20,9 @@ public class Fachada {
     private ControladorRefeicao controladorRefeicao;
     private ControladorTreino controladorTreino;
 
+    // Adicionado: Referência ao MainController
+    private MainController mainController;
+
     private Fachada() {
         this.controladorUsuario = new ControladorUsuario();
         this.controladorDieta = new ControladorDieta();
@@ -33,6 +37,11 @@ public class Fachada {
             instanciaUnica = new Fachada();
         }
         return instanciaUnica;
+    }
+
+    // Adicionado: Método para definir o MainController
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 
 
@@ -164,9 +173,25 @@ public class Fachada {
         System.out.println("  Tipo: " + tipo);
         System.out.println("  Valor Alvo: " + valorAlvo);
         System.out.println("  Progresso Atual: " + progressoAtual);
-        System.out.println("  Data Conclusão: " + dataConclusao); // Data
+        System.out.println("  Data Conclusão: " + dataConclusao);
 
         controladorMeta.inicializar(meta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
+
+        // MUITO IMPORTANTE: Depois de inicializar (ou seja, criar ou atualizar)
+        // a meta, adicione-a ao usuário logado, se houver um.
+        if (mainController != null && mainController.getUsuarioLogado() != null) {
+            try {
+                Usuario usuarioAtualizado = controladorUsuario.buscarPorId(mainController.getUsuarioLogado().getId());
+                controladorUsuario.cadastrarMeta(usuarioAtualizado, meta);  // ADICIONA A META AO USUÁRIO!
+                mainController.setUsuarioLogado(usuarioAtualizado);     // ATUALIZA O USUÁRIO LOGADO!
+            } catch (UsuarioNaoEncontradoException e) {
+                System.out.println("Erro ao atualizar usuário na Fachada: " + e.getMessage());
+            }
+
+        } else {
+            System.out.println("Não foi possível adicionar a meta ao usuário, usuário não logado ou MainController nulo");
+
+        }
     }
 
     public boolean verificarMetaConcluida(Meta meta) {

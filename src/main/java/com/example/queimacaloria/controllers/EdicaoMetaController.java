@@ -1,6 +1,7 @@
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Meta;
 import com.example.queimacaloria.negocio.Usuario;
@@ -10,9 +11,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
-//Adicionado o import que faltava.
-import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
-
 
 public class EdicaoMetaController {
 

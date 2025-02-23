@@ -65,21 +65,21 @@ public class ControladorUsuario {
 
     public void cadastrarMeta(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
         if (meta != null) {
-            usuario.getMetas().add(meta);
+            usuario.getMetas().add(meta); // Usa a lista observável EXISTENTE
             repositorio.salvar(usuario);
         }
     }
 
     public void adicionarTreino(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {
         if (treino != null && !usuario.getTreinos().contains(treino)) {
-            usuario.getTreinos().add(treino);
+            usuario.getTreinos().add(treino); // Usa a lista observável EXISTENTE
             repositorio.salvar(usuario);
         }
     }
 
     public void adicionarDieta(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException {
         if (dieta != null && !usuario.getDietas().contains(dieta)) {
-            usuario.getDietas().add(dieta);
+            usuario.getDietas().add(dieta); // Usa a lista observável EXISTENTE
             repositorio.salvar(usuario);
         }
     }

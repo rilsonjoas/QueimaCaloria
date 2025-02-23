@@ -1,5 +1,6 @@
 package com.example.queimacaloria.controllers;
 
+import com.example.queimacaloria.negocio.Fachada;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,6 +19,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import com.example.queimacaloria.negocio.Meta;
 import javafx.scene.control.ProgressBar; // Importante!
+import javafx.collections.ListChangeListener; // Importante!
+
 
 
 public class MainController {
@@ -62,11 +65,12 @@ public class MainController {
     }
 
     public void setUsuarioLogado(Usuario usuario) {
-        //System.out.println("MainController.setUsuarioLogado: Iniciando..."); // PRINT
+        System.out.println("MainController.setUsuarioLogado: Iniciando..."); // PRINT
         this.usuarioLogado = usuario;
 
         if (usuarioLogado != null) {
-            //System.out.println("MainController.setUsuarioLogado: Usuário logado: " + usuarioLogado.getEmail()); // PRINT
+            System.out.println("MainController.setUsuarioLogado: Usuário logado: " + usuarioLogado.getEmail()); // PRINT
+            System.out.println("MainController.setUsuarioLogado: Metas do usuário (antes do listener): " + usuarioLogado.getMetas()); // PRINT
 
             // Bindings (com verificações de nulidade)
             if (labelNomeUsuario != null) labelNomeUsuario.setText(usuarioLogado.getNome());
@@ -88,6 +92,19 @@ public class MainController {
                 ));
             }
 
+
+            // ---  ADICIONA O LISTENER AQUI  ---
+            //Adicionando o listener
+            if (usuarioLogado != null) {
+                usuarioLogado.getMetas().addListener((ListChangeListener<Meta>) change -> {
+                    System.out.println("MainController: Listener de metas disparado!"); // PRINT
+                    atualizarDadosTelaPrincipal(); // Recalcula e atualiza
+                });
+                System.out.println("MainController: Listener de metas ADICIONADO."); //PRINT
+
+            }
+
+
         } else {
             // System.out.println("MainController.setUsuarioLogado: Usuário logado é nulo."); // PRINT
             if (labelNomeUsuario != null) labelNomeUsuario.setText("Nome do Usuário");
@@ -106,7 +123,7 @@ public class MainController {
             }
         }
 
-        //System.out.println("MainController.setUsuarioLogado: Chamando atualizarDadosTelaPrincipal");
+        System.out.println("MainController.setUsuarioLogado: Chamando atualizarDadosTelaPrincipal"); // PRINT
         atualizarDadosTelaPrincipal(); //Chamada para inicializar a tabela, depois que o usuário está logado.
     }
 
@@ -135,6 +152,8 @@ public class MainController {
             ((RefeicaoController) getController(telaRefeicao)).setMainController(this);
             ((TreinoController) getController(telaTreino)).setMainController(this);
             ((PerfilController) getController(telaPerfil)).setMainController(this);
+            //Adicionado
+            Fachada.getInstanciaUnica().setMainController(this);
 
             mostrarTelaPrincipal();
 
@@ -295,35 +314,51 @@ public class MainController {
 
         }
     }
-
+    //CORREÇÃO
     public double calcularProgressoGeralUsuario() {
         double progressoTotal = 0.0;
         int contadorMetas = 0;
 
         if (usuarioLogado != null && usuarioLogado.getMetas() != null) {
+            System.out.println("MainController.calcularProgressoGeralUsuario(): Metas do usuário: " + usuarioLogado.getMetas().size()); // PRINT
+
             for (Meta meta : usuarioLogado.getMetas()) {
+                System.out.println("  Meta: " + meta.getDescricao() + ", Valor Alvo: " + meta.getValorAlvo() + ", Progresso Atual: " + meta.getProgressoAtual()); //PRINT
+
                 if (meta.getValorAlvo() > 0) { // Evita divisão por zero!
-                    progressoTotal += (meta.getProgressoAtual() / meta.getValorAlvo()) * 100.0; // Calcula a porcentagem *corretamente*
+                    double progressoMeta = (meta.getProgressoAtual() / meta.getValorAlvo());
+                    System.out.println("    Progresso da meta: " + progressoMeta); //PRINT
+                    progressoTotal += progressoMeta;
                     contadorMetas++;
+                } else {
+                    System.out.println("    Valor alvo da meta é 0. Ignorando no cálculo."); //PRINT
                 }
             }
+            System.out.println("    Progresso total (soma): " + progressoTotal); //PRINT
+
+        } else {
+            System.out.println("MainController.calcularProgressoGeralUsuario(): Usuário ou lista de metas nulos."); //PRINT
         }
 
         if (contadorMetas > 0) {
-            return progressoTotal / contadorMetas; // Média das *porcentagens*
+            double mediaProgresso = progressoTotal / contadorMetas;
+            System.out.println("  Média do progresso: " + mediaProgresso);  //PRINT
+            return mediaProgresso; // Média das *porcentagens*
         } else {
+            System.out.println("  Nenhuma meta válida encontrada. Retornando 0."); //PRINT
             return 0.0; // Se não houver metas, o progresso é 0.
         }
     }
 
 
     public void atualizarDadosTelaPrincipal() {
-        //System.out.println("MainController.atualizarDadosTelaPrincipal: Iniciando..."); // PRINT
+        System.out.println("MainController.atualizarDadosTelaPrincipal: Iniciando...");
         if (usuarioLogado != null) {
+            System.out.println("MainController: Metas do usuário (dentro de atualizarDadosTelaPrincipal): " + usuarioLogado.getMetas()); // PRINT
             atualizarCalorias();
-            //Muito Importante:
-            progressoGeral.set(calcularProgressoGeralUsuario()/100);
+            progressoGeral.set(calcularProgressoGeralUsuario()); // Agora deve funcionar!
 
+            // Atualiza as tabelas (se necessário - você já está fazendo isso nos listeners dos controllers)
             if (telaDieta != null)
                 ((DietaController) getController(telaDieta)).atualizarTabelaDietasUsuario();
             if (telaExercicio != null)
@@ -334,8 +369,8 @@ public class MainController {
                 ((RefeicaoController) getController(telaRefeicao)).atualizarTabelaRefeicoesUsuario();
             if (telaTreino != null)
                 ((TreinoController) getController(telaTreino)).atualizarTabelaTreinosUsuario();
-        } else{
-            //System.out.println("MainController.atualizarDadosTelaPrincipal: usuarioLogado NULO."); //PRINT
+        } else {
+            System.out.println("MainController.atualizarDadosTelaPrincipal: usuarioLogado NULO.");
         }
     }
 

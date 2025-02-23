@@ -37,6 +37,7 @@
                 <Button onAction="#abrirTelaCriarMeta" style="-fx-background-color: #55c5f5;" text="Criar meta personalizada" />
                 <Button onAction="#atualizarMeta" style="-fx-background-color: #55c5f5;" text="Atualizar meta selecionada" />
                 <Button onAction="#removerMeta" style="-fx-background-color: #55c5f5;" text="Remover meta" />
+                <Button fx:id="buttonCompartilhar" style="-fx-background-color: #55c5f5;" text="Compartilhar Lista" />
             </HBox>
 
             <Label text="Adicione uma meta pré-definida abaixo" textFill="#d7d7d7">

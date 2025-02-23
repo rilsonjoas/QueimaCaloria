@@ -31,11 +31,9 @@ public class EdicaoDietaController {
         this.mainController = mainController;
     }
 
-
-    // Método para receber a dieta a ser editada
     public void setDieta(Dieta dieta) {
         this.dieta = dieta;
-        preencherCampos(); // Preenche os campos com os dados da dieta
+        preencherCampos();
     }
 
     @FXML
@@ -43,7 +41,6 @@ public class EdicaoDietaController {
         campoObjetivo.setItems(FXCollections.observableArrayList(Dieta.ObjetivoDieta.values()));
     }
 
-    // Preenche os campos com os dados da dieta
     private void preencherCampos() {
         if (dieta != null) {
             campoNome.setText(dieta.getNome());
@@ -55,34 +52,18 @@ public class EdicaoDietaController {
     @FXML
     public void atualizarDieta() {
         try {
-            //  Obtém os valores dos campos
             String nome = campoNome.getText();
             Dieta.ObjetivoDieta objetivo = campoObjetivo.getValue();
             int calorias = Integer.parseInt(campoCalorias.getText());
 
-            //  Chama configurarDieta com os novos valores
-            fachada.configurarDieta(dieta, nome, objetivo, calorias, dieta.getUsuario());
-
+            fachada.configurarDieta(dieta, nome, objetivo, calorias, dieta.getUsuario()); // Mantém o usuário
             mensagemErro.setText("Dieta atualizada com sucesso!");
-
-            if(dietaController != null){
-                dietaController.initialize(); //Chama o initialize do DietaController.
-            }
-
-            //ADD
-            if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal();
-            }
-
-            fecharJanela(); // Fecha a janela de edição
+            fecharJanela();
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Calorias devem ser um número inteiro.");
         } catch (DietaNaoEncontradaException e) {
             mensagemErro.setText("Erro ao atualizar dieta: " + e.getMessage());
-        } catch (Exception e) {
-            mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -90,14 +71,5 @@ public class EdicaoDietaController {
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();
-    }
-
-    //Método showAlert (para não repetir código)
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

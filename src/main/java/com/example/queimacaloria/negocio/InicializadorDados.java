@@ -1,10 +1,6 @@
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.*;
-import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
-import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
-import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
-import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,35 +10,33 @@ import java.util.Map;
 
 public class InicializadorDados {
 
-    public static void inicializarDados() throws TreinoNaoEncontradoException {
-        RepositorioDietasArray repositorioDietas = RepositorioDietasArray.getInstanciaUnica();
-        RepositorioExerciciosArray repositorioExercicios = RepositorioExerciciosArray.getInstanciaUnica();
-        RepositorioMetasArray repositorioMetas = RepositorioMetasArray.getInstanciaUnica();
-        RepositorioRefeicoesArray repositorioRefeicoes = RepositorioRefeicoesArray.getInstanciaUnica();
-        RepositorioTreinosArray repositorioTreinos = RepositorioTreinosArray.getInstanciaUnica();
-        ControladorRefeicao controladorRefeicao = new ControladorRefeicao();
+    public static void inicializarDados() {
+        // Agora, *não* instancia os repositórios aqui.  Eles já são instanciados
+        // nos controladores (e são singletons).  O que *talvez* você queira
+        // fazer aqui é *limpar* os repositórios, se for necessário para testes.
+        // Mas, para uma aplicação real, normalmente você *não* limparia os dados
+        // toda vez que a aplicação inicia.
+
+        // Exemplo (OPCIONAL, se você quiser limpar para testes):
+        // RepositorioDietasArray.getInstanciaUnica().limpar();  // Método 'limpar' precisa ser criado
+        // ... faça o mesmo para os outros repositórios ...
     }
 
-
-    // Métodos estáticos para retornar as listas pré-definidas
     public static List<Dieta> inicializarDietas() {
         List<Dieta> dietas = new ArrayList<>();
-        try {
-            dietas.add(new Dieta("Dieta para Emagrecimento Rápido", Dieta.ObjetivoDieta.PERDA_DE_PESO, 1200, new HashMap<>(), null, null));
-            dietas.add(new Dieta("Dieta Low Carb Moderada", Dieta.ObjetivoDieta.PERDA_DE_PESO, 1600, new HashMap<>(), null, null));
-            dietas.add(new Dieta("Dieta da Proteína", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 2500, new HashMap<>(), null, null));
-            dietas.add(new Dieta("Dieta Vegana para Atletas", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 2700, new HashMap<>(), null, null));
-            dietas.add(new Dieta("Dieta Mediterrânea", Dieta.ObjetivoDieta.MANUTENCAO, 2000, new HashMap<>(), null, null));
-            dietas.add(new Dieta("Dieta sem Glúten e Lactose", Dieta.ObjetivoDieta.MANUTENCAO, 2200, new HashMap<>(), null, null));
-            dietas.add(new Dieta("Dieta para Ganho de Massa Muscular", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 3000, new HashMap<>(), null, null));
-            dietas.add(new Dieta("Dieta Flexível para Definição", Dieta.ObjetivoDieta.PERDA_DE_PESO, 1700, new HashMap<>(), null, null));
-            dietas.add(new Dieta("Dieta para Iniciantes", Dieta.ObjetivoDieta.MANUTENCAO, 1900, new HashMap<>(), null, null));
-            dietas.add(new Dieta("Dieta Personalizada do Cliente", Dieta.ObjetivoDieta.MANUTENCAO, 2400, new HashMap<>(), null, null));
-        } catch (Exception e) {
-            System.err.println("Erro ao adicionar dieta pré-definida: " + e.getMessage());
-        }
+        dietas.add(new Dieta("Dieta para Emagrecimento Rápido", Dieta.ObjetivoDieta.PERDA_DE_PESO, 1200,  null));
+        dietas.add(new Dieta("Dieta Low Carb Moderada", Dieta.ObjetivoDieta.PERDA_DE_PESO, 1600, null));
+        dietas.add(new Dieta("Dieta da Proteína", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 2500, null));
+        dietas.add(new Dieta("Dieta Vegana para Atletas", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 2700,  null));
+        dietas.add(new Dieta("Dieta Mediterrânea", Dieta.ObjetivoDieta.MANUTENCAO, 2000, null));
+        dietas.add(new Dieta("Dieta sem Glúten e Lactose", Dieta.ObjetivoDieta.MANUTENCAO, 2200, null));
+        dietas.add(new Dieta("Dieta para Ganho de Massa Muscular", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 3000, null));
+        dietas.add(new Dieta("Dieta Flexível para Definição", Dieta.ObjetivoDieta.PERDA_DE_PESO, 1700, null));
+        dietas.add(new Dieta("Dieta para Iniciantes", Dieta.ObjetivoDieta.MANUTENCAO, 1900, null));
+        dietas.add(new Dieta("Dieta Personalizada do Cliente", Dieta.ObjetivoDieta.MANUTENCAO, 2400, null));
         return dietas;
     }
+    //Restante do código
 
     public static List<Exercicio> inicializarExercicios() {
         List<Exercicio> exercicios = new ArrayList<>();
@@ -60,7 +54,7 @@ public class InicializadorDados {
             exercicios.add(new Exercicio("Natação Livre", "Exercício aeróbico de natação em piscina.", new ArrayList<>(), Exercicio.TipoExercicio.AQUATICO, 40, 10.0, false, 0));
             exercicios.add(new Exercicio("Yoga para Flexibilidade", "Exercício para melhorar a flexibilidade e o equilíbrio.", new ArrayList<>(), Exercicio.TipoExercicio.FLEXIBILIDADE, 40, 4.0, false, 0));
             exercicios.add(new Exercicio("Pilates para Core", "Exercício para fortalecer o core e melhorar a postura.", new ArrayList<>(), Exercicio.TipoExercicio.EQUILIBRIO, 45, 5.0, false, 0));
-            exercicios.add(new Exercicio("Spinning", "Exercício aeróbico em bicicleta estacionária.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 45, 8.0, false, 0));
+            exercicios.add(new Exercicio("Spinning", "Exercício aeróbico em bicicleta estacionária.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 45, 8.0, false,             0));
             exercicios.add(new Exercicio("Elíptico", "Exercício aeróbico de baixo impacto em elíptico.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 30, 7.0, false, 0));
             exercicios.add(new Exercicio("Treino Funcional", "Treino que combina diferentes exercícios em circuito.", new ArrayList<>(), Exercicio.TipoExercicio.OUTRO, 60, 6.0, false, 0));
             exercicios.add(new Exercicio("Burpees", "Exercício que trabalha o corpo todo.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 20, 10.0, false, 0));
@@ -370,7 +364,8 @@ public class InicializadorDados {
         }
         return refeicoes;
     }
-    public static List<Treino> inicializarTreinos() throws TreinoNaoEncontradoException{
+
+    public static List<Treino> inicializarTreinos() {
         List<Treino> treinos = new ArrayList<>();
 
         Treino treino1 = new Treino();

@@ -37,10 +37,6 @@ public class Main {
             fachada.adicionarDietaUsuario(usuario, dieta);
             System.out.println("Dieta adicionada ao usuário.");
 
-
-            double progressoGeral = fachada.calcularProgressoGeralUsuario(usuario);
-            System.out.println("Progresso geral do usuário: " + progressoGeral + "%");
-
             int idadeUsuario = fachada.calcularIdadeUsuario(usuario);
             System.out.println("Idade do usuário: " + idadeUsuario);
 
@@ -51,7 +47,7 @@ public class Main {
 
         // Testes de Dieta
         Dieta dieta = new Dieta();
-        Usuario userDieta = new Usuario();
+        Usuario userDieta = new Usuario(); //Removido
 
         try {
             fachada.configurarDieta(dieta, "Dieta de Teste", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 2500, userDieta);
@@ -70,27 +66,7 @@ public class Main {
             macros2.put("Gorduras", 40.0);
 
             fachada.configurarRefeicao(refeicao2, "Almoço", "Frango grelhado com batata doce", macros2);
-            fachada.inserirRefeicaoDieta(dieta, refeicao1);
-            fachada.inserirRefeicaoDieta(dieta, refeicao2);
 
-            System.out.println("Refeições inseridas na dieta.");
-
-            Map<String, Double> macronutrientes = fachada.calcularTotalMacronutrientesDieta(dieta);
-            System.out.println("Macronutrientes totais da dieta: " + macronutrientes);
-
-            int caloriasTotais = fachada.calcularTotalCaloriasDieta(dieta);
-            System.out.println("Calorias totais da dieta: " + caloriasTotais);
-
-            double progressoDieta = fachada.calcularProgressoDieta(dieta);
-            System.out.println("Progresso da dieta: " + progressoDieta + "%");
-
-            boolean dietaConcluida = fachada.verificarDietaConcluida(dieta);
-            System.out.println("Dieta concluída? " + dietaConcluida);
-
-
-            // Teste de exclusão
-            fachada.excluirRefeicaoDieta(dieta, refeicao1);
-            System.out.println("Refeição excluída da dieta (teste).");
 
         } catch (DietaNaoEncontradaException e) {
             System.err.println("Erro na dieta: " + e.getMessage());

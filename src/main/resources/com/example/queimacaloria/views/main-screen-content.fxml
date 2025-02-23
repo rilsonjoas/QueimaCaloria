@@ -60,7 +60,7 @@
                 <Region HBox.hgrow="ALWAYS" />
                 <Button fx:id="buttonVerMaisExercicios" style="-fx-background-color: #55c5f5;" text="Ver Mais" />
             </HBox>
-            <Label fx:id="labelAtividadesRecentes" text="Nenhum exercício recente." textFill="WHITE" wrapText="true" />
+            <Label fx:id="labelAtividadesRecentes" text="Nenhuma atividade recente." textFill="WHITE" wrapText="true" />
             <VBox.margin><Insets top="10" /></VBox.margin>
         </VBox>
     </HBox>

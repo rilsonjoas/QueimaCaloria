@@ -84,26 +84,6 @@ public class ControladorUsuario {
         }
     }
 
-    public double getProgresso(Usuario usuario) {
-        double progressoTotal = 0;
-        int contadorAtividades = 0;
-
-        for (Meta meta : usuario.getMetas()) {
-            progressoTotal += calcularProgressoMeta(meta);
-            contadorAtividades++;
-        }
-        for (Treino treino : usuario.getTreinos()) {
-            progressoTotal += calcularProgressoTreino(treino);
-            contadorAtividades++;
-        }
-        for (Dieta dieta : usuario.getDietas()) {
-            progressoTotal += calcularProgressoDieta(dieta);
-            contadorAtividades++;
-        }
-
-        return contadorAtividades > 0 ? progressoTotal / contadorAtividades : 0;
-    }
-
     public int getIdade(Usuario usuario) {
         if (usuario.getDataNascimento() == null) return 0;
         return Period.between(usuario.getDataNascimento(), LocalDate.now()).getYears();
@@ -118,20 +98,6 @@ public class ControladorUsuario {
         if (treino.getExercicios().isEmpty()) return 0.0;
         long exerciciosConcluidos = treino.getExercicios().stream().filter(Exercicio::isConcluido).count();
         return (exerciciosConcluidos / (double) treino.getExercicios().size()) * 100.0;
-    }
-
-    public double calcularProgressoDieta(Dieta dieta) {
-        int caloriasDiarias = dieta.getCaloriasDiarias();
-        if (caloriasDiarias == 0) return 0;
-        return (double) calcularCaloriasTotaisDieta(dieta) / caloriasDiarias * 100;
-    }
-
-    public int calcularCaloriasTotaisDieta(Dieta dieta) {
-        int totalCalorias = 0;
-        for (Refeicao refeicao : dieta.getRefeicoes()) {
-            totalCalorias += refeicao.getCalorias();
-        }
-        return totalCalorias;
     }
 
     public boolean isMetaConcluida(Meta meta) {

@@ -40,6 +40,7 @@ public class CriacaoRefeicaoController {
         this.mainController = mainController;
     }
 
+
     @FXML
     public void criarRefeicao() {
         try {
@@ -56,20 +57,13 @@ public class CriacaoRefeicaoController {
 
             mensagemErro.setText("Refeição criada com sucesso!");
 
-            if (mainController != null && mainController.getUsuarioLogado() != null) {
-                try {
-                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado);
-                } catch (UsuarioNaoEncontradoException e) {
-                    mensagemErro.setText("Erro ao atualizar usuário");
-                }
-            }
-
-
+            // Atualiza a tabela *primeiro*
             if (refeicaoController != null) {
-                refeicaoController.atualizarTabelaRefeicoesUsuario(); //Isso aqui não é bom.
+                refeicaoController.atualizarTabelaRefeicoesUsuario();
             }
-            if(mainController != null){
+
+            // *Depois*, notifica o MainController para atualizar a tela principal
+            if (mainController != null) {
                 mainController.atualizarDadosTelaPrincipal();
             }
 
@@ -77,10 +71,12 @@ public class CriacaoRefeicaoController {
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Valores de macronutrientes inválidos.");
-        } catch (Exception e) {
+        } catch (Exception e) { // Poderia ser uma exceção mais específica, se a Fachada lançar.
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
         }
     }
+
+
 
     @FXML
     private void fecharJanela() {

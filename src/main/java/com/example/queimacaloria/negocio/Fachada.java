@@ -1,7 +1,6 @@
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.controllers.MainController;
-import com.example.queimacaloria.dados.RepositorioUsuariosArray;
 import com.example.queimacaloria.excecoes.*;
 
 import java.time.LocalDate;
@@ -19,9 +18,7 @@ public class Fachada {
     private ControladorMeta controladorMeta;
     private ControladorRefeicao controladorRefeicao;
     private ControladorTreino controladorTreino;
-
-    // Adicionado: Referência ao MainController
-    private MainController mainController;
+    private MainController mainController; // Adicionado
 
     private Fachada() {
         this.controladorUsuario = new ControladorUsuario();
@@ -39,24 +36,21 @@ public class Fachada {
         return instanciaUnica;
     }
 
-    // Adicionado: Método para definir o MainController
+    // Método para definir o MainController
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
-
-    // MÉTODO para cadastro
     public Usuario cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
-                                    Usuario.Sexo sexo, float peso, float altura)  { // Removida a exception
-        // Verifica se o e-mail já existe (importante!)
+                                    Usuario.Sexo sexo, float peso, float altura) {
+        // Verifica se o e-mail já existe
         List<Usuario> usuarios = controladorUsuario.listarUsuarios();
         for (Usuario user : usuarios) {
             if (user.getEmail().equals(email)) {
-                throw new IllegalArgumentException("Email já cadastrado."); // Use IllegalArgumentException, mais apropriado
+                throw new IllegalArgumentException("Email já cadastrado.");
             }
         }
 
-        // Cria e adiciona o novo usuário diretamente
         Usuario novoUsuario = new Usuario();
         novoUsuario.setNome(nome);
         novoUsuario.setEmail(email);
@@ -65,13 +59,12 @@ public class Fachada {
         novoUsuario.setSexo(sexo);
         novoUsuario.setPeso(peso);
         novoUsuario.setAltura(altura);
-        // Adiciona o usuário ao repositório e já retorna o usuário.
-        controladorUsuario.cadastrarUsuario(novoUsuario);
-        return novoUsuario;
 
+        controladorUsuario.cadastrarUsuario(novoUsuario);
+        return novoUsuario; // Retorna o usuário criado
     }
 
-    // Métodos de Usuário
+    // Métodos de Usuário (Mantidos ou com pequenas adaptações)
     public void atualizarDadosUsuario(Usuario usuario, String nome, String email, String senha,
                                       LocalDate dataNascimento,
                                       Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
@@ -82,7 +75,7 @@ public class Fachada {
         controladorUsuario.cadastrarMeta(usuario, meta);
     }
 
-    public Usuario buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException{
+    public Usuario buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
         return controladorUsuario.buscarPorId(id);
     }
 
@@ -94,50 +87,27 @@ public class Fachada {
         controladorUsuario.adicionarDieta(usuario, dieta);
     }
 
+    //REMOVIDO, POIS A LÓGICA AGORA ESTÁ NO MAIN CONTROLLER
+    /*
     public double calcularProgressoGeralUsuario(Usuario usuario) {
         return controladorUsuario.getProgresso(usuario);
     }
-
+*/
     public int calcularIdadeUsuario(Usuario usuario) {
         return controladorUsuario.getIdade(usuario);
     }
 
-    //Adicionado o método listarUsuários
     public List<Usuario> listarUsuarios() {
         return controladorUsuario.listarUsuarios();
     }
 
-    // Métodos de Dieta
+    // Métodos de Dieta (Adaptados para a nova lógica)
     public void configurarDieta(Dieta dieta, String nome, Dieta.ObjetivoDieta objetivo, int caloriasDiarias,
                                 Usuario usuario) throws DietaNaoEncontradaException {
         controladorDieta.configurarDieta(dieta, nome, objetivo, caloriasDiarias, usuario);
     }
 
-    public void inserirRefeicaoDieta(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
-        controladorDieta.inserirRefeicao(dieta, refeicao);
-    }
-
-    public void excluirRefeicaoDieta(Dieta dieta, Refeicao refeicao) throws DietaNaoEncontradaException {
-        controladorDieta.excluirRefeicao(dieta, refeicao);
-    }
-
-    public Map<String, Double> calcularTotalMacronutrientesDieta(Dieta dieta) {
-        return controladorDieta.calcularTotalMacronutrientes(dieta);
-    }
-
-    public int calcularTotalCaloriasDieta(Dieta dieta) {
-        return controladorDieta.calcularTotalCalorias(dieta);
-    }
-
-    public double calcularProgressoDieta(Dieta dieta) {
-        return controladorDieta.calcularProgresso(dieta);
-    }
-
-    public boolean verificarDietaConcluida(Dieta dieta) {
-        return controladorDieta.verificarDietaConcluida(dieta);
-    }
-
-    // Métodos de Exercício
+    // Métodos de Exercício (Mantidos)
     public void configurarExercicio(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
                                     int tempo, double caloriasQueimadasPorMinuto) throws ExercicioNaoEncontradoException {
         controladorExercicio.inicializar(exercicio, nome, descricao, tipo, tempo, caloriasQueimadasPorMinuto);
@@ -159,26 +129,16 @@ public class Fachada {
         controladorExercicio.concluir(exercicio);
     }
 
-    // Adicionado o método de remoção de exercício
     public void removerExercicio(UUID id) throws ExercicioNaoEncontradoException {
         controladorExercicio.remover(id);
     }
 
-    // Métodos de Meta
+    // Métodos de Meta (Mantidos)
     public void configurarMeta(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
                                LocalDate dataConclusao) throws MetaNaoEncontradaException {
-        System.out.println("Fachada.configurarMeta:");
-        System.out.println("  Meta ID: " + meta.getId());
-        System.out.println("  Descrição: " + descricao);
-        System.out.println("  Tipo: " + tipo);
-        System.out.println("  Valor Alvo: " + valorAlvo);
-        System.out.println("  Progresso Atual: " + progressoAtual);
-        System.out.println("  Data Conclusão: " + dataConclusao);
-
         controladorMeta.inicializar(meta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
 
-        // MUITO IMPORTANTE: Depois de inicializar (ou seja, criar ou atualizar)
-        // a meta, adicione-a ao usuário logado, se houver um.
+        // MUITO IMPORTANTE: Adiciona a meta ao usuário logado, se houver
         if (mainController != null && mainController.getUsuarioLogado() != null) {
             try {
                 Usuario usuarioAtualizado = controladorUsuario.buscarPorId(mainController.getUsuarioLogado().getId());
@@ -206,7 +166,7 @@ public class Fachada {
         controladorMeta.concluirMeta(meta);
     }
 
-    // Métodos de Refeição
+    // Métodos de Refeição (Mantidos)
     public void configurarRefeicao(Refeicao refeicao, String nome, String descricao,
                                    Map<String, Double> macronutrientes) {  // Já está correto
         controladorRefeicao.inicializar(refeicao, nome, descricao, macronutrientes);
@@ -227,12 +187,14 @@ public class Fachada {
     public void removerRefeicao(UUID id) throws RefeicaoNaoEncontradaException {
         controladorRefeicao.remover(id);
     }
-
+    public void removerDieta(UUID id) throws DietaNaoEncontradaException{
+        controladorDieta.removerDieta(id);
+    }
     public void removerMeta(UUID id) throws MetaNaoEncontradaException {
         controladorMeta.remover(id);
     }
 
-    // Métodos de Treino
+    // Métodos de Treino (Mantidos)
     public void configurarTreino(Treino treino, String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade)
             throws TreinoNaoEncontradoException {
         controladorTreino.inicializar(treino, nome, tipoDeTreino, duracao, nivelDeDificuldade);
@@ -257,6 +219,7 @@ public class Fachada {
         controladorTreino.atualizarProgresso(treino);
     }
 
+    // Métodos de Listagem (Mantidos)
     public List<Dieta> listarDietas() {
         return controladorDieta.listarDietas();
     }

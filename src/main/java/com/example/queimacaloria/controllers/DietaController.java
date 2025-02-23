@@ -3,9 +3,7 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.*;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,11 +13,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import java.util.HashMap;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DietaController {
 
@@ -27,22 +22,13 @@ public class DietaController {
     @FXML private TableColumn<Dieta, String> colunaNomeUsuario;
     @FXML private TableColumn<Dieta, Dieta.ObjetivoDieta> colunaObjetivoUsuario;
     @FXML private TableColumn<Dieta, Integer> colunaCaloriasUsuario;
-    @FXML private TableColumn<Dieta, Double> colunaProgressoUsuario;
 
     @FXML private TableView<Dieta> tabelaDietasPreDefinidas;
     @FXML private TableColumn<Dieta, String> colunaNomePreDefinida;
     @FXML private TableColumn<Dieta, Dieta.ObjetivoDieta> colunaObjetivoPreDefinida;
     @FXML private TableColumn<Dieta, Integer> colunaCaloriasPreDefinida;
-    //@FXML private TableColumn<Dieta, Double> colunaProgressoPreDefinida; //REMOVER
 
     @FXML private Label mensagemDieta;
-    @FXML private Label labelNomeDieta;
-    @FXML private Label labelObjetivoDieta;
-    @FXML private Label labelCaloriasDieta;
-    @FXML private Label labelProgressoDieta;
-
-
-    private Dieta dietaSelecionada;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private MainController mainController;
@@ -55,52 +41,32 @@ public class DietaController {
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
-        configurarTabelaPreDefinida(); //Agora sem a coluna progresso
+        configurarTabelaPreDefinida();
         carregarDietasPreDefinidas();
+        atualizarTabelaDietasUsuario(); // Importante para carregar ao iniciar
     }
 
     private void configurarTabelaUsuario() {
         colunaNomeUsuario.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaObjetivoUsuario.setCellValueFactory(new PropertyValueFactory<>("objetivo"));
         colunaCaloriasUsuario.setCellValueFactory(new PropertyValueFactory<>("caloriasDiarias"));
-        colunaProgressoUsuario.setCellValueFactory(cellData -> {
-            Dieta dieta = cellData.getValue();
-            double progresso = (dieta.getCaloriasDiarias() > 0) ? (fachada.calcularTotalCaloriasDieta(dieta)*100.0)/dieta.getCaloriasDiarias() : 0.0;
-            return new SimpleDoubleProperty(progresso).asObject();
-        });
-
-        // Adicione um listener de SELEÇÃO à tabela:
-        tabelaDietasUsuario.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    dietaSelecionada = newValue;  // Guarda a dieta selecionada
-                    if (mainController != null) {
-                        mainController.setDietaSelecionada(newValue); // Define no MainController
-                    }
-                    exibirDetalhesDieta(newValue); //Se clicar em outra dieta da tabela, atualiza os detalhes.
-                }
-        );
     }
 
     private void configurarTabelaPreDefinida() {
         colunaNomePreDefinida.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaObjetivoPreDefinida.setCellValueFactory(new PropertyValueFactory<>("objetivo"));
         colunaCaloriasPreDefinida.setCellValueFactory(new PropertyValueFactory<>("caloriasDiarias"));
-        //Removido
-        //colunaProgressoPreDefinida.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().calcularProgresso()).asObject()); //Mesmo método de progresso
-
     }
 
     private void carregarDietasPreDefinidas() {
         try {
-            // Usa o InicializadorDados para OBTER uma cópia. Não modifica o original.
-            List<Dieta> dietas = InicializadorDados.inicializarDietas(); // Método estático
+            List<Dieta> dietas = InicializadorDados.inicializarDietas();
             dietasPreDefinidas.setAll(dietas);
             tabelaDietasPreDefinidas.setItems(dietasPreDefinidas);
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar dietas pré-definidas", e.getMessage());
         }
     }
-
 
     @FXML
     public void abrirTelaCriacaoDieta() {
@@ -112,9 +78,10 @@ public class DietaController {
             stage.setScene(scene);
 
             CriacaoDietaController controller = loader.getController();
-            controller.setDietaController(this); // Injeta o DietaController
-            controller.setMainController(mainController);  // Injeta o MainController
+            controller.setDietaController(this);
+            controller.setMainController(mainController);
             stage.showAndWait();
+            atualizarTabelaDietasUsuario(); // Atualiza após criar
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
@@ -130,23 +97,13 @@ public class DietaController {
                 Parent root = loader.load();
                 EdicaoDietaController controller = loader.getController();
                 controller.setDietaController(this);
-                controller.setMainController(mainController); //Muito importante
+                controller.setMainController(mainController);
                 controller.setDieta(dietaSelecionada);
                 Stage stage = new Stage();
                 stage.setTitle("Editar Dieta");
                 stage.setScene(new Scene(root));
                 stage.showAndWait();
-
-                //ATUALIZA USUÁRIO LOGADO
-                if(mainController != null){
-                    try{
-                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                        mainController.setUsuarioLogado(usuarioAtualizado);
-                    } catch(UsuarioNaoEncontradoException e){
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.", "O usuário logado não pôde ser encontrado.");
-                    }
-                }
-
+                atualizarTabelaDietasUsuario(); // Atualiza após editar
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -156,27 +113,15 @@ public class DietaController {
         }
     }
 
-
     @FXML
     public void realizarRemocaoDieta() {
         Dieta dietaSelecionada = tabelaDietasUsuario.getSelectionModel().getSelectedItem();
         if (dietaSelecionada != null) {
             try {
-                fachada.configurarDieta(dietaSelecionada, null, null, 0, null); //Removendo, precisa do objeto dieta para remover.
+                fachada.removerDieta(dietaSelecionada.getId()); // Remove pela fachada
                 atualizarTabelaDietasUsuario();
                 mensagemDieta.setText("Dieta removida.");
-
-                //ATUALIZA USUÁRIO LOGADO
-                if(mainController != null){
-                    try{
-                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                        mainController.setUsuarioLogado(usuarioAtualizado);
-                    } catch(UsuarioNaoEncontradoException e){
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.", "O usuário logado não pôde ser encontrado.");
-                    }
-                }
-
-            } catch (Exception e) {
+            } catch (DietaNaoEncontradaException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover dieta", e.getMessage());
             }
         } else {
@@ -192,26 +137,23 @@ public class DietaController {
             return;
         }
 
-        System.out.println("DietaController.adicionarDietaPreDefinida: Iniciando..."); // PRINT
         try {
+            // Cria uma *NOVA* instância, copiando os valores.  NÃO MODIFICA A ORIGINAL.
             Dieta novaDieta = new Dieta(
                     dietaSelecionada.getNome(),
                     dietaSelecionada.getObjetivo(),
                     dietaSelecionada.getCaloriasDiarias(),
-                    new HashMap<>(dietaSelecionada.getMacronutrientes()),
-                    new ArrayList<>(dietaSelecionada.getRefeicoes()),
-                    null
+                    null // Sem refeições!
             );
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
-                novaDieta.setUsuario(mainController.getUsuarioLogado()); //  <-  USA O USUÁRIO LOGADO
-                System.out.println("DietaController.adicionarDietaPreDefinida: Usuário logado: " + mainController.getUsuarioLogado().getEmail()); //PRINT
+                novaDieta.setUsuario(mainController.getUsuarioLogado());
                 fachada.configurarDieta(novaDieta, novaDieta.getNome(), novaDieta.getObjetivo(),
                         novaDieta.getCaloriasDiarias(), novaDieta.getUsuario());
                 atualizarTabelaDietasUsuario();
                 mensagemDieta.setText("Dieta adicionada.");
 
-                //ATUALIZA O USUÁRIO LOGADO -  CORRETO E COMPLETO
+                // ATUALIZA O USUÁRIO LOGADO - CORRETO E COMPLETO
                 if (mainController != null) {
                     try {
                         Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
@@ -222,7 +164,6 @@ public class DietaController {
                 }
 
             } else {
-                System.out.println("DietaController.adicionarDietaPreDefinida: Usuário logado é nulo.");// PRINT
                 showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário logado", "Não foi possível adicionar a dieta.");
             }
 
@@ -232,75 +173,18 @@ public class DietaController {
     }
 
     public void atualizarTabelaDietasUsuario() {
-        System.out.println("DietaController.atualizarTabelaDietasUsuario: Iniciando...");
         try {
             List<Dieta> listaDietas = fachada.listarDietas();
-
             if (mainController != null && mainController.getUsuarioLogado() != null) {
-                System.out.println("DietaController.atualizarTabelaDietasUsuario: Filtrando dietas para o usuário: " + mainController.getUsuarioLogado().getEmail());
-                List<Dieta> dietasDoUsuario = listaDietas.stream()
-                        .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(mainController.getUsuarioLogado().getId()))
-                        .collect(Collectors.toList());
-
-                System.out.println("Dietas do usuário (antes do observable): " + dietasDoUsuario); // PRINT: Dietas *antes* do observable
-
-                ObservableList<Dieta> observableDietas = FXCollections.observableArrayList(dietasDoUsuario);
-                tabelaDietasUsuario.setItems(observableDietas);
-
-                System.out.println("Dietas na ObservableList: " + observableDietas); // PRINT: Dietas *na* ObservableList
-
-                // Adiciona o listener *para cada dieta*
-                for (Dieta dieta : observableDietas) {
-                    // Print para verificar se estamos entrando no loop
-                    System.out.println("Adicionando listener para dieta: " + dieta.getNome() + ", ID: " + dieta.getId());
-
-                    dieta.getRefeicoes().addListener((ListChangeListener.Change<? extends Refeicao> change) -> {
-                        System.out.println("Listener de refeições disparado para dieta: " + dieta.getNome() + ", ID: " + dieta.getId());
-
-                        // Adicione mais prints *dentro* do listener para verificar o estado *imediatamente antes* do refresh:
-                        System.out.println("  Refeições da dieta (dentro do listener): " + dieta.getRefeicoes());
-                        System.out.println("  Calorias diárias da dieta (dentro do listener): " + dieta.getCaloriasDiarias());
-                        try {
-                            System.out.println("  Progresso calculado (dentro do listener): " + fachada.calcularProgressoDieta(dieta));
-                        } catch (Exception e) {
-                            System.out.println("  Erro ao calcular progresso dentro do listener: " + e.getMessage());
-                            e.printStackTrace();
-                        }
-
-                        tabelaDietasUsuario.refresh(); // Atualiza a tabela!
-                    });
-                }
-
-            } else {
-                System.out.println("DietaController.atualizarTabelaDietasUsuario: Usuário logado é nulo. Exibindo lista vazia.");
-                tabelaDietasUsuario.setItems(FXCollections.observableArrayList());
+                // Filtra as dietas pelo usuário logado:
+                Usuario usuarioLogado = mainController.getUsuarioLogado();
+                listaDietas = listaDietas.stream()
+                        .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(usuarioLogado.getId()))
+                        .toList();
             }
-
-            if (!tabelaDietasUsuario.getItems().isEmpty()) {
-                tabelaDietasUsuario.getSelectionModel().select(0);
-                exibirDetalhesDieta(tabelaDietasUsuario.getItems().get(0));
-            } else {
-                exibirDetalhesDieta(null);
-            }
-
+            tabelaDietasUsuario.setItems(FXCollections.observableArrayList(listaDietas));
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar dietas", e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-
-    private void exibirDetalhesDieta(Dieta dieta) {
-        if (dieta != null) {
-            if (labelNomeDieta != null) labelNomeDieta.setText("Nome: " + dieta.getNome());
-            if (labelObjetivoDieta != null) labelObjetivoDieta.setText("Objetivo: " + dieta.getObjetivo());
-            if (labelCaloriasDieta != null) labelCaloriasDieta.setText("Calorias: " + dieta.getCaloriasDiarias());
-            if (labelProgressoDieta != null) labelProgressoDieta.setText("Progresso: " + String.format("%.2f%%", dieta.calcularProgresso()));
-        } else {
-            if (labelNomeDieta != null) labelNomeDieta.setText("Nome: ");
-            if (labelObjetivoDieta != null) labelObjetivoDieta.setText("Objetivo: ");
-            if (labelCaloriasDieta != null) labelCaloriasDieta.setText("Calorias: ");
-            if (labelProgressoDieta != null) labelProgressoDieta.setText("Progresso: ");
         }
     }
 

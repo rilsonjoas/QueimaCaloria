@@ -7,19 +7,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.beans.binding.Bindings; // Importante!
+import javafx.beans.binding.Bindings;
 
 public class PerfilController {
 
-    // Labels para os valores
     @FXML private Label labelNomeAtual;
     @FXML private Label labelEmailAtual;
     @FXML private Label labelPesoAtual;
     @FXML private Label labelAlturaAtual;
     @FXML private Label labelIMCatual;
 
-
-    // Campos de texto
     @FXML private TextField campoNome;
     @FXML private TextField campoEmail;
     @FXML private TextField campoPeso;
@@ -30,15 +27,18 @@ public class PerfilController {
     private MainController mainController;
     private Usuario usuarioLogado;
 
+    // Define o controlador principal.
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
+    // Define o usuário logado e configura os bindings.
     public void setUsuarioLogado(Usuario usuario) {
         this.usuarioLogado = usuario;
-        bindLabels(); //Chama o método que configura os bindings.  DEPOIS de definir usuarioLogado.
+        bindLabels();
     }
 
+    // Configura os bindings dos labels e campos de texto.
     private void bindLabels() {
         if (usuarioLogado != null) {
             labelNomeAtual.textProperty().bind(usuarioLogado.nomeProperty());
@@ -57,8 +57,6 @@ public class PerfilController {
                     usuarioLogado.imcProperty()
             ));
 
-
-            // Mantém os bindings bidirecionais para os campos de texto.
             campoNome.textProperty().bindBidirectional(usuarioLogado.nomeProperty());
             campoEmail.textProperty().bindBidirectional(usuarioLogado.emailProperty());
             campoPeso.textProperty().bindBidirectional(usuarioLogado.pesoProperty(), new javafx.util.converter.NumberStringConverter());
@@ -67,7 +65,7 @@ public class PerfilController {
         }
     }
 
-
+    // Atualiza os dados do perfil do usuário.
     @FXML
     public void atualizarPerfil() {
         if (usuarioLogado == null) {
@@ -77,7 +75,6 @@ public class PerfilController {
 
         try {
             fachada.atualizarDadosUsuario(usuarioLogado, usuarioLogado.getNome(), usuarioLogado.getEmail(), null, null, null, usuarioLogado.getPeso(), usuarioLogado.getAltura());
-            // atualizarLabels(); // Não precisa mais! Os bindings fazem a atualização.
             mensagemPerfil.setText("Perfil atualizado com sucesso!");
 
         } catch (NumberFormatException e) {
@@ -90,6 +87,7 @@ public class PerfilController {
         }
     }
 
+    // Volta para a tela principal.
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {
@@ -99,6 +97,7 @@ public class PerfilController {
         }
     }
 
+    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

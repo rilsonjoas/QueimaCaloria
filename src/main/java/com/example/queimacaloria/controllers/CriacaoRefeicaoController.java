@@ -32,15 +32,17 @@ public class CriacaoRefeicaoController {
 
     private MainController mainController;
 
+    // Define o controlador da tela de refeições.
     public void setRefeicaoController(RefeicaoController refeicaoController) {
         this.refeicaoController = refeicaoController;
     }
 
+    // Define o controlador principal.
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
 
-
+    // Cria uma nova refeição.
     @FXML
     public void criarRefeicao() {
         try {
@@ -57,12 +59,10 @@ public class CriacaoRefeicaoController {
 
             mensagemErro.setText("Refeição criada com sucesso!");
 
-            // Atualiza a tabela *primeiro*
             if (refeicaoController != null) {
                 refeicaoController.atualizarTabelaRefeicoesUsuario();
             }
 
-            // *Depois*, notifica o MainController para atualizar a tela principal
             if (mainController != null) {
                 mainController.atualizarDadosTelaPrincipal();
             }
@@ -71,13 +71,12 @@ public class CriacaoRefeicaoController {
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Valores de macronutrientes inválidos.");
-        } catch (Exception e) { // Poderia ser uma exceção mais específica, se a Fachada lançar.
+        } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
         }
     }
 
-
-
+    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();

@@ -1,3 +1,4 @@
+
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioDietasArray;
@@ -10,10 +11,12 @@ public class ControladorDieta {
 
     private RepositorioDietasArray repositorio;
 
+    // Construtor, inicializa o repositório.
     public ControladorDieta() {
         this.repositorio = RepositorioDietasArray.getInstanciaUnica();
     }
 
+    // Configura uma dieta, atualizando ou adicionando ao repositório.
     public void configurarDieta(Dieta dieta, String nome, Dieta.ObjetivoDieta objetivo, int caloriasDiarias, Usuario usuario) throws DietaNaoEncontradaException {
         dieta.setNome(nome);
         dieta.setObjetivo(objetivo);
@@ -27,14 +30,12 @@ public class ControladorDieta {
         }
     }
 
+    // Lista todas as dietas do repositório.
     public List<Dieta> listarDietas() {
         return repositorio.getAll();
     }
 
-    public void removerDieta(Dieta dieta) throws DietaNaoEncontradaException{
-        repositorio.remover(dieta.getId());
-    }
-
+    // Remove uma dieta do repositório (usando o ID).
     public void removerDieta(UUID id) throws DietaNaoEncontradaException{
         repositorio.remover(id);
     }

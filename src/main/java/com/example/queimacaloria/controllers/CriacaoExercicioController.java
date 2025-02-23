@@ -9,7 +9,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import lombok.Setter;
 
-// Controller para a tela de criação de exercício
 public class CriacaoExercicioController {
 
     @FXML
@@ -21,7 +20,8 @@ public class CriacaoExercicioController {
     @FXML
     private TextField campoTempo;
     @FXML
-    private TextField campoCaloriasPorMinuto;
+    private TextField campoCaloriasQueimadas;
+
     @FXML
     private Label mensagemErro;
 
@@ -32,32 +32,31 @@ public class CriacaoExercicioController {
 
     private MainController mainController;
 
+    // Define o controlador principal.
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
-
+    // Inicializa o ChoiceBox com os tipos de exercício.
     @FXML
-    // Inicializa o ChoiceBox com os tipos de exercício
     public void initialize() {
         campoTipo.setItems(FXCollections.observableArrayList(Exercicio.TipoExercicio.values()));
     }
 
+    // Cria um novo exercício.
     @FXML
-    // Método chamado ao clicar no botão "Criar Exercício"
     public void criarExercicio() {
         try {
             String nome = campoNome.getText();
             String descricao = campoDescricao.getText();
             Exercicio.TipoExercicio tipo = campoTipo.getValue();
             int tempo = Integer.parseInt(campoTempo.getText());
-            double caloriasPorMinuto = Double.parseDouble(campoCaloriasPorMinuto.getText());
+            double caloriasQueimadas = Double.parseDouble(campoCaloriasQueimadas.getText());
 
             Exercicio novoExercicio = new Exercicio();
-            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, caloriasPorMinuto);
+            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, caloriasQueimadas);
 
             mensagemErro.setText("Exercício criado com sucesso!");
 
-            // Atualiza a tabela de exercícios no ExercicioController
             if (exercicioController != null) {
                 exercicioController.initialize();
             }
@@ -75,10 +74,11 @@ public class CriacaoExercicioController {
         } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
         }
+
     }
 
+    // Fecha a janela atual.
     @FXML
-    // Fecha a janela atual
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();

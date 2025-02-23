@@ -9,10 +9,10 @@ import java.util.Map;
 
 public class Main {
 
+    // Método principal para testes (pode ser removido ou adaptado).
     public static void main(String[] args) {
         Fachada fachada = Fachada.getInstanciaUnica();
 
-        // Testes de Usuário
         Usuario usuario = new Usuario();
         try {
             fachada.atualizarDadosUsuario(usuario, "João Silva", "joao@email.com", "senha123",
@@ -26,20 +26,15 @@ public class Main {
             fachada.cadastrarMetaUsuario(usuario, meta);
             System.out.println("Meta cadastrada para o usuário.");
 
-
             Treino treino = new Treino();
             fachada.configurarTreino(treino, "Treino de Força", "Força", 60, 3);
-            fachada.adicionarTreinoUsuario(usuario, treino);
+            fachada.adicionarTreinoAoUsuario(usuario, treino);
             System.out.println("Treino adicionado ao usuário.");
 
             Dieta dieta = new Dieta();
             fachada.configurarDieta(dieta, "Dieta Low Carb", Dieta.ObjetivoDieta.PERDA_DE_PESO, 1800, usuario);
             fachada.adicionarDietaUsuario(usuario, dieta);
             System.out.println("Dieta adicionada ao usuário.");
-
-            //REMOVIDO
-            //double progressoGeral = fachada.calcularProgressoGeralUsuario(usuario);
-            //System.out.println("Progresso geral do usuário: " + progressoGeral + "%");
 
             int idadeUsuario = fachada.calcularIdadeUsuario(usuario);
             System.out.println("Idade do usuário: " + idadeUsuario);
@@ -48,10 +43,8 @@ public class Main {
             System.err.println("Erro no usuário: " + e.getMessage());
         }
 
-
-        // Testes de Dieta
         Dieta dieta = new Dieta();
-        Usuario userDieta = new Usuario(); //Removido
+        Usuario userDieta = new Usuario();
 
         try {
             fachada.configurarDieta(dieta, "Dieta de Teste", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 2500, userDieta);
@@ -76,27 +69,21 @@ public class Main {
             System.err.println("Erro na dieta: " + e.getMessage());
         }
 
-        // Testes de Exercicio
         Exercicio exercicio = new Exercicio();
         try {
             fachada.configurarExercicio(exercicio, "Corrida", "Corrida leve", Exercicio.TipoExercicio.CARDIO, 30, 10.0);
             fachada.adicionarMusculoExercicio(exercicio, "Pernas");
             System.out.println("Exercício configurado.");
 
-            double caloriasQueimadas = fachada.calcularCaloriasQueimadasExercicio(exercicio);
-            System.out.println("Calorias queimadas no exercício: " + caloriasQueimadas);
-
             fachada.concluirExercicio(exercicio);
             System.out.println("Exercício concluído.");
 
-            //Teste de remoção
             fachada.removerMusculoExercicio(exercicio, "Pernas");
             System.out.println("Músculo removido do exercício(Teste).");
         } catch (ExercicioNaoEncontradoException e) {
             System.err.println("Erro no exercício: " + e.getMessage());
         }
 
-        // Testes de Meta
         Meta meta = new Meta();
         try {
             fachada.configurarMeta(meta, "Ganhar 2kg de massa", Meta.Tipo.GANHO_DE_MASSA, 2.0, 0.0, LocalDate.of(2024, 10, 15));
@@ -115,7 +102,6 @@ public class Main {
             System.err.println("Erro na Meta: " + e.getMessage());
         }
 
-        // Testes de Refeição
         Refeicao refeicao = new Refeicao();
         Map<String, Double> macronutrientesRefeicao = new HashMap<>();
         macronutrientesRefeicao.put("Proteínas", 40.0);
@@ -130,15 +116,13 @@ public class Main {
         Map<String, Double> macrosCalculados = fachada.calcularMacronutrientesRefeicao(refeicao);
         System.out.println("Macronutrientes da refeição: " + macrosCalculados);
 
-        // Testes de Treino
         Treino treino = new Treino();
         Exercicio exercicio1 = new Exercicio();
         Exercicio exercicio2 = new Exercicio();
 
-
         try {
 
-            fachada.configurarExercicio(exercicio1, "Supino", "Peito", Exercicio.TipoExercicio.FORCA, 45, 8.0); // Crie este exercício.
+            fachada.configurarExercicio(exercicio1, "Supino", "Peito", Exercicio.TipoExercicio.FORCA, 45, 8.0);
             fachada.configurarExercicio(exercicio2, "Agachamento", "Pernas", Exercicio.TipoExercicio.FORCA, 60, 9.0);
             fachada.configurarTreino(treino, "Treino Completo", "Full Body", 90, 4);
 
@@ -150,17 +134,14 @@ public class Main {
             System.out.println("Calorias queimadas no treino: " + caloriasQueimadasTreino);
             fachada.atualizarProgressoTreino(treino);
             System.out.println("Progresso do treino atualizado.");
-            // Teste de exclusão (opcional)
+
             fachada.excluirExercicioTreino(treino, exercicio1);
             System.out.println("Exercício excluído do treino (teste).");
-
-
 
         } catch (TreinoNaoEncontradoException | ExercicioNaoEncontradoException e) {
             System.err.println("Erro no treino: " + e.getMessage());
         }
 
-        // Testes de listagem
         System.out.println("\nListando Dietas:");
         List<Dieta> dietas = fachada.listarDietas();
         for (Dieta d : dietas) {

@@ -19,9 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Setter;
-//ADD o import de ListChangeListener
-import javafx.collections.ListChangeListener;
-
 
 public class ExercicioController {
 
@@ -46,26 +43,28 @@ public class ExercicioController {
     @Setter
     private ExercicioController exercicioController;
 
+    // Define o controlador principal.
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
+    // Inicializa o controlador, configurando as tabelas.
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
         configurarTabelaPreDefinida();
         carregarExerciciosPreDefinidos();
-
-        //  Listeners REMOVIDOS (já havia comentado isso antes)
     }
 
+    // Configura a tabela de exercícios do usuário.
     private void configurarTabelaUsuario() {
         colunaNomeUsuario.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipoUsuario.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colunaTempoUsuario.setCellValueFactory(new PropertyValueFactory<>("tempo"));
-        colunaCaloriasQueimadasUsuario.setCellValueFactory(new PropertyValueFactory<>("caloriasQueimadas"));
+        colunaCaloriasQueimadasUsuario.setCellValueFactory(cellData -> cellData.getValue().caloriasQueimadasProperty().asObject());
     }
 
+    // Configura a tabela de exercícios pré-definidos.
     private void configurarTabelaPreDefinida() {
         colunaNomePreDefinido.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("tipo"));
@@ -73,6 +72,7 @@ public class ExercicioController {
         colunaCaloriasQueimadasPreDefinido.setCellValueFactory(cellData -> cellData.getValue().caloriasQueimadasProperty().asObject());
     }
 
+    // Carrega os exercícios pré-definidos.
     private void carregarExerciciosPreDefinidos() {
         try {
             List<Exercicio> exercicios = InicializadorDados.inicializarExercicios();
@@ -83,6 +83,7 @@ public class ExercicioController {
         }
     }
 
+    // Abre a tela de criação de exercício.
     @FXML
     public void abrirTelaCriarExercicio() {
         try {
@@ -104,7 +105,7 @@ public class ExercicioController {
         }
     }
 
-
+    // Abre a tela de edição de exercício.
     @FXML
     public void atualizarExercicio() {
         Exercicio exercicioSelecionado = tabelaExerciciosUsuario.getSelectionModel().getSelectedItem();
@@ -133,6 +134,7 @@ public class ExercicioController {
         }
     }
 
+    // Remove o exercício selecionado.
     @FXML
     public void removerExercicio() {
         Exercicio exercicioSelecionado = tabelaExerciciosUsuario.getSelectionModel().getSelectedItem();
@@ -153,6 +155,7 @@ public class ExercicioController {
         }
     }
 
+    // Adiciona um exercício pré-definido ao usuário.
     @FXML
     public void adicionarExercicioPreDefinido() {
         Exercicio exercicioSelecionado = tabelaExerciciosPreDefinidos.getSelectionModel().getSelectedItem();
@@ -164,21 +167,21 @@ public class ExercicioController {
                         exercicioSelecionado.getMusculosTrabalhados() != null ? new ArrayList<>(exercicioSelecionado.getMusculosTrabalhados()) : new ArrayList<>(),
                         exercicioSelecionado.getTipo(),
                         exercicioSelecionado.getTempo(),
-                        exercicioSelecionado.getCaloriasQueimadasPorMinuto(),
-                        false,
-                        0.0
+                        exercicioSelecionado.getCaloriasQueimadas(),
+                        false
                 );
 
                 fachada.configurarExercicio(novoExercicio, novoExercicio.getNome(),
                         novoExercicio.getDescricao(), novoExercicio.getTipo(),
-                        novoExercicio.getTempo(), novoExercicio.getCaloriasQueimadasPorMinuto());
+                        novoExercicio.getTempo(), novoExercicio.getCaloriasQueimadas());
+
                 atualizarTabelaExerciciosUsuario();
                 mensagemExercicio.setText("Exercício adicionado com sucesso!");
 
-                if(mainController != null){
+                if (mainController != null) {
                     mainController.atualizarDadosTelaPrincipal();
                 }
-            } catch (ExercicioNaoEncontradoException e){
+            } catch (ExercicioNaoEncontradoException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar exercício", e.getMessage());
             }
         } else {
@@ -187,18 +190,15 @@ public class ExercicioController {
         }
     }
 
-
+    // Atualiza a tabela de exercícios do usuário.
     public void atualizarTabelaExerciciosUsuario() {
         try {
             List<Exercicio> listaExercicios = fachada.listarExercicios();
 
-            // Limpa a lista de atividades recentes no MainController (importante!)
             if(mainController != null){
                 mainController.getAtividadesRecentes().clear();
             }
 
-
-            //Adiciona os exercicios na lista de atividades recentes.
             for(Exercicio exercicio : listaExercicios){
                 if(mainController != null){
                     mainController.adicionarExercicioRecente(exercicio);
@@ -211,7 +211,7 @@ public class ExercicioController {
         }
     }
 
-
+    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -220,6 +220,7 @@ public class ExercicioController {
         alert.showAndWait();
     }
 
+    // Volta para a tela principal.
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {

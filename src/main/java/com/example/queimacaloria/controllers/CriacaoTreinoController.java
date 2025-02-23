@@ -9,9 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-//Adicione esse import
 import javafx.scene.control.CheckBox;
-//Novo import
 import javafx.scene.control.Alert;
 
 public class CriacaoTreinoController {
@@ -27,27 +25,26 @@ public class CriacaoTreinoController {
     @FXML
     private Label mensagemErro;
 
-    //Adicione este campo:
     @FXML
     private CheckBox checkboxConcluido;
-
 
     private Fachada fachada = Fachada.getInstanciaUnica();
 
     private TreinoController treinoController;
 
-    private MainController mainController; //ADD
+    private MainController mainController;
 
-    // Injeta o TreinoController para que a tabela seja atualizada após criar um novo treino.
+    // Define o controlador da tela de treinos.
     public void setTreinoController(TreinoController treinoController) {
         this.treinoController = treinoController;
     }
 
+    // Define o controlador principal.
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
 
-
+    // Cria um novo treino.
     @FXML
     public void criarTreino() {
         try {
@@ -61,51 +58,47 @@ public class CriacaoTreinoController {
             fachada.configurarTreino(novoTreino, nome, tipoTreino, duracao, nivelDificuldade);
             novoTreino.setConcluido(concluido);
 
-
-            // ATUALIZA O USUÁRIO LOGADO *APÓS* TODAS AS MODIFICAÇÕES:
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza o usuário *no MainController*.
+                    mainController.setUsuarioLogado(usuarioAtualizado);
 
-                    // Adiciona a pontuação *se* o treino for criado como concluído.
                     if (concluido) {
                         mainController.getUsuarioLogado().adicionarPontuacao(nivelDificuldade);
-                        //Mostra mensagem de sucesso
                         showAlert(Alert.AlertType.INFORMATION,"Parabéns!", "Treino Concluído", "Você concluiu o treino e ganhou " + nivelDificuldade + " pontos!");
                     }
 
                 } catch (UsuarioNaoEncontradoException e) {
-                    System.err.println("Erro ao buscar usuário: " + e.getMessage()); //melhor tratamento
+                    System.err.println("Erro ao buscar usuário: " + e.getMessage());
                 }
             }
-            // *******************************************************
-
 
             if (treinoController != null) {
-                treinoController.atualizarTabelaTreinosUsuario(); // Já estava correto.
+                treinoController.atualizarTabelaTreinosUsuario();
             }
 
             if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal(); // Já estava correto.
+                mainController.atualizarDadosTelaPrincipal();
             }
-            mensagemErro.setText("Treino criado com sucesso!"); //Mensagem de sucesso
+            mensagemErro.setText("Treino criado com sucesso!");
             fecharJanela();
 
         } catch (NumberFormatException | TreinoNaoEncontradoException  e) {
             mensagemErro.setText("Erro: " + e.getMessage());
-        } catch (Exception e) { // Captura genérica *depois* das específicas.
+        } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace();  // Muito importante para debugging!
+            e.printStackTrace();
         }
     }
+
+    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();
     }
 
-    //Método showAlert para usar o Alert
+    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

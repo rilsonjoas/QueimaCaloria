@@ -19,10 +19,12 @@ public class LoginController {
 
     private Fachada fachada = Fachada.getInstanciaUnica();
 
+    // Define o controlador de autenticação.
     public void setAuthController(AuthController authController) {
         this.authController = authController;
     }
 
+    // Realiza o login do usuário.
     @FXML
     public void login() {
         String email = campoEmail.getText();
@@ -40,7 +42,7 @@ public class LoginController {
                     alert.setContentText("Olá,! Seja bem-vindo ao sistema.");
                     alert.show();
                     authController.mostrarTelaPrincipal(getPrimaryStage(), usuario);
-                    return; // Importante: Sai do método após o login bem-sucedido.
+                    return;
                 }
             }
 
@@ -52,6 +54,7 @@ public class LoginController {
         }
     }
 
+    // Navega para a tela de registro.
     @FXML
     public void irParaRegistro() {
         if (authController != null) {
@@ -61,6 +64,7 @@ public class LoginController {
         }
     }
 
+    // Obtém o palco principal da aplicação.
     private Stage getPrimaryStage() {
         if (authController != null) {
             return (Stage) campoEmail.getScene().getWindow();

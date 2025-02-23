@@ -14,38 +14,38 @@ public class Dieta {
     private IntegerProperty caloriasDiarias = new SimpleIntegerProperty(0);
     private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
 
-    // Enum com strings associadas
+    // Enum com strings associadas para os objetivos da dieta.
     public enum ObjetivoDieta {
         PERDA_DE_PESO("Perda de peso"),
         GANHO_DE_MASSA("Ganho de massa"),
-        MANUTENCAO("Manutenção"); // Ponto e vírgula no último!
+        MANUTENCAO("Manutenção");
 
-        private final String descricao; // Campo para a string
+        private final String descricao;
 
-        ObjetivoDieta(String descricao) { // Construtor
+        ObjetivoDieta(String descricao) {
             this.descricao = descricao;
         }
 
-        public String getDescricao() { // Getter para a string
+        public String getDescricao() {
             return descricao;
         }
 
-        // Método para converter de String para enum (opcional, mas útil)
         public static ObjetivoDieta fromString(String text) {
             for (ObjetivoDieta objetivo : ObjetivoDieta.values()) {
                 if (objetivo.descricao.equalsIgnoreCase(text)) {
                     return objetivo;
                 }
             }
-            return null; // Ou lançar uma exceção IllegalArgumentException, se preferir
+            return null;
         }
 
         @Override
-        public String toString() { //Para o choice box exibir a descrição
+        public String toString() {
             return descricao;
         }
     }
 
+    // Construtor da classe Dieta.
     public Dieta(String nome, ObjetivoDieta objetivo, int caloriasDiarias, Usuario usuario) {
         this.nome.set(nome);
         this.objetivo.set(objetivo);
@@ -72,6 +72,7 @@ public class Dieta {
     public IntegerProperty caloriasDiariasProperty() { return caloriasDiarias; }
     public ObjectProperty<Usuario> usuarioProperty() { return usuario; }
 
+    // Método equals, para comparar objetos Dieta.
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -80,11 +81,13 @@ public class Dieta {
         return id.equals(dieta.id);
     }
 
+    // Método hashCode, para gerar um código hash do objeto Dieta.
     @Override
     public int hashCode() {
         return id.hashCode();
     }
 
+    // Método toString, para representação textual do objeto Dieta.
     @Override
     public String toString() {
         return "Dieta{" +

@@ -36,10 +36,12 @@ public class RefeicaoController {
     private MainController mainController;
     private ObservableList<Refeicao> refeicoesPreDefinidas = FXCollections.observableArrayList();
 
+    // Define o controlador principal.
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
+    // Inicializa o controlador, configurando as tabelas.
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
@@ -48,18 +50,21 @@ public class RefeicaoController {
         carregarRefeicoesPreDefinidas();
     }
 
+    // Configura a tabela de refeições do usuário.
     private void configurarTabelaUsuario() {
         colunaNomeUsuario.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaCaloriasUsuario.setCellValueFactory(new PropertyValueFactory<>("calorias"));
         colunaMacronutrientesUsuario.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMacronutrientesFormatados()));
     }
 
+    // Configura a tabela de refeições pré-definidas.
     private void configurarTabelaPreDefinida() {
         colunaNomePreDefinida.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaCaloriasPreDefinida.setCellValueFactory(new PropertyValueFactory<>("calorias"));
         colunaMacronutrientesPreDefinida.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMacronutrientesFormatados()));
     }
 
+    // Carrega as refeições pré-definidas.
     private void carregarRefeicoesPreDefinidas() {
         try {
             List<Refeicao> refeicoes = InicializadorDados.inicializarRefeicoes();
@@ -70,6 +75,7 @@ public class RefeicaoController {
         }
     }
 
+    // Abre a tela de criação de refeição.
     @FXML
     public void abrirTelaCriarRefeicao() {
         try {
@@ -90,6 +96,7 @@ public class RefeicaoController {
         }
     }
 
+    // Abre a tela de edição de refeição.
     @FXML
     public void atualizarRefeicao() {
         Refeicao refeicaoSelecionada = tabelaRefeicoesUsuario.getSelectionModel().getSelectedItem();
@@ -117,6 +124,7 @@ public class RefeicaoController {
         }
     }
 
+    // Remove a refeição selecionada.
     @FXML
     public void removerRefeicao() {
         Refeicao refeicaoSelecionada = tabelaRefeicoesUsuario.getSelectionModel().getSelectedItem();
@@ -133,26 +141,26 @@ public class RefeicaoController {
         }
     }
 
+    // Adiciona uma refeição pré-definida ao usuário.
     @FXML
     public void adicionarRefeicaoPreDefinida() {
         Refeicao refeicaoSelecionada = tabelaRefeicoesPreDefinidas.getSelectionModel().getSelectedItem();
         if (refeicaoSelecionada != null) {
             try {
-                // Cria uma *NOVA* instância, copiando os valores, SEM usuário
                 Refeicao novaRefeicao = new Refeicao(
                         refeicaoSelecionada.getNome(),
                         refeicaoSelecionada.getDescricao(),
-                        refeicaoSelecionada.getCalorias(), //  Copia as calorias!
-                        refeicaoSelecionada.getMacronutrientes() // Copia o Map
+                        refeicaoSelecionada.getCalorias(),
+                        refeicaoSelecionada.getMacronutrientes()
                 );
                 fachada.configurarRefeicao(novaRefeicao, novaRefeicao.getNome(),
                         novaRefeicao.getDescricao(), novaRefeicao.getMacronutrientes());
-                atualizarTabelaRefeicoesUsuario(); //  ATUALIZA A TABELA *APÓS* ADICIONAR
+                atualizarTabelaRefeicoesUsuario();
                 mensagemRefeicao.setText("Refeição adicionada com sucesso!");
 
-            } catch (Exception e) { // Captura genérica, pois configurarRefeicao não lança exceções específicas
+            } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar refeição", e.getMessage());
-                e.printStackTrace(); // Imprime o stack trace para ajudar a debugar
+                e.printStackTrace();
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma refeição selecionada",
@@ -160,8 +168,7 @@ public class RefeicaoController {
         }
     }
 
-
-
+    // Atualiza a tabela de refeições do usuário.
     public void atualizarTabelaRefeicoesUsuario() {
         try {
             List<Refeicao> listaRefeicoes = fachada.listarRefeicoes();
@@ -171,6 +178,7 @@ public class RefeicaoController {
         }
     }
 
+    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -179,6 +187,7 @@ public class RefeicaoController {
         alert.showAndWait();
     }
 
+    // Volta para a tela principal.
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {

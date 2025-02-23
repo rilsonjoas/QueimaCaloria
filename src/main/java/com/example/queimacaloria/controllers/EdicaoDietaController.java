@@ -24,23 +24,29 @@ public class EdicaoDietaController {
     private DietaController dietaController;
     private MainController mainController;
 
+    // Define o controlador da tela de dietas.
     public void setDietaController(DietaController dietaController) {
         this.dietaController = dietaController;
     }
+
+    // Define o controlador principal.
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
+    // Define a dieta a ser editada.
     public void setDieta(Dieta dieta) {
         this.dieta = dieta;
         preencherCampos();
     }
 
+    // Inicializa o controlador, configurando o ChoiceBox de objetivo.
     @FXML
     public void initialize() {
         campoObjetivo.setItems(FXCollections.observableArrayList(Dieta.ObjetivoDieta.values()));
     }
 
+    // Preenche os campos com os dados da dieta.
     private void preencherCampos() {
         if (dieta != null) {
             campoNome.setText(dieta.getNome());
@@ -49,6 +55,7 @@ public class EdicaoDietaController {
         }
     }
 
+    // Atualiza os dados da dieta.
     @FXML
     public void atualizarDieta() {
         try {
@@ -56,7 +63,7 @@ public class EdicaoDietaController {
             Dieta.ObjetivoDieta objetivo = campoObjetivo.getValue();
             int calorias = Integer.parseInt(campoCalorias.getText());
 
-            fachada.configurarDieta(dieta, nome, objetivo, calorias, dieta.getUsuario()); // Mantém o usuário
+            fachada.configurarDieta(dieta, nome, objetivo, calorias, dieta.getUsuario());
             mensagemErro.setText("Dieta atualizada com sucesso!");
             fecharJanela();
 
@@ -67,6 +74,7 @@ public class EdicaoDietaController {
         }
     }
 
+    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();

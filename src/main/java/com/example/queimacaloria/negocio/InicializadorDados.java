@@ -11,15 +11,7 @@ import java.util.Map;
 public class InicializadorDados {
 
     public static void inicializarDados() {
-        // Agora, *não* instancia os repositórios aqui.  Eles já são instanciados
-        // nos controladores (e são singletons).  O que *talvez* você queira
-        // fazer aqui é *limpar* os repositórios, se for necessário para testes.
-        // Mas, para uma aplicação real, normalmente você *não* limparia os dados
-        // toda vez que a aplicação inicia.
 
-        // Exemplo (OPCIONAL, se você quiser limpar para testes):
-        // RepositorioDietasArray.getInstanciaUnica().limpar();  // Método 'limpar' precisa ser criado
-        // ... faça o mesmo para os outros repositórios ...
     }
 
     public static List<Dieta> inicializarDietas() {
@@ -36,31 +28,30 @@ public class InicializadorDados {
         dietas.add(new Dieta("Dieta Personalizada do Cliente", Dieta.ObjetivoDieta.MANUTENCAO, 2400, null));
         return dietas;
     }
-    //Restante do código
 
     public static List<Exercicio> inicializarExercicios() {
         List<Exercicio> exercicios = new ArrayList<>();
         try {
-            exercicios.add(new Exercicio("Agachamento Livre", "Exercício básico para pernas e glúteos com barra nas costas.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 9.0, false, 0));
-            exercicios.add(new Exercicio("Supino Reto com Barra", "Exercício para peitoral e tríceps com barra.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 8.5, false, 0));
-            exercicios.add(new Exercicio("Remada Curvada com Barra", "Exercício para costas e bíceps com barra.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 7.0, false, 0));
-            exercicios.add(new Exercicio("Desenvolvimento Militar com Halteres", "Exercício para ombros com halteres.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 7.0, false, 0));
-            exercicios.add(new Exercicio("Flexão de Braço", "Exercício para peitoral, ombros e tríceps.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 6.5, false, 0));
-            exercicios.add(new Exercicio("Barra Fixa Pegada Pronada", "Exercício para costas e bíceps com barra fixa.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 8.0, false, 0));
-            exercicios.add(new Exercicio("Prancha Abdominal", "Exercício para fortalecimento do core.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 60, 4.0, false, 0));
-            exercicios.add(new Exercicio("Caminhada na Esteira Inclinada", "Exercício aeróbico de caminhada com inclinação.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 20, 6.0, false, 0));
-            exercicios.add(new Exercicio("Corrida na Rua", "Exercício aeróbico de corrida ao ar livre.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 30, 9.0, false, 0));
-            exercicios.add(new Exercicio("Pular Corda", "Exercício aeróbico e de coordenação com corda.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 15, 10.0, false, 0));
-            exercicios.add(new Exercicio("Natação Livre", "Exercício aeróbico de natação em piscina.", new ArrayList<>(), Exercicio.TipoExercicio.AQUATICO, 40, 10.0, false, 0));
-            exercicios.add(new Exercicio("Yoga para Flexibilidade", "Exercício para melhorar a flexibilidade e o equilíbrio.", new ArrayList<>(), Exercicio.TipoExercicio.FLEXIBILIDADE, 40, 4.0, false, 0));
-            exercicios.add(new Exercicio("Pilates para Core", "Exercício para fortalecer o core e melhorar a postura.", new ArrayList<>(), Exercicio.TipoExercicio.EQUILIBRIO, 45, 5.0, false, 0));
-            exercicios.add(new Exercicio("Spinning", "Exercício aeróbico em bicicleta estacionária.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 45, 8.0, false,             0));
-            exercicios.add(new Exercicio("Elíptico", "Exercício aeróbico de baixo impacto em elíptico.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 30, 7.0, false, 0));
-            exercicios.add(new Exercicio("Treino Funcional", "Treino que combina diferentes exercícios em circuito.", new ArrayList<>(), Exercicio.TipoExercicio.OUTRO, 60, 6.0, false, 0));
-            exercicios.add(new Exercicio("Burpees", "Exercício que trabalha o corpo todo.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 20, 10.0, false, 0));
-            exercicios.add(new Exercicio("Polichinelo", "Exercício aeróbico simples.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 15, 5.0, false, 0));
-            exercicios.add(new Exercicio("Corda Naval", "Exercício de força e resistência com corda naval.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 20, 9.0, false, 0));
-            exercicios.add(new Exercicio("Abdominal Supra", "Exercício para abdominais superiores.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 20, 3.0, false, 0));
+            exercicios.add(new Exercicio("Agachamento Livre", "Exercício básico para pernas e glúteos com barra nas costas.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 9.0, false));
+            exercicios.add(new Exercicio("Supino Reto com Barra", "Exercício para peitoral e tríceps com barra.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 8.5, false));
+            exercicios.add(new Exercicio("Remada Curvada com Barra", "Exercício para costas e bíceps com barra.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 7.0, false));
+            exercicios.add(new Exercicio("Desenvolvimento Militar com Halteres", "Exercício para ombros com halteres.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 7.0, false));
+            exercicios.add(new Exercicio("Flexão de Braço", "Exercício para peitoral, ombros e tríceps.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 6.5, false));
+            exercicios.add(new Exercicio("Barra Fixa Pegada Pronada", "Exercício para costas e bíceps com barra fixa.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 30, 8.0, false));
+            exercicios.add(new Exercicio("Prancha Abdominal", "Exercício para fortalecimento do core.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 60, 4.0, false));
+            exercicios.add(new Exercicio("Caminhada na Esteira Inclinada", "Exercício aeróbico de caminhada com inclinação.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 20, 6.0, false));
+            exercicios.add(new Exercicio("Corrida na Rua", "Exercício aeróbico de corrida ao ar livre.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 30, 9.0, false));
+            exercicios.add(new Exercicio("Pular Corda", "Exercício aeróbico e de coordenação com corda.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 15, 10.0, false));
+            exercicios.add(new Exercicio("Natação Livre", "Exercício aeróbico de natação em piscina.", new ArrayList<>(), Exercicio.TipoExercicio.AQUATICO, 40, 10.0, false));
+            exercicios.add(new Exercicio("Yoga para Flexibilidade", "Exercício para melhorar a flexibilidade e o equilíbrio.", new ArrayList<>(), Exercicio.TipoExercicio.FLEXIBILIDADE, 40, 4.0, false));
+            exercicios.add(new Exercicio("Pilates para Core", "Exercício para fortalecer o core e melhorar a postura.", new ArrayList<>(), Exercicio.TipoExercicio.EQUILIBRIO, 45, 5.0, false));
+            exercicios.add(new Exercicio("Spinning", "Exercício aeróbico em bicicleta estacionária.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 45, 8.0, false));
+            exercicios.add(new Exercicio("Elíptico", "Exercício aeróbico de baixo impacto em elíptico.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 30, 7.0, false));
+            exercicios.add(new Exercicio("Treino Funcional", "Treino que combina diferentes exercícios em circuito.", new ArrayList<>(), Exercicio.TipoExercicio.OUTRO, 60, 6.0, false));
+            exercicios.add(new Exercicio("Burpees", "Exercício que trabalha o corpo todo.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 20, 10.0, false));
+            exercicios.add(new Exercicio("Polichinelo", "Exercício aeróbico simples.", new ArrayList<>(), Exercicio.TipoExercicio.CARDIO, 15, 5.0, false));
+            exercicios.add(new Exercicio("Corda Naval", "Exercício de força e resistência com corda naval.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 20, 9.0, false));
+            exercicios.add(new Exercicio("Abdominal Supra", "Exercício para abdominais superiores.", new ArrayList<>(), Exercicio.TipoExercicio.FORCA, 20, 3.0, false));
         }  catch (Exception e) {
             System.err.println("Erro ao adicionar exercicio pré-definidos: " + e.getMessage());
         }

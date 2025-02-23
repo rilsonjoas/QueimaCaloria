@@ -27,6 +27,7 @@ public class Treino {
     @Setter private double progresso;
     @Setter private boolean concluido;
 
+    // Construtor padrão da classe Treino.
     public Treino() {
         this.id = UUID.randomUUID();
         this.exercicios = new ArrayList<>();
@@ -35,6 +36,7 @@ public class Treino {
         this.progresso = 0.0;
     }
 
+    // Construtor da classe Treino.
     public Treino(String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade,
                   ArrayList<Exercicio> exercicios, double caloriasQueimadas, double progresso, boolean concluido) {
         this.id = UUID.randomUUID();
@@ -48,6 +50,7 @@ public class Treino {
         this.concluido = concluido;
     }
 
+    // Construtor da classe Treino.
     public Treino(String nome, String tipoDeTreino, String tipo, int duracao, int nivelDeDificuldade,
                   ArrayList<Exercicio> exercicios, double caloriasQueimadas, double progresso, boolean concluido) {
         this.id = UUID.randomUUID();
@@ -61,7 +64,15 @@ public class Treino {
         this.concluido = concluido;
     }
 
+    public double calcularCaloriasTotais() {
+        double caloriasTotais = 0;
+        for (Exercicio exercicio : this.getExercicios()) {
+            caloriasTotais += exercicio.getCaloriasQueimadas() * exercicio.getTempo();
+        }
+        return caloriasTotais;
+    }
 
+    // Métodos Property
     public StringProperty nomeProperty() {
         return new SimpleStringProperty(nome);
     }

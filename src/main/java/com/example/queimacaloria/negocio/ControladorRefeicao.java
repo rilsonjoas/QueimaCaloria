@@ -12,21 +12,22 @@ public class ControladorRefeicao {
 
     private RepositorioRefeicoesArray repositorio;
 
+    // Construtor, inicializa o repositório.
     public ControladorRefeicao() {
         this.repositorio = RepositorioRefeicoesArray.getInstanciaUnica();
     }
 
-    // Inicializa uma refeição.
+    // Inicializa uma refeição, atualizando ou adicionando ao repositório.
     public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes) {
         refeicao.setNome(nome);
         refeicao.setDescricao(descricao);
         refeicao.setMacronutrientes(macronutrientes);
-        refeicao.setCalorias(calcularCalorias(refeicao)); // Calcula e define as calorias.
+        refeicao.setCalorias(calcularCalorias(refeicao));
 
         try {
-            repositorio.salvar(refeicao); // Tenta atualizar.
+            repositorio.salvar(refeicao);
         } catch (RefeicaoNaoEncontradaException e) {
-            repositorio.adicionar(refeicao); // Se não existir, adiciona.
+            repositorio.adicionar(refeicao);
         }
     }
 
@@ -48,9 +49,9 @@ public class ControladorRefeicao {
         return (int) Math.round(totalCalorias);
     }
 
-    // Calcula os macronutrientes da refeição (retorna uma cópia para evitar modificações externas).
+    // Retorna uma cópia dos macronutrientes da refeição.
     public Map<String, Double> calcularMacronutrientes(Refeicao refeicao) {
-        return new HashMap<>(refeicao.getMacronutrientes()); // Retorna uma cópia.
+        return new HashMap<>(refeicao.getMacronutrientes());
     }
 
     // Lista todas as refeições do repositório.
@@ -58,7 +59,7 @@ public class ControladorRefeicao {
         return repositorio.getAll();
     }
 
-    // Adiciona o método de remoção
+    // Remove uma refeição pelo ID.
     public void remover(UUID id) throws RefeicaoNaoEncontradaException {
         repositorio.remover(id);
     }

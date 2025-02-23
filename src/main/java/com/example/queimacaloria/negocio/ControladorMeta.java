@@ -11,11 +11,12 @@ public class ControladorMeta {
 
     private RepositorioMetasArray repositorio;
 
+    // Construtor, inicializa o repositório.
     public ControladorMeta() {
         this.repositorio = RepositorioMetasArray.getInstanciaUnica();
     }
 
-    // Configura uma meta.
+    // Inicializa uma meta, atualizando ou adicionando ao repositório.
     public void inicializar(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
                             LocalDate dataConclusao) throws MetaNaoEncontradaException {
 
@@ -23,19 +24,18 @@ public class ControladorMeta {
         System.out.println("Meta ID " + meta.getId());
         System.out.println("Descrição: " + descricao);
 
-        meta.setDescricao(descricao);  // Correto: usando set
-        meta.setTipo(tipo);          // Correto
-        meta.setValorAlvo(valorAlvo);  // Correto
-        meta.setProgressoAtual(progressoAtual); // Correto
-        meta.setDataConclusao(dataConclusao);  // Correto
+        meta.setDescricao(descricao);
+        meta.setTipo(tipo);
+        meta.setValorAlvo(valorAlvo);
+        meta.setProgressoAtual(progressoAtual);
+        meta.setDataConclusao(dataConclusao);
 
-
-        System.out.println("Meta após setar valores no Controlador: " + meta); //PRINT
+        System.out.println("Meta após setar valores no Controlador: " + meta);
 
         try {
-            repositorio.salvar(meta); // Tenta atualizar.
+            repositorio.salvar(meta);
         } catch (MetaNaoEncontradaException e) {
-            repositorio.adicionar(meta); // Se não existir, adiciona.
+            repositorio.adicionar(meta);
         }
     }
 
@@ -52,10 +52,10 @@ public class ControladorMeta {
         return (meta.getProgressoAtual() / meta.getValorAlvo()) * 100;
     }
 
-    // Conclui a meta (define a data de conclusão como a data atual).
+    // Conclui a meta (define a data de conclusão).
     public void concluirMeta(Meta meta) throws MetaNaoEncontradaException {
         meta.setDataConclusao(LocalDate.now());
-        repositorio.salvar(meta); // Salva a meta como concluída.
+        repositorio.salvar(meta);
     }
 
     // Lista todas as metas do repositório.
@@ -63,7 +63,7 @@ public class ControladorMeta {
         return repositorio.getAll();
     }
 
-    // Adiciona o método de remoção
+    // Remove uma meta pelo ID.
     public void remover(UUID id) throws MetaNaoEncontradaException {
         repositorio.remover(id);
     }

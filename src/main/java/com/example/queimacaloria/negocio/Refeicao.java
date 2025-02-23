@@ -24,10 +24,12 @@ public class Refeicao {
     private int calorias;
     private Map<String, Double> macronutrientes;
 
+    // Construtor padrão da classe Refeicao.
     public Refeicao() {
         this.id = UUID.randomUUID();
     }
 
+    // Construtor da classe Refeicao.
     public Refeicao(String nome, String descricao, int calorias, Map<String, Double> macronutrientes) {
         this.id = UUID.randomUUID();
         this.nome = nome;
@@ -36,7 +38,7 @@ public class Refeicao {
         this.macronutrientes = macronutrientes;
     }
 
-    // Construtor sem as calorias
+    // Construtor sem as calorias.
     public Refeicao(String nome, String descricao, Map<String, Double> macronutrientes) {
         this.id = UUID.randomUUID();
         this.nome = nome;
@@ -44,6 +46,7 @@ public class Refeicao {
         this.macronutrientes = macronutrientes;
     }
 
+    // Métodos Property
     public StringProperty nomeProperty() {
         return new SimpleStringProperty(nome);
     }
@@ -52,9 +55,10 @@ public class Refeicao {
         return new SimpleIntegerProperty(calorias);
     }
 
+    // Formata os macronutrientes para exibição.
     public String getMacronutrientesFormatados() {
         if (macronutrientes == null || macronutrientes.isEmpty()) {
-            return ""; // Ou "N/A", ou o que você preferir para indicar ausência de dados.
+            return "";
         }
 
         StringBuilder sb = new StringBuilder();
@@ -62,7 +66,6 @@ public class Refeicao {
             sb.append(entry.getKey()).append(": ").append(String.format("%.1f", entry.getValue())).append("g, ");
         }
 
-        // Remove a última vírgula e espaço:
         if (sb.length() > 2) {
             sb.delete(sb.length() - 2, sb.length());
         }

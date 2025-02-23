@@ -24,36 +24,38 @@ public class CriacaoMetaController {
     private MetaController metaController;
     private MainController mainController;
 
+    // Define o controlador da tela de metas.
     public void setMetaController(MetaController metaController) {
         this.metaController = metaController;
     }
+
+    // Define o controlador principal.
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
 
+    // Inicializa o controlador, configurando o ChoiceBox de tipo.
     @FXML
     public void initialize() {
         campoTipo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
     }
 
+    // Cria uma nova meta.
     @FXML
     public void criarMeta() {
         try {
             String descricao = campoDescricao.getText();
             Meta.Tipo tipo = campoTipo.getValue();
             double valorAlvo = Double.parseDouble(campoValorAlvo.getText());
-            // O progresso inicial de uma nova meta DEVE ser 0.0. Não use o valor do campo.
-            double progressoAtual = 0.0; // Valor inicial correto.
+            double progressoAtual = 0.0;
             LocalDate dataConclusao = campoDataConclusao.getValue();
 
-            //Verifica se o usuário está logado
             if(mainController != null && mainController.getUsuarioLogado() != null){
                 Meta novaMeta = new Meta();
                 fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
 
                 mensagemErro.setText("Meta criada com sucesso!");
 
-                // Atualiza o usuário logado *após* a modificação:
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
                     mainController.setUsuarioLogado(usuarioAtualizado);
@@ -62,8 +64,6 @@ public class CriacaoMetaController {
                             "O usuário logado não pôde ser encontrado.");
                 }
 
-
-                // Atualiza a tabela de metas no MetaController
                 if (metaController != null) {
                     metaController.initialize();
                 }
@@ -74,9 +74,7 @@ public class CriacaoMetaController {
                 mensagemErro.setText("Erro, usuário não logado");
             }
 
-
-
-            fecharJanela(); // Fecha a janela atual
+            fecharJanela();
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Valores numéricos inválidos.");
@@ -87,13 +85,14 @@ public class CriacaoMetaController {
         }
     }
 
-
+    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoDescricao.getScene().getWindow();
         stage.close();
     }
 
+    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

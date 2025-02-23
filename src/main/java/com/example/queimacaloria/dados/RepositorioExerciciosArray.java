@@ -13,18 +13,20 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
     private int proximoIndice;
     private static RepositorioExerciciosArray instanciaUnica;
 
+    // Construtor privado para o padrão Singleton.
     private RepositorioExerciciosArray() {
         exercicios = new Exercicio[10];
         proximoIndice = 0;
     }
 
+    // Retorna a instância única do repositório (Singleton).
     public static RepositorioExerciciosArray getInstanciaUnica() {
         if (instanciaUnica == null) {
             instanciaUnica = new RepositorioExerciciosArray();
         }
         return instanciaUnica;
     }
-
+    // Procura o índice de um exercício pelo ID.
     private int procurarIndice(UUID id) {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         for (int i = 0; i < proximoIndice; i++) {
@@ -33,6 +35,7 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
         return proximoIndice;
     }
 
+    // Adiciona um exercício ao repositório.
     @Override
     public void adicionar(Exercicio exercicio) throws ExercicioNaoEncontradoException {
         if (exercicio == null) throw new IllegalArgumentException("Exercício não pode ser nulo.");
@@ -44,6 +47,7 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
         exercicios[proximoIndice++] = exercicio;
     }
 
+    // Salva (atualiza) um exercício no repositório.
     @Override
     public void salvar(Exercicio exercicio) throws ExercicioNaoEncontradoException {
         if (exercicio == null) throw new IllegalArgumentException("Exercício não pode ser nulo.");
@@ -55,6 +59,7 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
         }
     }
 
+    // Remove um exercício do repositório pelo ID.
     @Override
     public void remover(UUID id) throws ExercicioNaoEncontradoException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -67,6 +72,7 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
         }
     }
 
+    // Busca um exercício pelo ID.
     @Override
     public Exercicio buscar(UUID id) throws ExercicioNaoEncontradoException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -78,6 +84,7 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
         }
     }
 
+    // Retorna todos os exercícios do repositório.
     @Override
     public List<Exercicio> getAll() {
         List<Exercicio> lista = new ArrayList<>();

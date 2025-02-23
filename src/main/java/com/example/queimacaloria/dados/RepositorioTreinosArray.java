@@ -13,10 +13,13 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
     private int proximoIndice;
     private static RepositorioTreinosArray instanciaUnica;
 
+    // Construtor privado para o padrão Singleton.
     public RepositorioTreinosArray() {
         treinos = new Treino[10];
         proximoIndice = 0;
     }
+
+    // Retorna a instância única do repositório (Singleton).
     public static RepositorioTreinosArray getInstanciaUnica() {
         if (instanciaUnica == null) {
             instanciaUnica = new RepositorioTreinosArray();
@@ -24,6 +27,7 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
         return instanciaUnica;
     }
 
+    // Procura o índice de um treino pelo ID.
     private int procurarIndice(UUID id) {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         for (int i = 0; i < proximoIndice; i++) {
@@ -32,6 +36,7 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
         return proximoIndice;
     }
 
+    // Adiciona um treino ao repositório.
     @Override
     public void adicionar(Treino treino) throws TreinoNaoEncontradoException{
         if (treino == null) throw new IllegalArgumentException("Treino não pode ser nulo.");
@@ -43,6 +48,7 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
         treinos[proximoIndice++] = treino;
     }
 
+    // Salva (atualiza) um treino no repositório.
     @Override
     public void salvar(Treino treino) throws TreinoNaoEncontradoException {
         if (treino == null) throw new IllegalArgumentException("Treino não pode ser nulo.");
@@ -54,6 +60,7 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
         }
     }
 
+    // Remove um treino do repositório pelo ID.
     @Override
     public void remover(UUID id) throws TreinoNaoEncontradoException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -66,6 +73,7 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
         }
     }
 
+    // Busca um treino pelo ID.
     @Override
     public Treino buscar(UUID id) throws TreinoNaoEncontradoException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -77,6 +85,7 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
         }
     }
 
+    // Retorna todos os treinos do repositório.
     @Override
     public List<Treino> getAll() {
         List<Treino> lista = new ArrayList<>();

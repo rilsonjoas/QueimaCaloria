@@ -22,7 +22,7 @@ public class Usuario {
     private FloatProperty peso = new SimpleFloatProperty();
     private FloatProperty altura = new SimpleFloatProperty();
     private FloatProperty imc = new SimpleFloatProperty();
-    private IntegerProperty aguaConsumida = new SimpleIntegerProperty(0); // Em mililitros (ml)
+    private IntegerProperty aguaConsumida = new SimpleIntegerProperty(0);
 
     @Setter
     private ObservableList<Meta> metas = FXCollections.observableArrayList();
@@ -31,23 +31,27 @@ public class Usuario {
     @Setter
     private ObservableList<Dieta> dietas = FXCollections.observableArrayList();
 
-    // Nova propriedade para a dieta ativa, agora com ObjectProperty
     private ObjectProperty<Dieta> dietaAtiva = new SimpleObjectProperty<>();
 
     private IntegerProperty pontuacao = new SimpleIntegerProperty(0);
 
+    // Enum para o sexo do usuário.
     public enum Sexo {
         Masculino,
         Feminino,
     }
 
+    // Construtor padrão.
     public Usuario() {
         this.id = UUID.randomUUID();
     }
 
+    // Construtor básico com os principais atributos.
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura) {
         this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList());
     }
+
+    // Construtor completo (incluindo listas).
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas) {
         this.id = UUID.randomUUID();
         this.nome.set(nome);
@@ -61,21 +65,11 @@ public class Usuario {
         this.treinos.setAll(treinos);
         this.dietas.setAll(dietas);
         this.pontuacao.set(0);
-        this.dietaAtiva.set(null); // Inicializa como nula
+        this.dietaAtiva.set(null); // Inicializa como nula pois nenhuma dieta foi selecionada ainda.
+        calcularEAtualizarIMC();
     }
 
-    //Getters e Setters:
-    public Dieta getDietaAtiva() {
-        return dietaAtiva.get();
-    }
-
-    public ObjectProperty<Dieta> dietaAtivaProperty() {
-        return dietaAtiva;
-    }
-
-    public void setDietaAtiva(Dieta dietaAtiva) {
-        this.dietaAtiva.set(dietaAtiva);
-    }
+    // Getters, Setters e Properties gerais
 
     public String getNome() {
         return nome.get();
@@ -83,23 +77,6 @@ public class Usuario {
 
     public StringProperty nomeProperty() {
         return nome;
-    }
-
-    public int getAguaConsumida() {
-        return aguaConsumida.get();
-    }
-
-    public IntegerProperty aguaConsumidaProperty() {
-        return aguaConsumida;
-    }
-
-    public void setAguaConsumida(int aguaConsumida) {
-        this.aguaConsumida.set(aguaConsumida);
-    }
-
-    // Método de conveniência para adicionar água:
-    public void beberAgua(int ml) {
-        this.aguaConsumida.set(this.aguaConsumida.get() + ml);
     }
 
     public void setNome(String nome) {
@@ -164,7 +141,7 @@ public class Usuario {
 
     public void setPeso(float peso) {
         this.peso.set(peso);
-        calcularEAtualizarIMC();
+        calcularEAtualizarIMC();  // Importante: recalcula o IMC sempre que o peso muda.
     }
 
     public float getAltura() {
@@ -177,7 +154,7 @@ public class Usuario {
 
     public void setAltura(float altura) {
         this.altura.set(altura);
-        calcularEAtualizarIMC();
+        calcularEAtualizarIMC(); // Importante: recalcula o IMC sempre que a altura muda
     }
 
     public float getImc() {
@@ -188,20 +165,52 @@ public class Usuario {
         return imc;
     }
 
-    public void setImc(float imc) {
-        this.imc.set(imc);
-    }
 
-    private void calcularEAtualizarIMC(){
+    private void calcularEAtualizarIMC() {
         if (this.getAltura() > 0 && this.getPeso() > 0) {
-            float imc = this.getPeso() / (this.getAltura() * this.getAltura());
+            float alturaEmMetros = this.getAltura() / 100.0f;
+            float imc = this.getPeso() / (alturaEmMetros * alturaEmMetros);
             this.imc.set(imc);
         } else {
             this.imc.set(0);
         }
     }
 
-    // Getter e Setter para a pontuação:
+
+    // Getters, Setters e Properties para Dieta Ativa
+    public Dieta getDietaAtiva() {
+        return dietaAtiva.get();
+    }
+
+    public ObjectProperty<Dieta> dietaAtivaProperty() {
+        return dietaAtiva;
+    }
+
+    public void setDietaAtiva(Dieta dietaAtiva) {
+        this.dietaAtiva.set(dietaAtiva);
+    }
+
+
+    // Getters, Setters e Properties para Água
+    public int getAguaConsumida() {
+        return aguaConsumida.get();
+    }
+
+    public IntegerProperty aguaConsumidaProperty() {
+        return aguaConsumida;
+    }
+
+    public void setAguaConsumida(int aguaConsumida) {
+        this.aguaConsumida.set(aguaConsumida);
+    }
+
+    // Adiciona água consumida.
+    public void beberAgua(int ml) {
+        this.aguaConsumida.set(this.aguaConsumida.get() + ml);
+    }
+
+    // Getters, Setters e Properties para Pontuação
+
     public int getPontuacao() {
         return pontuacao.get();
     }
@@ -214,7 +223,7 @@ public class Usuario {
         this.pontuacao.set(pontuacao);
     }
 
-    //Método para adicionar a pontuação
+    // Adiciona pontuação.
     public void adicionarPontuacao(int pontos) {
         this.pontuacao.set(this.pontuacao.get() + pontos);
     }

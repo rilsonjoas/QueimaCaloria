@@ -11,11 +11,12 @@ public class ControladorTreino {
 
     private RepositorioTreinosArray repositorio;
 
+    // Construtor, inicializa o repositório.
     public ControladorTreino() {
         this.repositorio = RepositorioTreinosArray.getInstanciaUnica();
     }
 
-    // Inicializa um treino.
+    // Inicializa um treino, atualizando ou adicionando ao repositório.
     public void inicializar(Treino treino, String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade) throws TreinoNaoEncontradoException {
         treino.setNome(nome);
         treino.setTipoDeTreino(tipoDeTreino);
@@ -23,9 +24,9 @@ public class ControladorTreino {
         treino.setNivelDeDificuldade(nivelDeDificuldade);
 
         try {
-            repositorio.salvar(treino); // Tenta atualizar.
+            repositorio.salvar(treino);
         } catch (TreinoNaoEncontradoException e) {
-            repositorio.adicionar(treino); // Se não existir, adiciona.
+            repositorio.adicionar(treino);
         }
     }
 
@@ -33,9 +34,8 @@ public class ControladorTreino {
     public void adicionarExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         if (exercicio != null && !treino.getExercicios().contains(exercicio)) {
             treino.getExercicios().add(exercicio);
-            calcularCaloriasQueimadas(treino); // Recalcula calorias.
-            atualizarProgresso(treino);      // Atualiza o progresso.
-            repositorio.salvar(treino); //Salva as mudanças.
+            Fachada.getInstanciaUnica().atualizarTreino(treino);
+            repositorio.salvar(treino);
         }
     }
 
@@ -43,22 +43,9 @@ public class ControladorTreino {
     public void removerExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         if (exercicio != null && treino.getExercicios().contains(exercicio)) {
             treino.getExercicios().remove(exercicio);
-            calcularCaloriasQueimadas(treino); // Recalcula calorias.
-            atualizarProgresso(treino);      // Atualiza o progresso.
-            repositorio.salvar(treino); //Salva as mudanças.
+            Fachada.getInstanciaUnica().atualizarTreino(treino);
+            repositorio.salvar(treino);
         }
-    }
-
-    // Calcula o total de calorias queimadas no treino.
-    public double calcularCaloriasQueimadas(Treino treino) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
-        double caloriasQueimadas = 0;
-        for (Exercicio exercicio : treino.getExercicios()) {
-            ControladorExercicio ce = new ControladorExercicio(); // Use o controlador existente.
-            caloriasQueimadas += ce.calcularCaloriasQueimadas(exercicio);
-        }
-        treino.setCaloriasQueimadas(caloriasQueimadas);
-        repositorio.salvar(treino); // Salva as calorias calculadas.
-        return caloriasQueimadas;
     }
 
     // Atualiza o progresso do treino.
@@ -66,7 +53,7 @@ public class ControladorTreino {
         if (treino.getExercicios().isEmpty()) {
             treino.setProgresso(0.0);
             treino.setConcluido(false);
-            repositorio.salvar(treino); // Salva o progresso.
+            repositorio.salvar(treino);
             return;
         }
 
@@ -74,7 +61,7 @@ public class ControladorTreino {
         double progresso = (exerciciosConcluidos / (double) treino.getExercicios().size()) * 100.0;
         treino.setProgresso(progresso);
         treino.setConcluido(progresso == 100.0);
-        repositorio.salvar(treino); // Salva o progresso.
+        repositorio.salvar(treino);
     }
 
     // Lista todos os treinos do repositório.
@@ -82,7 +69,7 @@ public class ControladorTreino {
         return repositorio.getAll();
     }
 
-    // Adiciona o método de remoção
+    // Remove um treino pelo ID.
     public void remover(UUID id) throws TreinoNaoEncontradoException {
         repositorio.remover(id);
     }

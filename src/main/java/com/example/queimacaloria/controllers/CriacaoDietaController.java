@@ -21,21 +21,26 @@ public class CriacaoDietaController {
     @FXML private Label mensagemErro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    private DietaController dietaController;  // Referência para o DietaController
+    private DietaController dietaController;
     private MainController mainController;
 
+    // Define o controlador da tela de dieta.
     public void setDietaController(DietaController dietaController) {
-        this.dietaController = dietaController; // Injeção de dependência
+        this.dietaController = dietaController;
     }
 
+    // Define o controlador principal.
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
+    // Inicializa o controlador, configurando o ChoiceBox de objetivo.
     @FXML
     public void initialize() {
         campoObjetivo.setItems(FXCollections.observableArrayList(Dieta.ObjetivoDieta.values()));
     }
+
+    // Cria uma nova dieta para o usuário logado.
     @FXML
     public void criarDieta() {
         System.out.println("CriacaoDietaController.criarDieta: Iniciando...");
@@ -49,42 +54,31 @@ public class CriacaoDietaController {
                 Dieta novaDieta = new Dieta();
                 fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado);
 
-                // *****************************************
-                // DEFINE A DIETA COMO ATIVA:
                 fachada.setDietaAtiva(usuarioLogado, novaDieta);
-                // *****************************************
 
-                // **********  MUDANÇA AQUI  **********
-                // Chama um método no *DietaController* para notificar sobre a nova dieta:
                 if (dietaController != null) {
-                    dietaController.atualizarTabelaDietasUsuario(); // Atualiza a tabela
-                    dietaController.showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dieta Criada", "Dieta criada e definida como ativa com sucesso!"); // Mostra a mensagem de sucesso
+                    dietaController.atualizarTabelaDietasUsuario();
+                    dietaController.showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dieta Criada", "Dieta criada e definida como ativa com sucesso!");
                 }
-                // ************************************
 
-                mensagemErro.setText("Dieta criada com sucesso!"); //Não precisa mais.
-
-                // ATUALIZA O USUÁRIO LOGADO APÓS A MODIFICAÇÃO:  (Isso pode ser feito no DietaController, para manter a consistência)
                 Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(usuarioLogado.getId());
                 mainController.setUsuarioLogado(usuarioAtualizado);
                 mainController.atualizarDadosTelaPrincipal();
 
                 fecharJanela();
 
-
             } else {
                 System.out.println("CriacaoDietaController.criarDieta: Usuário logado é nulo.");
-                mensagemErro.setText("Erro: Usuário não logado."); //Isso não deve mais acontecer.
+                mensagemErro.setText("Erro: Usuário não logado.");
             }
-            //Agora captura *todas* as exceções que podem ser lançadas *neste* bloco:
-        } catch (NumberFormatException | DietaNaoEncontradaException | UsuarioNaoEncontradoException e) { //Captura as três possíveis
+        } catch (NumberFormatException | DietaNaoEncontradaException | UsuarioNaoEncontradoException e) {
             mensagemErro.setText("Erro: " + e.getMessage());
-        } catch (Exception e) { // Captura genérica para outros erros inesperados
+        } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
         }
     }
 
-
+    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();

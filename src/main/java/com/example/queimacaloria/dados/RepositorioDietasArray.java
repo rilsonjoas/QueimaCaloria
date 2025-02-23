@@ -13,11 +13,13 @@ public class RepositorioDietasArray implements IRepositorioDietas {
     private int proximoIndice;
     private static RepositorioDietasArray instanciaUnica;
 
+    // Construtor privado para o padrão Singleton.
     private RepositorioDietasArray() {
         dietas = new Dieta[10];
         proximoIndice = 0;
     }
 
+    // Retorna a instância única do repositório (Singleton).
     public static RepositorioDietasArray getInstanciaUnica() {
         if (instanciaUnica == null) {
             instanciaUnica = new RepositorioDietasArray();
@@ -25,6 +27,7 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         return instanciaUnica;
     }
 
+    // Procura o índice de uma dieta pelo ID.
     private int procurarIndice(UUID id) {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         for (int i = 0; i < proximoIndice; i++) {
@@ -32,9 +35,10 @@ public class RepositorioDietasArray implements IRepositorioDietas {
                 return i;
             }
         }
-        return proximoIndice; // Retorna proximoIndice se não encontrado.
+        return proximoIndice;
     }
 
+    // Adiciona uma dieta ao repositório.
     @Override
     public void adicionar(Dieta dieta) throws DietaNaoEncontradaException {
         if (dieta == null) throw new IllegalArgumentException("Dieta não pode ser nula.");
@@ -46,6 +50,7 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         dietas[proximoIndice++] = dieta;
     }
 
+    // Salva (atualiza) uma dieta no repositório.
     @Override
     public void salvar(Dieta dieta) throws DietaNaoEncontradaException {
         if (dieta == null) throw new IllegalArgumentException("Dieta não pode ser nula.");
@@ -58,6 +63,7 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         }
     }
 
+    // Remove uma dieta do repositório pelo ID.
     @Override
     public void remover(UUID id) throws DietaNaoEncontradaException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -70,6 +76,7 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         }
     }
 
+    // Busca uma dieta pelo ID.
     @Override
     public Dieta buscar(UUID id) throws DietaNaoEncontradaException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -81,11 +88,12 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         }
     }
 
+    // Retorna todas as dietas do repositório.
     @Override
     public List<Dieta> getAll() {
         List<Dieta> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {
-            if (dietas[i] != null) { // Evita NullPointerException
+            if (dietas[i] != null) {
                 lista.add(dietas[i]);
             }
         }

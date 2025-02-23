@@ -13,11 +13,13 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
     private int proximoIndice;
     private static RepositorioUsuariosArray instanciaUnica;
 
+    //Construtor privado (padrão Singleton)
     public RepositorioUsuariosArray() {
         usuarios = new Usuario[10];
         proximoIndice = 0;
     }
 
+    //Método estático para obter a instância única (Singleton)
     public static RepositorioUsuariosArray getInstanciaUnica() {
         if (instanciaUnica == null) {
             instanciaUnica = new RepositorioUsuariosArray();
@@ -25,6 +27,7 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
         return instanciaUnica;
     }
 
+    //Método privado para encontrar o índice de um usuário pelo ID
     private int procurarIndice(UUID id) {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         for (int i = 0; i < proximoIndice; i++) {
@@ -33,6 +36,7 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
         return proximoIndice;
     }
 
+    // Adiciona um usuário ao repositório.
     @Override
     public void adicionar(Usuario usuario) {
         if (usuario == null) throw new IllegalArgumentException("Usuário não pode ser nulo.");
@@ -44,6 +48,7 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
         usuarios[proximoIndice++] = usuario;
     }
 
+    // Salva (atualiza) um usuário no repositório.
     @Override
     public void salvar(Usuario usuario) throws UsuarioNaoEncontradoException {
         if (usuario == null) throw new IllegalArgumentException("Usuário não pode ser nulo.");
@@ -55,6 +60,7 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
         }
     }
 
+    // Remove um usuário do repositório pelo ID.
     @Override
     public void remover(UUID id) throws UsuarioNaoEncontradoException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -67,6 +73,7 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
         }
     }
 
+    // Busca um usuário pelo ID.
     @Override
     public Usuario buscar(UUID id) throws UsuarioNaoEncontradoException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -78,11 +85,12 @@ public class RepositorioUsuariosArray implements IRepositorioUsuarios {
         }
     }
 
+    // Retorna todos os usuários do repositório.
     @Override
     public List<Usuario> getAll() {
         List<Usuario> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {
-            if (usuarios[i] != null) { // Evita NullPointerException
+            if (usuarios[i] != null) {
                 lista.add(usuarios[i]);
             }
         }

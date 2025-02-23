@@ -44,7 +44,7 @@
                 <font><Font name="Gill Sans MT" size="20.0" /></font>
                 <VBox.margin><Insets top="20.0" /></VBox.margin>
             </Label>
-            <!-- Tabela de Metas Pré-definidas -->
+
             <TableView fx:id="tabelaMetasPreDefinidas" prefHeight="150.0" styleClass = "tabela-escura">
                 <columns>
                     <TableColumn fx:id="colunaDescricaoPreDefinida" prefWidth="150.0" styleClass = "tabela-escura-coluna" text="Descrição" />

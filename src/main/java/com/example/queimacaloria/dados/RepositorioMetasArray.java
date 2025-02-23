@@ -13,11 +13,13 @@ public class RepositorioMetasArray implements IRepositorioMetas {
     private int proximoIndice;
     private static RepositorioMetasArray instanciaUnica;
 
+    // Construtor privado para o padrão Singleton.
     private RepositorioMetasArray() {
         metas = new Meta[10];
         proximoIndice = 0;
     }
 
+    // Retorna a instância única do repositório (Singleton).
     public static RepositorioMetasArray getInstanciaUnica() {
         if (instanciaUnica == null) {
             instanciaUnica = new RepositorioMetasArray();
@@ -25,6 +27,7 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         return instanciaUnica;
     }
 
+    // Procura o índice de uma meta pelo ID.
     private int procurarIndice(UUID id) {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         for (int i = 0; i < proximoIndice; i++) {
@@ -33,6 +36,7 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         return proximoIndice;
     }
 
+    // Adiciona uma meta ao repositório.
     @Override
     public void adicionar(Meta meta) throws MetaNaoEncontradaException {
         if (meta == null) throw new IllegalArgumentException("Meta não pode ser nula.");
@@ -44,31 +48,34 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         metas[proximoIndice++] = meta;
     }
 
+    // Salva (atualiza) uma meta no repositório.
     @Override
     public void salvar(Meta meta) throws MetaNaoEncontradaException {
         if (meta == null) throw new IllegalArgumentException("Meta não pode ser nula.");
         int indice = procurarIndice(meta.getId());
         if (indice < proximoIndice) {
-            System.out.println("RepositorioMetasArray.salvar: Antes da atualização: " + metas[indice]); //PRINT
+            System.out.println("RepositorioMetasArray.salvar: Antes da atualização: " + metas[indice]);
             metas[indice] = meta;
-            System.out.println("RepositorioMetasArray.salvar: Depois da atualização: " + metas[indice]); //PRINT
+            System.out.println("RepositorioMetasArray.salvar: Depois da atualização: " + metas[indice]);
         } else {
             throw new MetaNaoEncontradaException("Meta não encontrada.");
         }
     }
 
+    // Remove uma meta do repositório pelo ID.
     @Override
     public void remover(UUID id) throws MetaNaoEncontradaException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         int indice = procurarIndice(id);
         if (indice < proximoIndice) {
             metas[indice] = metas[proximoIndice - 1];
-            metas[--proximoIndice] = null;  //  Remove a referência
+            metas[--proximoIndice] = null;
         } else {
             throw new MetaNaoEncontradaException("Meta não encontrada.");
         }
     }
 
+    // Busca uma meta pelo ID.
     @Override
     public Meta buscar(UUID id) throws MetaNaoEncontradaException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -80,6 +87,7 @@ public class RepositorioMetasArray implements IRepositorioMetas {
         }
     }
 
+    // Retorna todas as metas do repositório.
     @Override
     public List<Meta> getAll() {
         List<Meta> lista = new ArrayList<>();

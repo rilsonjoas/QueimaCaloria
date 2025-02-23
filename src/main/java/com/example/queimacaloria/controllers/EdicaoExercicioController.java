@@ -17,59 +17,63 @@ public class EdicaoExercicioController {
     @FXML private TextField campoDescricao;
     @FXML private ChoiceBox<Exercicio.TipoExercicio> campoTipo;
     @FXML private TextField campoTempo;
-    @FXML private TextField campoCaloriasPorMinuto;
+    @FXML private TextField campoCaloriasQueimadas; // Mudança aqui
     @FXML private Label mensagemErro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private Exercicio exercicio;
     private ExercicioController exercicioController;
-    //ADD
     private MainController mainController;
 
+    // Define o controlador da tela de exercícios.
     public void setExercicioController(ExercicioController exercicioController) {
         this.exercicioController = exercicioController;
     }
+
+    // Define o controlador principal.
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
+    // Define o exercício a ser editado.
     public void setExercicio(Exercicio exercicio) {
         this.exercicio = exercicio;
         preencherCampos();
     }
 
+    // Inicializa o controlador, configurando o ChoiceBox de tipo.
     @FXML
     public void initialize() {
         campoTipo.setItems(FXCollections.observableArrayList(Exercicio.TipoExercicio.values()));
     }
 
+    // Preenche os campos com os dados do exercício.
     private void preencherCampos() {
         if (exercicio != null) {
             campoNome.setText(exercicio.getNome());
             campoDescricao.setText(exercicio.getDescricao());
             campoTipo.setValue(exercicio.getTipo());
             campoTempo.setText(String.valueOf(exercicio.getTempo()));
-            campoCaloriasPorMinuto.setText(String.valueOf(exercicio.getCaloriasQueimadasPorMinuto()));
+            campoCaloriasQueimadas.setText(String.valueOf(exercicio.getCaloriasQueimadas()));
         }
     }
 
-
+    // Atualiza os dados do exercício.
     @FXML
     public void atualizarExercicio() {
         try {
-            // Obtém os valores dos campos
             String nome = campoNome.getText();
             String descricao = campoDescricao.getText();
             Exercicio.TipoExercicio tipo = campoTipo.getValue();
             int tempo = Integer.parseInt(campoTempo.getText());
-            double caloriasPorMinuto = Double.parseDouble(campoCaloriasPorMinuto.getText());
+            double caloriasQueimadas = Double.parseDouble(campoCaloriasQueimadas.getText());
 
-            fachada.configurarExercicio(exercicio, nome, descricao, tipo, tempo, caloriasPorMinuto);
+            fachada.configurarExercicio(exercicio, nome, descricao, tipo, tempo, caloriasQueimadas);
 
             mensagemErro.setText("Exercício atualizado com sucesso!");
 
             if (exercicioController != null) {
-                exercicioController.initialize(); //  Chama initialize
+                exercicioController.initialize();
             }
             if(mainController != null){
                 mainController.atualizarDadosTelaPrincipal();
@@ -87,6 +91,7 @@ public class EdicaoExercicioController {
         }
     }
 
+    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();

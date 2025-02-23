@@ -26,15 +26,18 @@ public class RegistroController {
     private Fachada fachada = Fachada.getInstanciaUnica();
     @FXML private AuthController authController;
 
+    // Define o controlador de autenticação.
     public void setAuthController(AuthController authController) {
         this.authController = authController;
     }
 
+    // Inicializa o controlador, configurando o ComboBox de sexo.
     @FXML
     public void initialize() {
         campoSexo.setItems(FXCollections.observableArrayList(Usuario.Sexo.values()));
     }
 
+    // Registra um novo usuário.
     @FXML
     public void registrar() {
         String nome = campoNome.getText();
@@ -45,33 +48,28 @@ public class RegistroController {
         float peso = 0.0f;
         float altura = 0.0f;
 
-
         try {
             peso = Float.parseFloat(campoPeso.getText());
-            altura = Float.parseFloat(campoAltura.getText())/100;
+            altura = Float.parseFloat(campoAltura.getText());
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Dados inválidos", "Peso e altura devem ser números válidos.");
-            return; // Retorna se houver erro de conversão.
+            return;
         }
 
-
         try {
-            // Cadastra e já obtém o usuário criado.
             Usuario novoUsuario = fachada.cadastrarUsuario(nome, email, password, dataNascimento, sexo, peso, altura);
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
 
-            // Adiciona um pequeno atraso antes de redirecionar (ajuda aos dados carregarem completamente)
-            PauseTransition delay = new PauseTransition(Duration.seconds(0.3)); // Atraso de menos de meio segundo
+            PauseTransition delay = new PauseTransition(Duration.seconds(0.3));
             delay.setOnFinished(event -> {
                 if (authController != null) {
-                    authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario); // Passa o novo usuário
+                    authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario);
                 } else {
                     System.err.println("Erro: AuthController é nulo em RegistroController!");
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");
                 }
             });
-            delay.play(); // Inicia o atraso.
-
+            delay.play();
 
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao cadastrar usuário", e.getMessage());
@@ -81,6 +79,7 @@ public class RegistroController {
         }
     }
 
+    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -89,12 +88,11 @@ public class RegistroController {
         alert.showAndWait();
     }
 
-
+    // Navega para a tela de login.
     @FXML
     public void irParaLogin() {
         if (authController != null) {
             authController.mostrarTelaLogin();
-            // Limpeza dos campos
             campoNome.clear();
             campoSenha.clear();
             campoAltura.clear();
@@ -104,12 +102,12 @@ public class RegistroController {
             campoDataNascimento.setValue(null);
             mensagemRegistro.setText(null);
         } else {
-            System.err.println("Erro: AuthController não foi injetado!"); // Boa prática
+            System.err.println("Erro: AuthController não foi injetado!");
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");
         }
     }
 
-
+    // Obtém o palco principal da aplicação.
     private Stage getPrimaryStage() {
         if (authController != null) {
             return (Stage) campoEmail.getScene().getWindow();

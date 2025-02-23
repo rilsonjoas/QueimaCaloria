@@ -10,7 +10,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-//Adicione esse import
 import javafx.scene.control.CheckBox;
 
 public class EdicaoTreinoController {
@@ -21,34 +20,32 @@ public class EdicaoTreinoController {
     @FXML private TextField campoNivelDificuldade;
     @FXML private Label mensagemErro;
 
-    //Adicione este campo:
     @FXML
     private CheckBox checkboxConcluido;
-
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private Treino treino;
     private TreinoController treinoController;
     private MainController mainController;
 
+    // Define o controlador da tela de treinos.
     public void setTreinoController(TreinoController treinoController) {
         this.treinoController = treinoController;
     }
 
+    // Define o controlador principal.
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
 
-
+    // Define o treino a ser editado.
     public void setTreino(Treino treino) {
-        System.out.println("EdicaoTreinoController.setTreino() chamado. ID do treino: " + treino.getId()); // LOG
+        System.out.println("EdicaoTreinoController.setTreino() chamado. ID do treino: " + treino.getId());
         this.treino = treino;
         preencherCampos();
     }
 
-
-
-
+    // Preenche os campos com os dados do treino.
     private void preencherCampos() {
         if (treino != null) {
             campoNome.setText(treino.getNome());
@@ -56,58 +53,50 @@ public class EdicaoTreinoController {
             campoDuracao.setText(String.valueOf(treino.getDuracao()));
             campoNivelDificuldade.setText(String.valueOf(treino.getNivelDeDificuldade()));
 
-            //  Preenche o CheckBox:
             if (checkboxConcluido != null) {
                 checkboxConcluido.setSelected(treino.isConcluido());
             }
         }
     }
 
+    // Atualiza os dados do treino.
     @FXML
     public void atualizarTreino() {
-        System.out.println("EdicaoTreinoController.atualizarTreino() chamado"); // LOG
+        System.out.println("EdicaoTreinoController.atualizarTreino() chamado");
 
         try {
-            // Obtém os valores dos campos.
             String nome = campoNome.getText();
             String tipoTreino = campoTipoTreino.getText();
             int duracao = Integer.parseInt(campoDuracao.getText());
             int nivelDificuldade = Integer.parseInt(campoNivelDificuldade.getText());
 
-            //  1.  Lógica de Conclusão *ANTES* de chamar a fachada:
             if (checkboxConcluido != null) {
                 System.out.println("  CheckBox existe.  Estado atual: " + treino.isConcluido());
                 System.out.println("  Checkbox selecionado? " + checkboxConcluido.isSelected());
 
-                boolean estadoAnterior = treino.isConcluido(); // Guarda o estado *antes* da mudança
-                treino.setConcluido(checkboxConcluido.isSelected()); //  AGORA SIM!
+                boolean estadoAnterior = treino.isConcluido();
+                treino.setConcluido(checkboxConcluido.isSelected());
 
                 System.out.println("  Novo estado do treino: " + treino.isConcluido());
-                //   Adiciona a pontuação *SE* o estado mudou *E* agora está concluído
 
                 if (treino.isConcluido() && estadoAnterior != treino.isConcluido() && mainController != null && mainController.getUsuarioLogado() != null) {
                     mainController.getUsuarioLogado().adicionarPontuacao(treino.getNivelDeDificuldade());
                     System.out.println("  Pontuação adicionada!");
 
-                    // ******************************************************
-                    // MOSTRA A MENSAGEM DE PARABÉNS:
                     showAlert(Alert.AlertType.INFORMATION, "Parabéns!", "Treino Concluído",
                             "Você concluiu o treino \"" + treino.getNome() + "\" e ganhou " +
                                     treino.getNivelDeDificuldade() + " pontos!");
-                    // ******************************************************
                 } else {
                     System.out.println("  Pontuação NÃO adicionada. Condições não satisfeitas.");
                 }
             }
 
-            // 2. *AGORA* chama a fachada, DEPOIS de modificar o treino
             fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade);
 
             mensagemErro.setText("Treino atualizado com sucesso!");
 
-            //Notifica o main controller para atualizar
             if (treinoController != null) {
-                treinoController.atualizarTabelaTreinosUsuario(); //  Chama initialize
+                treinoController.atualizarTabelaTreinosUsuario();
             }
             if(mainController != null){
                 mainController.atualizarDadosTelaPrincipal();
@@ -119,23 +108,25 @@ public class EdicaoTreinoController {
         }
         catch (TreinoNaoEncontradoException e) {
             mensagemErro.setText("Erro: " + e.getMessage());
-        } catch (Exception e) { // Captura genérica, importante para outros erros
+        } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();
     }
-    // Método showAlert (para evitar repetição)
+
+    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
-        alert.showAndWait(); // Mostra o Alert e ESPERA.
+        alert.showAndWait();
     }
 }

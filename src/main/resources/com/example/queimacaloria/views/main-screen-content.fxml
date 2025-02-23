@@ -54,13 +54,13 @@
 
         <VBox alignment="TOP_LEFT"  style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15;" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="Atividades Recentes" textFill="#d7d7d7">
+                <Label text="Exercícios Recentes" textFill="#d7d7d7">
                     <font><Font name="Gill Sans MT" size="20.0" /></font>
                 </Label>
                 <Region HBox.hgrow="ALWAYS" />
                 <Button fx:id="buttonVerMaisExercicios" style="-fx-background-color: #55c5f5;" text="Ver Mais" />
             </HBox>
-            <Label fx:id="labelAtividadesRecentes" text="Nenhuma atividade recente." textFill="WHITE" wrapText="true" />
+            <Label fx:id="labelAtividadesRecentes" text="Nenhum exercício recente." textFill="WHITE" wrapText="true" />
             <VBox.margin><Insets top="10" /></VBox.margin>
         </VBox>
     </HBox>

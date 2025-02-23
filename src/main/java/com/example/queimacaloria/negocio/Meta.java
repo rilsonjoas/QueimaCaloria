@@ -2,7 +2,7 @@ package com.example.queimacaloria.negocio;
 
 import javafx.beans.property.*;
 import lombok.Getter;
-import lombok.Setter; // Este import não é estritamente necessário se você não usar @Setter nos campos
+import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
@@ -19,6 +19,7 @@ public class Meta {
     private ObjectProperty<LocalDate> dataCriacao = new SimpleObjectProperty<>();
     private ObjectProperty<LocalDate> dataConclusao = new SimpleObjectProperty<>();
 
+    // Enum para os tipos de meta, com descrições amigáveis.
     public enum Tipo {
         PERDA_DE_PESO("Perda de Peso"),
         GANHO_DE_MASSA("Ganho de Massa");
@@ -33,27 +34,28 @@ public class Meta {
             return descricao;
         }
 
-        // Opcional: Método para converter de String para enum (útil para o ChoiceBox)
         public static Tipo fromString(String text) {
             for (Tipo tipo : Tipo.values()) {
                 if (tipo.descricao.equalsIgnoreCase(text)) {
                     return tipo;
                 }
             }
-            return null; // Ou lançar IllegalArgumentException
+            return null;
         }
 
         @Override
         public String toString() {
-            return descricao; // Para o ChoiceBox exibir a descrição
+            return descricao;
         }
     }
 
+    // Construtor padrão da classe Meta.
     public Meta() {
         this.id = UUID.randomUUID();
         this.dataCriacao.set(LocalDate.now());
     }
 
+    // Construtor da classe Meta.
     public Meta(String descricao, Tipo tipo, double valorAlvo, double progressoAtual, LocalDate dataCriacao,
                 LocalDate dataConclusao) {
         this.id = UUID.randomUUID();
@@ -90,7 +92,7 @@ public class Meta {
         return this.dataConclusao;
     }
 
-
+    //Setters
     public void setDescricao(String descricao) {
         this.descricao.set(descricao);
     }
@@ -114,6 +116,7 @@ public class Meta {
         this.dataConclusao.set(dataConclusao);
     }
 
+    //Getters:
     public String getDescricao() {
         return descricao.get();
     }

@@ -20,12 +20,11 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import com.example.queimacaloria.negocio.Meta;
 import javafx.collections.ListChangeListener;
-//Imports novos
 import com.example.queimacaloria.negocio.Exercicio;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException; // Importante
-import com.example.queimacaloria.negocio.Dieta; // Importante
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
+import com.example.queimacaloria.negocio.Dieta;
 
 public class MainController {
 
@@ -44,8 +43,6 @@ public class MainController {
     @FXML private Label labelProgressoMetas;
     @FXML private Label labelPontuacao;
     @FXML private Label labelAtividadesRecentes;
-
-    //Novos elementos para o card de água
     @FXML private Label labelAguaConsumida;
     @FXML private Button buttonBeberAgua;
     @FXML private Button buttonZerarAgua;
@@ -63,33 +60,33 @@ public class MainController {
     private DoubleProperty progressoGeral = new SimpleDoubleProperty(0.0);
     private ObservableList<String> atividadesRecentes = FXCollections.observableArrayList();
 
+    // Define o palco principal.
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
 
+    // Obtém o usuário logado.
     public Usuario getUsuarioLogado() {
         return usuarioLogado;
     }
-
+    // Obtém as atividades recentes do usuário
     public ObservableList<String> getAtividadesRecentes() {
         return this.atividadesRecentes;
     }
 
+    // Define o usuário logado e atualiza a interface.
     public void setUsuarioLogado(Usuario usuario) {
         this.usuarioLogado = usuario;
 
         if (usuarioLogado != null) {
-            // Tenta obter a dieta ativa.  Se não existir, não faz nada.
             try {
                 Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
                 if (dietaAtiva != null) {
-                    usuarioLogado.setDietaAtiva(dietaAtiva); // Define a dieta ativa no *próprio* usuário.
+                    usuarioLogado.setDietaAtiva(dietaAtiva);
                 }
             } catch (UsuarioNaoEncontradoException e) {
-                // Tratar exceção, se necessário (logar, talvez).
                 System.err.println("Usuário não encontrado ao buscar dieta ativa: " + e.getMessage());
             }
-
 
             if (labelNomeUsuario != null) labelNomeUsuario.setText(usuarioLogado.getNome());
             if (labelPesoUsuario != null)
@@ -120,11 +117,10 @@ public class MainController {
                 ));
             }
 
-            // Binding para o label de água consumida.
             if (labelAguaConsumida != null) {
                 labelAguaConsumida.textProperty().bind(Bindings.createStringBinding(
                         () -> "Água: " + usuarioLogado.getAguaConsumida() + " ml",
-                        usuarioLogado.aguaConsumidaProperty() // Importante
+                        usuarioLogado.aguaConsumidaProperty()
                 ));
             }
 
@@ -133,7 +129,7 @@ public class MainController {
                 atualizarDadosTelaPrincipal();
             });
         }
-        else { // Usuário deslogado -  Código *já existente*
+        else {
             if (labelNomeUsuario != null) labelNomeUsuario.setText("Nome do Usuário");
             if (labelPesoUsuario != null) labelPesoUsuario.setText("Peso: --");
             if (labelAlturaUsuario != null) labelAlturaUsuario.setText("Altura: --");
@@ -158,6 +154,7 @@ public class MainController {
         atualizarDadosTelaPrincipal();
     }
 
+    // Retorna a situação do IMC com base no valor.
     private String getSituacaoIMC(float imc) {
         if (imc < 18.5) return "Abaixo do peso";
         else if (imc < 25) return "Peso normal";
@@ -166,8 +163,8 @@ public class MainController {
         else if (imc < 40) return "Obesidade grau II";
         else return "Obesidade grau III";
     }
-    // ... restante do código do MainController ...
 
+    // Inicializa o controlador, carregando as telas secundárias.
     @FXML
     public void initialize() {
         try {
@@ -193,10 +190,12 @@ public class MainController {
         }
     }
 
+    // Obtém o controlador de uma tela FXML.
     private Object getController(Parent parent) {
         return ((FXMLLoader) parent.getProperties().get("fxmlLoader")).getController();
     }
 
+    // Carrega uma tela FXML a partir do caminho.
     private Parent carregarTela(String caminho) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(caminho));
         Parent root = loader.load();
@@ -204,18 +203,29 @@ public class MainController {
         return root;
     }
 
+    // Exibe a tela de dieta.
     @FXML public void mostrarTelaDieta() { areaConteudo.getChildren().setAll(telaDieta); }
+
+    // Exibe a tela de exercício.
     @FXML public void mostrarTelaExercicio() { areaConteudo.getChildren().setAll(telaExercicio); }
+
+    // Exibe a tela de metas.
     @FXML public void mostrarTelaMeta() { areaConteudo.getChildren().setAll(telaMeta); }
+
+    // Exibe a tela de refeição.
     @FXML public void mostrarTelaRefeicao() { areaConteudo.getChildren().setAll(telaRefeicao); }
+
+    // Exibe a tela de treino.
     @FXML public void mostrarTelaTreino() { areaConteudo.getChildren().setAll(telaTreino); }
+
+    // Exibe a tela de perfil.
     @FXML public void mostrarTelaPerfil() {
         PerfilController perfilController = (PerfilController) getController(telaPerfil);
         perfilController.setUsuarioLogado(usuarioLogado);
         areaConteudo.getChildren().setAll(telaPerfil);
     }
 
-
+    // Exibe a tela principal (conteúdo da tela principal).
     @FXML
     public void mostrarTelaPrincipal() {
         try {
@@ -239,8 +249,7 @@ public class MainController {
             labelAtividadesRecentes = (Label) telaPrincipalContent.lookup("#labelAtividadesRecentes");
             labelAguaConsumida = (Label) telaPrincipalContent.lookup("#labelAguaConsumida");
             buttonBeberAgua = (Button) telaPrincipalContent.lookup("#buttonBeberAgua");
-            buttonZerarAgua = (Button) telaPrincipalContent.lookup("#buttonZerarAgua"); // Get reference
-
+            buttonZerarAgua = (Button) telaPrincipalContent.lookup("#buttonZerarAgua");
 
             if (buttonVerMaisMetas != null) buttonVerMaisMetas.setOnAction(e -> mostrarTelaMeta());
             if (buttonVerMaisExercicios != null)
@@ -253,17 +262,13 @@ public class MainController {
                     if (usuarioLogado != null) {
                         try {
                             Fachada.getInstanciaUnica().beberAgua(usuarioLogado, INCREMENTO_AGUA_ML);
-                            // O binding já cuida de atualizar a label.
-                            //A fachada já está atualizando o usuário.
                         } catch (UsuarioNaoEncontradoException ex) {
-                            //Tratar
                             System.err.println("Erro ao beber agua: " + ex.getMessage());
                         }
                     }
                 });
             }
 
-            //Adiciona a ação do novo botão
             if (buttonZerarAgua != null) {
                 buttonZerarAgua.setOnAction(e -> {
                     if (usuarioLogado != null) {
@@ -277,7 +282,7 @@ public class MainController {
             }
 
             if (usuarioLogado != null) {
-                setUsuarioLogado(usuarioLogado);  // Corrigido!
+                setUsuarioLogado(usuarioLogado);
             } else {
                 if(labelNomeUsuario != null) labelNomeUsuario.setText("Nome do Usuário");
                 if(labelIMC != null)  labelIMC.setText("IMC: --");
@@ -289,7 +294,7 @@ public class MainController {
                     barraProgressoMetas.progressProperty().unbind();
                     barraProgressoMetas.setProgress(0.0);
                 }
-                //Se o usuário não estiver logado, a pontuação some.
+
                 if(labelPontuacao != null){
                     labelPontuacao.setText("Pontuação: --");
                 }
@@ -300,11 +305,12 @@ public class MainController {
             e.printStackTrace();
         }
     }
+
+    // Calcula o total de calorias consumidas pelo usuário.
     private int calcularTotalCaloriasConsumidas() {
         if (usuarioLogado == null) {
             return 0;
         }
-        // Soma as calorias de *TODAS* as refeições do usuário, independentemente de dietas.
         int total = 0;
         List<Refeicao> todasRefeicoes = Fachada.getInstanciaUnica().listarRefeicoes();
         for(Refeicao r : todasRefeicoes) {
@@ -313,24 +319,23 @@ public class MainController {
         return total;
     }
 
+    // Atualiza o label de calorias consumidas/diárias.
     private void atualizarCalorias() {
         if (usuarioLogado != null) {
             int caloriasConsumidas = calcularTotalCaloriasConsumidas();
-            int caloriasDiarias = 0; // Valor padrão
+            int caloriasDiarias = 0;
 
             try {
-                Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado); //Obtém a dieta ativa
+                Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
                 if(dietaAtiva != null){
                     caloriasDiarias = dietaAtiva.getCaloriasDiarias();
                 }
             } catch (UsuarioNaoEncontradoException e){
-                //Lida com a exceção. Pode logar, mostrar uma mensagem, etc
                 System.err.println("Usuário não encontrado ao buscar dieta ativa: " + e.getMessage());
             }
 
-
             if (labelCaloriasDia != null) {
-                labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias); //  Mostra as calorias
+                labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias);
             }
         } else {
             if (labelCaloriasDia != null) {
@@ -339,12 +344,12 @@ public class MainController {
         }
     }
 
+    // Calcula o progresso geral do usuário em relação às metas.
     public double calcularProgressoGeralUsuario() {
         double progressoTotal = 0.0;
         int contadorMetas = 0;
 
         if (usuarioLogado != null) {
-            // Calcula progresso das metas
             if (usuarioLogado.getMetas() != null) {
                 for (Meta meta : usuarioLogado.getMetas()) {
                     if (meta.getValorAlvo() > 0) {
@@ -363,34 +368,34 @@ public class MainController {
         }
     }
 
+    // Adiciona um exercício à lista de atividades recentes.
     public void adicionarExercicioRecente(Exercicio exercicio) {
 
         String nomeExercicio = exercicio.getNome();
 
-        //Remove o exercício se ele já existir na lista.
         atividadesRecentes.remove(nomeExercicio);
         atividadesRecentes.add(0, nomeExercicio);
 
-        if(atividadesRecentes.size() > 3){ // Agora, no máximo 3
-            atividadesRecentes.remove(3); // Remove a partir do índice 3
+        if(atividadesRecentes.size() > 3){
+            atividadesRecentes.remove(3);
         }
-        atualizarAtividadesRecentes(); //Chama o metodo de atualizar a label
+        atualizarAtividadesRecentes();
 
     }
 
-    //Novo método para atualizar o texto na label:
+    // Atualiza o texto do label de atividades recentes.
     private void atualizarAtividadesRecentes() {
         if (labelAtividadesRecentes != null) {
             if (atividadesRecentes.isEmpty()) {
                 labelAtividadesRecentes.setText("Nenhuma atividade recente.");
             } else {
-                // Junta os nomes dos exercícios com vírgulas
-                String texto = String.join(", ", atividadesRecentes); // <-- Mudança aqui
+                String texto = String.join(", ", atividadesRecentes);
                 labelAtividadesRecentes.setText(texto);
             }
         }
     }
 
+    // Atualiza todos os dados da tela principal.
     public void atualizarDadosTelaPrincipal() {
         if (usuarioLogado != null) {
             atualizarCalorias();
@@ -406,41 +411,28 @@ public class MainController {
                 ((TreinoController) getController(telaTreino)).atualizarTabelaTreinosUsuario();
         }
     }
-    private void atualizarAgua(){  //Não precisa mais.
-        /*if (usuarioLogado != null) {
-            if (labelAguaConsumida != null) { //Verificação extra
-                labelAguaConsumida.setText("Água: " + usuarioLogado.getAguaConsumida() + " ml");
-            }
 
-        } else {
-            if (labelAguaConsumida != null) {
-                labelAguaConsumida.setText("Água: -- ml");
-            }
-        }
-        */
+    // Atualiza a label de água.
+    private void atualizarAgua(){
 
     }
 
+    // Realiza o logout do usuário.
     @FXML
     public void logout() {
-        // Cria um Alert do tipo CONFIRMATION
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmação de Logout");
         alert.setHeaderText("Sair do YouFit");
         alert.setContentText("Tem certeza que deseja sair?");
 
-        // Configura os botões (opcional, mas recomendado para clareza)
         ButtonType buttonTypeSim = new ButtonType("Sim");
         ButtonType buttonTypeNao = new ButtonType("Não");
 
         alert.getButtonTypes().setAll(buttonTypeSim, buttonTypeNao);
 
-        // Mostra o Alert e espera pela resposta do usuário
         Optional<ButtonType> result = alert.showAndWait();
 
-        // Verifica qual botão foi clicado
         if (result.isPresent() && result.get() == buttonTypeSim) {
-            // O usuário clicou em "Sim".  Executa a lógica de logout.
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/auth-view.fxml"));
                 Parent authView = loader.load();
@@ -452,7 +444,5 @@ public class MainController {
                 e.printStackTrace();
             }
         }
-        // Se o usuário clicou em "Não" ou "Cancelar", o diálogo simplesmente fecha, e nada acontece.
     }
-
 }

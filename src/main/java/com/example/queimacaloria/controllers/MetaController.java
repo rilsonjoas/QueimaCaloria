@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.util.List;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-//Importe ReadOnlyObjectWrapper
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -46,11 +45,12 @@ public class MetaController {
     private MainController mainController;
     private ObservableList<Meta> metasPreDefinidas = FXCollections.observableArrayList();
 
-
+    // Define o controlador principal.
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
+    // Inicializa o controlador, configurando as tabelas.
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
@@ -60,6 +60,7 @@ public class MetaController {
         carregarMetasPreDefinidas();
     }
 
+    // Configura a tabela de metas do usuário.
     private void configurarTabelaUsuario() {
         colunaDescricaoUsuario.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaTipoUsuario.setCellValueFactory(new PropertyValueFactory<>("tipo"));
@@ -70,14 +71,11 @@ public class MetaController {
             return new SimpleDoubleProperty(progresso).asObject();
         });
 
-
-        // CORREÇÃO: Usar ReadOnlyObjectWrapper + Listener
         colunaDataConclusaoUsuario.setCellValueFactory(cellData -> {
             Meta meta = cellData.getValue();
             return new ReadOnlyObjectWrapper<>(meta.getDataConclusao());
         });
 
-        // Listener para atualizar a exibição da data de conclusão
         colunaDataConclusaoUsuario.setCellFactory(column -> {
             return new TableCell<Meta, LocalDate>() {
                 @Override
@@ -89,7 +87,6 @@ public class MetaController {
                         setStyle("");
                     } else {
                         Meta meta = getTableView().getItems().get(getIndex());
-                        // Verifica se a meta não é nula e se a data de conclusão não é nula
                         if (meta != null && meta.getDataConclusao() != null) {
                             setText(meta.getDataConclusao().toString());
                             setStyle("-fx-alignment: CENTER;");
@@ -103,29 +100,29 @@ public class MetaController {
             };
         });
 
-        // Adiciona um listener para *cada meta* na tabela.  ESSENCIAL!
         tabelaMetasUsuario.getItems().addListener((javafx.collections.ListChangeListener<Meta>) change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
                     for (Meta meta : change.getAddedSubList()) {
                         meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
-                            tabelaMetasUsuario.refresh(); // Atualiza a tabela!
+                            tabelaMetasUsuario.refresh();
                         });
                     }
                 }
             }
         });
     }
+
+    // Configura a tabela de metas pré-definidas.
     private void configurarTabelaPreDefinida() {
         colunaDescricaoPreDefinida.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaTipoPreDefinida.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        //Removido os setCellValueFactory das colunas que foram removidas.
     }
 
-
+    // Carrega as metas pré-definidas.
     private void carregarMetasPreDefinidas() {
         try {
-            List<Meta> metas = InicializadorDados.inicializarMetas(); // Método estático
+            List<Meta> metas = InicializadorDados.inicializarMetas();
             metasPreDefinidas.setAll(metas);
             tabelaMetasPreDefinidas.setItems(metasPreDefinidas);
         } catch (Exception e) {
@@ -133,7 +130,7 @@ public class MetaController {
         }
     }
 
-
+    // Abre a tela de criação de meta.
     @FXML
     public void abrirTelaCriarMeta() {
         try {
@@ -153,44 +150,27 @@ public class MetaController {
         }
     }
 
+    // Abre a tela de edição de meta.
     @FXML
     public void atualizarMeta() {
         Meta metaSelecionada = tabelaMetasUsuario.getSelectionModel().getSelectedItem();
         if (metaSelecionada != null) {
             try {
-                // Carrega a tela de edição
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/edicao-meta-view.fxml"));
                 Parent root = loader.load();
 
-                // Obtém o controlador da tela de edição
                 EdicaoMetaController controller = loader.getController();
                 controller.setMetaController(this);
                 controller.setMainController(mainController);
 
-                // Passa a meta selecionada para o controlador
                 controller.setMeta(metaSelecionada);
 
-                // Exibe a tela de edição
                 Stage stage = new Stage();
                 stage.setTitle("Editar Meta");
                 stage.setScene(new Scene(root));
-                stage.showAndWait(); // Exibe como um diálogo modal
+                stage.showAndWait();
 
-                atualizarTabelaMetasUsuario(); // Atualiza a tabela *após* a edição
-
-                // Atualiza o usuário logado *após* a edição: Removido, a fachada agora cuida disso
-                /*
-                if (mainController != null && mainController.getUsuarioLogado() != null) {
-                    try {
-                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                        mainController.setUsuarioLogado(usuarioAtualizado);
-                    } catch (UsuarioNaoEncontradoException e) {
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
-                                "O usuário logado não pôde ser encontrado após a edição da meta.");
-                    }
-                }
-
-                 */
+                atualizarTabelaMetasUsuario();
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -201,30 +181,17 @@ public class MetaController {
         }
     }
 
+    // Remove a meta selecionada.
     @FXML
     public void removerMeta() {
         Meta metaSelecionada = tabelaMetasUsuario.getSelectionModel().getSelectedItem();
         if (metaSelecionada != null) {
             try {
-                fachada.removerMeta(metaSelecionada.getId()); //  Chama remover da fachada
-                atualizarTabelaMetasUsuario(); //  Atualiza a tabela
+                fachada.removerMeta(metaSelecionada.getId());
+                atualizarTabelaMetasUsuario();
                 mensagemMeta.setText("Meta removida com sucesso!");
 
-               /* Removido: A fachada agora cuida de atualizar o usuário
-                // Atualiza o usuário logado *após* a remoção:
-                if (mainController != null && mainController.getUsuarioLogado() != null) {
-                    try {
-                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                        mainController.setUsuarioLogado(usuarioAtualizado);
-                    } catch (UsuarioNaoEncontradoException e) {
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
-                                "O usuário logado não pôde ser encontrado após a remoção da meta.");
-                    }
-                }
-                */
-
-
-            } catch (MetaNaoEncontradaException e) { // Captura a exceção
+            } catch (MetaNaoEncontradaException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover meta", e.getMessage());
             }
         } else {
@@ -232,28 +199,26 @@ public class MetaController {
                     "Por favor, selecione uma meta para remover.");
         }
     }
+
+    // Adiciona uma meta pré-definida ao usuário.
     @FXML
     public void adicionarMetaPreDefinida() {
         Meta metaSelecionada = tabelaMetasPreDefinidas.getSelectionModel().getSelectedItem();
         if (metaSelecionada != null) {
             try {
-                // Cria uma *NOVA* instância, copiando os valores.
                 Meta novaMeta = new Meta(
                         metaSelecionada.getDescricao(),
                         metaSelecionada.getTipo(),
                         metaSelecionada.getValorAlvo(),
-                        0.0,  //  <-  Progresso inicial DEVE ser 0.0
+                        0.0,
                         metaSelecionada.getDataCriacao(),
                         metaSelecionada.getDataConclusao() != null ? metaSelecionada.getDataConclusao() : null
-                        // Mantém a data de conclusão se existir, senão, define como null.
                 );
                 fachada.configurarMeta(novaMeta, novaMeta.getDescricao(), novaMeta.getTipo(),
                         novaMeta.getValorAlvo(), novaMeta.getProgressoAtual(), novaMeta.getDataConclusao());
 
-                atualizarTabelaMetasUsuario(); //  ATUALIZA A TABELA *APÓS* ADICIONAR, E REMOVIDO A ATUALIZAÇÃO DO USUÁRIO
+                atualizarTabelaMetasUsuario();
                 mensagemMeta.setText("Meta adicionada com sucesso!");
-
-
 
             } catch (MetaNaoEncontradaException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar meta", e.getMessage());
@@ -264,34 +229,31 @@ public class MetaController {
         }
     }
 
-
+    // Atualiza a tabela de metas do usuário.
     public void atualizarTabelaMetasUsuario() {
-        System.out.println("MetaController.atualizarTabelaMetasUsuario() chamado."); // PRINT
+        System.out.println("MetaController.atualizarTabelaMetasUsuario() chamado.");
         try {
             List<Meta> listaMetas = fachada.listarMetas();
             tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas));
 
-            // Adiciona o listener DENTRO de atualizarTabelaMetasUsuario
             for (Meta meta : tabelaMetasUsuario.getItems()) {
-                // Listener para dataConclusaoProperty
                 meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
-                    System.out.println("Listener de dataConclusaoProperty disparado! Meta ID: " + meta.getId()); //PRINT
-                    tabelaMetasUsuario.refresh(); // Atualiza a tabela quando a data de conclusão mudar.
+                    System.out.println("Listener de dataConclusaoProperty disparado! Meta ID: " + meta.getId());
+                    tabelaMetasUsuario.refresh();
                 });
 
-                // Listener para progressoAtualProperty  --  ADICIONAR AQUI!
                 meta.progressoAtualProperty().addListener((obs, oldVal, newVal) -> {
-                    System.out.println("Listener de progressoAtualProperty disparado! Meta ID: " + meta.getId()); //PRINT
+                    System.out.println("Listener de progressoAtualProperty disparado! Meta ID: " + meta.getId());
                     tabelaMetasUsuario.refresh();
                 });
             }
-
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar metas", e.getMessage());
         }
     }
 
+    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -300,6 +262,7 @@ public class MetaController {
         alert.showAndWait();
     }
 
+    // Volta para a tela principal.
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {

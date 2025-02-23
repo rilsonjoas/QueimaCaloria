@@ -12,13 +12,13 @@ public class ControladorUsuario {
 
     private RepositorioUsuariosArray repositorio;
 
+    // Construtor, inicializa o repositório.
     public ControladorUsuario() {
         this.repositorio = RepositorioUsuariosArray.getInstanciaUnica();
     }
 
-    // Método de cadastro.  ESTAVA FALTANDO!
+    // Cadastra um novo usuário no repositório.
     public void cadastrarUsuario(Usuario novoUsuario) {
-        // Verifica se o e-mail já existe
         List<Usuario> usuarios = repositorio.getAll();
         for (Usuario user : usuarios) {
             if (user.getEmail().equals(novoUsuario.getEmail())) {
@@ -29,12 +29,11 @@ public class ControladorUsuario {
         repositorio.adicionar(novoUsuario);
     }
 
-
-    // Atualiza os dados de um usuário existente.  ESTAVA FALTANDO!
+    // Atualiza os dados de um usuário existente.
     public void atualizarDados(UUID usuarioId, String nome, String email, String senha, LocalDate dataNascimento,
                                Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException
     {
-        Usuario usuario = repositorio.buscar(usuarioId); // Busca o usuário pelo ID
+        Usuario usuario = repositorio.buscar(usuarioId);
         if (usuario == null) {
             throw new UsuarioNaoEncontradoException("Usuário com ID " + usuarioId + " não encontrado.");
         }
@@ -61,73 +60,64 @@ public class ControladorUsuario {
             usuario.setAltura(altura);
         }
 
-        repositorio.salvar(usuario); // Salva o objeto ATUALIZADO
+        repositorio.salvar(usuario);
     }
 
-
-    public void cadastrarMeta(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
-        if (meta != null) {
-            usuario.getMetas().add(meta); // Usa a lista observável EXISTENTE
-            repositorio.salvar(usuario);
-        }
+    // Busca um usuário pelo ID.
+    public Usuario buscarPorId(UUID id) throws UsuarioNaoEncontradoException{
+        return repositorio.buscar(id);
     }
 
-    public void adicionarTreino(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {
-        if (treino != null && !usuario.getTreinos().contains(treino)) {
-            usuario.getTreinos().add(treino); // Usa a lista observável EXISTENTE
-            repositorio.salvar(usuario);
-        }
+    // Lista todos os usuários do repositório.
+    public List<Usuario> listarUsuarios() {
+        return repositorio.getAll();
     }
 
-    public void adicionarDieta(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException {
-        if (dieta != null && !usuario.getDietas().contains(dieta)) {
-            usuario.getDietas().add(dieta); // Usa a lista observável EXISTENTE
-            repositorio.salvar(usuario);
-        }
-    }
-    //Adicionado setDietaAtiva
-    public void setDietaAtiva(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException{
-        if(usuario != null && dieta != null){
-            usuario.setDietaAtiva(dieta); // Agora sim!
-            repositorio.salvar(usuario);
-        }
-    }
-    //Adicionado getDietaAtiva
-    public Dieta getDietaAtiva(Usuario usuario) throws UsuarioNaoEncontradoException{ //Não precisa da exceção aqui
-        if(usuario != null){
-            return usuario.getDietaAtiva();  // Agora sim!
-        }
-        return null;
-    }
-
+    // Calcula a idade do usuário.
     public int getIdade(Usuario usuario) {
         if (usuario.getDataNascimento() == null) return 0;
         return Period.between(usuario.getDataNascimento(), LocalDate.now()).getYears();
     }
 
-    public double calcularProgressoMeta(Meta meta) {
-        if (meta.getValorAlvo() == 0) return 0;
-        return (meta.getProgressoAtual() / meta.getValorAlvo()) * 100;
+    // Métodos relacionados a Metas
+    public void cadastrarMeta(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
+        if (meta != null) {
+            usuario.getMetas().add(meta);
+            repositorio.salvar(usuario);
+        }
     }
 
-    public double calcularProgressoTreino(Treino treino) {
-        if (treino.getExercicios().isEmpty()) return 0.0;
-        long exerciciosConcluidos = treino.getExercicios().stream().filter(Exercicio::isConcluido).count();
-        return (exerciciosConcluidos / (double) treino.getExercicios().size()) * 100.0;
+    // Métodos relacionados a Treinos
+    public void adicionarTreino(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {
+        if (treino != null && !usuario.getTreinos().contains(treino)) {
+            usuario.getTreinos().add(treino);
+            repositorio.salvar(usuario);
+        }
     }
 
-    public boolean isMetaConcluida(Meta meta) {
-        return meta.getDataConclusao() != null;
+    // Métodos relacionados a Dietas
+    public void adicionarDieta(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException {
+        if (dieta != null && !usuario.getDietas().contains(dieta)) {
+            usuario.getDietas().add(dieta);
+            repositorio.salvar(usuario);
+        }
     }
 
-    public Usuario buscarPorId(UUID id) throws UsuarioNaoEncontradoException{
-        return repositorio.buscar(id);
+    public void setDietaAtiva(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException{
+        if(usuario != null && dieta != null){
+            usuario.setDietaAtiva(dieta);
+            repositorio.salvar(usuario);
+        }
     }
 
-    public List<Usuario> listarUsuarios() {
-        return repositorio.getAll();
+    public Dieta getDietaAtiva(Usuario usuario) throws UsuarioNaoEncontradoException {
+        if(usuario != null){
+            return usuario.getDietaAtiva();
+        }
+        return null;
     }
 
+    // Métodos relacionados à água
     public void beberAgua(Usuario usuario, int ml) throws UsuarioNaoEncontradoException{
         if(usuario != null){
             usuario.beberAgua(ml);
@@ -137,11 +127,12 @@ public class ControladorUsuario {
 
     public void zerarAgua(Usuario usuario) throws UsuarioNaoEncontradoException {
         if(usuario != null){
-            usuario.setAguaConsumida(0); //Zera diretamente na propriedade
-            repositorio.salvar(usuario); //Persiste a alteração
+            usuario.setAguaConsumida(0);
+            repositorio.salvar(usuario);
         }
     }
 
+    // Remover o usuário
     public void remover(UUID id) throws UsuarioNaoEncontradoException {
         repositorio.remover(id);
     }

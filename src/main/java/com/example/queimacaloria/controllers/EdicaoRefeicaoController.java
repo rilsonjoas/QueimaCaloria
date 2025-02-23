@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import java.util.HashMap; // Importante
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -24,19 +24,23 @@ public class EdicaoRefeicaoController {
     private RefeicaoController refeicaoController;
     private MainController mainController;
 
+    // Define o controlador da tela de refeições.
     public void setRefeicaoController(RefeicaoController refeicaoController) {
         this.refeicaoController = refeicaoController;
     }
 
+    // Define o controlador principal.
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
 
+    // Define a refeição a ser editada.
     public void setRefeicao(Refeicao refeicao) {
         this.refeicao = refeicao;
         preencherCampos();
     }
 
+    // Preenche os campos com os dados da refeição.
     private void preencherCampos() {
         if (refeicao != null) {
             campoNome.setText(refeicao.getNome());
@@ -51,14 +55,13 @@ public class EdicaoRefeicaoController {
         }
     }
 
+    // Atualiza os dados da refeição.
     @FXML
     public void atualizarRefeicao() {
         try {
-            // Atualiza a descrição
             String nome = campoNome.getText();
             String descricao = campoDescricao.getText();
 
-            // Coleta e atualiza os macronutrientes
             Map<String, Double> novosMacronutrientes = new HashMap<>();
             try {
                 novosMacronutrientes.put("Proteínas", Double.parseDouble(campoProteinas.getText()));
@@ -76,7 +79,7 @@ public class EdicaoRefeicaoController {
             if (refeicaoController != null) {
                 refeicaoController.initialize();
             }
-            //ADD
+
             if(mainController != null){
                 mainController.atualizarDadosTelaPrincipal();
             }
@@ -89,6 +92,7 @@ public class EdicaoRefeicaoController {
         }
     }
 
+    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();

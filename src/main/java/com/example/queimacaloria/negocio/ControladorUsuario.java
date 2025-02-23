@@ -128,6 +128,20 @@ public class ControladorUsuario {
         return repositorio.getAll();
     }
 
+    public void beberAgua(Usuario usuario, int ml) throws UsuarioNaoEncontradoException{
+        if(usuario != null){
+            usuario.beberAgua(ml);
+            repositorio.salvar(usuario);
+        }
+    }
+
+    public void zerarAgua(Usuario usuario) throws UsuarioNaoEncontradoException {
+        if(usuario != null){
+            usuario.setAguaConsumida(0); //Zera diretamente na propriedade
+            repositorio.salvar(usuario); //Persiste a alteração
+        }
+    }
+
     public void remover(UUID id) throws UsuarioNaoEncontradoException {
         repositorio.remover(id);
     }

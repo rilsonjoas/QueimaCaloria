@@ -20,6 +20,8 @@ public class Fachada {
     private ControladorTreino controladorTreino;
     private MainController mainController; // Adicionado
 
+
+
     private Fachada() {
         this.controladorUsuario = new ControladorUsuario();
         this.controladorDieta = new ControladorDieta();
@@ -116,6 +118,18 @@ public class Fachada {
 
     public int calcularIdadeUsuario(Usuario usuario) {
         return controladorUsuario.getIdade(usuario);
+    }
+
+    public int getAguaConsumida(Usuario usuario) {
+        return usuario.getAguaConsumida();
+    }
+
+    public void zerarAgua(Usuario usuario) throws UsuarioNaoEncontradoException{
+        controladorUsuario.zerarAgua(usuario);
+    }
+
+    public void beberAgua(Usuario usuario, int ml) throws UsuarioNaoEncontradoException {
+        controladorUsuario.beberAgua(usuario, ml);
     }
 
     public List<Usuario> listarUsuarios() {

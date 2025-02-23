@@ -85,5 +85,17 @@
             <Label fx:id="labelCaloriasDia" text="Calorias: -- / --" textFill="WHITE" />
             <VBox.margin><Insets top="10" /></VBox.margin>
         </VBox>
+        <VBox alignment="TOP_LEFT"  style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15;" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Quantidade de Água" textFill="#d7d7d7">
+                    <font><Font name="Gill Sans MT" size="20.0" /></font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="buttonBeberAgua" style="-fx-background-color: #55c5f5;" text="Beber Água" />
+                <Button fx:id="buttonZerarAgua" style="-fx-background-color: #55c5f5;" text="Zerar" />
+            </HBox>
+            <Label fx:id="labelAguaConsumida" text="Água: -- ml" textFill="WHITE" />
+            <VBox.margin><Insets top="10" /></VBox.margin>
+        </VBox>
     </HBox>
 </VBox>

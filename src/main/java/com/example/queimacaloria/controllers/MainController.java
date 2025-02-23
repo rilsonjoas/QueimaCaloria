@@ -46,6 +46,12 @@ public class MainController {
     @FXML private Label labelPontuacao;
     @FXML private Label labelAtividadesRecentes;
 
+    //Novos elementos para o card de água
+    @FXML private Label labelAguaConsumida;
+    @FXML private Button buttonBeberAgua;
+    @FXML private Button buttonZerarAgua;
+    private static final int INCREMENTO_AGUA_ML = 200;
+
     private Parent telaDieta;
     private Parent telaExercicio;
     private Parent telaMeta;
@@ -115,6 +121,14 @@ public class MainController {
                 ));
             }
 
+            // Binding para o label de água consumida.
+            if (labelAguaConsumida != null) {
+                labelAguaConsumida.textProperty().bind(Bindings.createStringBinding(
+                        () -> "Água: " + usuarioLogado.getAguaConsumida() + " ml",
+                        usuarioLogado.aguaConsumidaProperty() // Importante
+                ));
+            }
+
             usuarioLogado.getMetas().addListener((ListChangeListener<Meta>) change -> {
                 System.out.println("MainController: Listener de metas disparado!");
                 atualizarDadosTelaPrincipal();
@@ -136,6 +150,9 @@ public class MainController {
             }
             if (labelPontuacao != null) {
                 labelPontuacao.setText("Pontuação: --");
+            }
+            if (labelAguaConsumida != null) {
+                labelAguaConsumida.setText("Água: -- ml");
             }
         }
 
@@ -221,12 +238,44 @@ public class MainController {
             labelProgressoMetas = (Label) telaPrincipalContent.lookup("#labelProgressoMetas");
             labelPontuacao = (Label) telaPrincipalContent.lookup("#labelPontuacao");
             labelAtividadesRecentes = (Label) telaPrincipalContent.lookup("#labelAtividadesRecentes");
+            labelAguaConsumida = (Label) telaPrincipalContent.lookup("#labelAguaConsumida");
+            buttonBeberAgua = (Button) telaPrincipalContent.lookup("#buttonBeberAgua");
+            buttonZerarAgua = (Button) telaPrincipalContent.lookup("#buttonZerarAgua"); // Get reference
+
 
             if (buttonVerMaisMetas != null) buttonVerMaisMetas.setOnAction(e -> mostrarTelaMeta());
             if (buttonVerMaisExercicios != null)
                 buttonVerMaisExercicios.setOnAction(e -> mostrarTelaExercicio());
             if (buttonVerMaisDietas != null) buttonVerMaisDietas.setOnAction(e -> mostrarTelaDieta());
             if (buttonVerMaisPerfil != null) buttonVerMaisPerfil.setOnAction(e -> mostrarTelaPerfil());
+
+            if (buttonBeberAgua != null) {
+                buttonBeberAgua.setOnAction(e -> {
+                    if (usuarioLogado != null) {
+                        try {
+                            Fachada.getInstanciaUnica().beberAgua(usuarioLogado, INCREMENTO_AGUA_ML);
+                            // O binding já cuida de atualizar a label.
+                            //A fachada já está atualizando o usuário.
+                        } catch (UsuarioNaoEncontradoException ex) {
+                            //Tratar
+                            System.err.println("Erro ao beber agua: " + ex.getMessage());
+                        }
+                    }
+                });
+            }
+
+            //Adiciona a ação do novo botão
+            if (buttonZerarAgua != null) {
+                buttonZerarAgua.setOnAction(e -> {
+                    if (usuarioLogado != null) {
+                        try {
+                            Fachada.getInstanciaUnica().zerarAgua(usuarioLogado);
+                        } catch (UsuarioNaoEncontradoException ex) {
+                            System.err.println("Erro ao zerar agua: " + ex.getMessage());
+                        }
+                    }
+                });
+            }
 
             if (usuarioLogado != null) {
                 setUsuarioLogado(usuarioLogado);  // Corrigido!
@@ -346,6 +395,7 @@ public class MainController {
     public void atualizarDadosTelaPrincipal() {
         if (usuarioLogado != null) {
             atualizarCalorias();
+            atualizarAgua();
             progressoGeral.set(calcularProgressoGeralUsuario());
             if (telaDieta != null) ((DietaController) getController(telaDieta)).atualizarTabelaDietasUsuario();
             if (telaExercicio != null)
@@ -356,6 +406,20 @@ public class MainController {
             if (telaTreino != null)
                 ((TreinoController) getController(telaTreino)).atualizarTabelaTreinosUsuario();
         }
+    }
+    private void atualizarAgua(){  //Não precisa mais.
+        /*if (usuarioLogado != null) {
+            if (labelAguaConsumida != null) { //Verificação extra
+                labelAguaConsumida.setText("Água: " + usuarioLogado.getAguaConsumida() + " ml");
+            }
+
+        } else {
+            if (labelAguaConsumida != null) {
+                labelAguaConsumida.setText("Água: -- ml");
+            }
+        }
+        */
+
     }
     @FXML
     public void logout() {

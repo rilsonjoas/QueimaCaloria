@@ -22,6 +22,7 @@ public class Usuario {
     private FloatProperty peso = new SimpleFloatProperty();
     private FloatProperty altura = new SimpleFloatProperty();
     private FloatProperty imc = new SimpleFloatProperty();
+    private IntegerProperty aguaConsumida = new SimpleIntegerProperty(0); // Em mililitros (ml)
 
     @Setter
     private ObservableList<Meta> metas = FXCollections.observableArrayList();
@@ -82,6 +83,23 @@ public class Usuario {
 
     public StringProperty nomeProperty() {
         return nome;
+    }
+
+    public int getAguaConsumida() {
+        return aguaConsumida.get();
+    }
+
+    public IntegerProperty aguaConsumidaProperty() {
+        return aguaConsumida;
+    }
+
+    public void setAguaConsumida(int aguaConsumida) {
+        this.aguaConsumida.set(aguaConsumida);
+    }
+
+    // Método de conveniência para adicionar água:
+    public void beberAgua(int ml) {
+        this.aguaConsumida.set(this.aguaConsumida.get() + ml);
     }
 
     public void setNome(String nome) {

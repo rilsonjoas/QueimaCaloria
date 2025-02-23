@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -20,8 +21,8 @@
             <Button fx:id="buttonVerMaisPerfil" style="-fx-background-color: #55c5f5;" text="Ver Mais" />
         </HBox>
         <Label fx:id="labelNomeUsuario" text="Nome do Usuário" textFill="WHITE" />
-        <Label fx:id="labelPesoUsuario" text="Peso: --" textFill="WHITE" />  <!-- Adicionado -->
-        <Label fx:id="labelAlturaUsuario" text="Altura: --" textFill="WHITE" /> <!-- Adicionado -->
+        <Label fx:id="labelPesoUsuario" text="Peso: --" textFill="WHITE" />
+        <Label fx:id="labelAlturaUsuario" text="Altura: --" textFill="WHITE" />
         <VBox.margin><Insets top="10" /></VBox.margin>
     </VBox>
 
@@ -30,7 +31,7 @@
             <font><Font name="Gill Sans MT" size="20.0" /></font>
         </Label>
         <Label fx:id="labelIMC" text="IMC: --" textFill="WHITE" />
-        <Label fx:id="labelIMCSituacao" text="Situação: --" textFill="WHITE" /> <!-- Novo label para a situação -->
+        <Label fx:id="labelIMCSituacao" text="Situação: --" textFill="WHITE" />
         <VBox.margin><Insets top="10" /></VBox.margin>
     </VBox>
 
@@ -55,7 +56,8 @@
             <Region HBox.hgrow="ALWAYS" />
             <Button fx:id="buttonVerMaisExercicios" style="-fx-background-color: #55c5f5;" text="Ver Mais" />
         </HBox>
-        <Label fx:id="labelAtividadesRecentes" text="Nenhuma atividade recente." textFill="WHITE" wrapText="true" />
+
+        <ListView fx:id="listViewAtividadesRecentes" prefHeight="100.0" style="-fx-background-color: #1a1922; -fx-control-inner-background: #1a1922; -fx-border-color: #55c5f5; -fx-border-width: 1;" />
         <VBox.margin><Insets top="10" /></VBox.margin>
     </VBox>
 

@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Setter;
+//ADD o import de ListChangeListener
+import javafx.collections.ListChangeListener;
 
 
 public class ExercicioController {
@@ -51,11 +53,10 @@ public class ExercicioController {
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
-        //atualizarTabelaExerciciosUsuario();  // REMOVIDO
         configurarTabelaPreDefinida();
         carregarExerciciosPreDefinidos();
 
-        //  Listeners REMOVIDOS
+        //  Listeners REMOVIDOS (já havia comentado isso antes)
     }
 
     private void configurarTabelaUsuario() {
@@ -69,12 +70,12 @@ public class ExercicioController {
         colunaNomePreDefinido.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colunaTempoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("tempo"));
-        colunaCaloriasQueimadasPreDefinido.setCellValueFactory(cellData -> cellData.getValue().caloriasQueimadasProperty().asObject()); //CORRETO
+        colunaCaloriasQueimadasPreDefinido.setCellValueFactory(cellData -> cellData.getValue().caloriasQueimadasProperty().asObject());
     }
 
     private void carregarExerciciosPreDefinidos() {
         try {
-            List<Exercicio> exercicios = InicializadorDados.inicializarExercicios(); // Método estático
+            List<Exercicio> exercicios = InicializadorDados.inicializarExercicios();
             exerciciosPreDefinidos.setAll(exercicios);
             tabelaExerciciosPreDefinidos.setItems(exerciciosPreDefinidos);
         } catch (Exception e) {
@@ -94,7 +95,7 @@ public class ExercicioController {
 
             CriacaoExercicioController controller = loader.getController();
             controller.setExercicioController(this);
-            controller.setMainController(mainController); //ADD
+            controller.setMainController(mainController);
 
             stage.showAndWait();
 
@@ -109,25 +110,19 @@ public class ExercicioController {
         Exercicio exercicioSelecionado = tabelaExerciciosUsuario.getSelectionModel().getSelectedItem();
         if (exercicioSelecionado != null) {
             try {
-                // Carrega a tela de edição
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/edicao-exercicio-view.fxml"));
                 Parent root = loader.load();
 
-                // Obtém o controlador da tela de edição
                 EdicaoExercicioController controller = loader.getController();
-                controller.setExercicioController(this); //Passa a referência para esse controller
+                controller.setExercicioController(this);
                 controller.setExercicio(exercicioSelecionado);
-                controller.setMainController(mainController); //ADD
+                controller.setMainController(mainController);
 
 
-                // Exibe a tela de edição
                 Stage stage = new Stage();
                 stage.setTitle("Editar Exercício");
                 stage.setScene(new Scene(root));
-                stage.showAndWait(); //Modal
-
-                //atualizarTabelaExerciciosUsuario(); //REMOVIDO
-                //mensagemExercicio.setText("Exercício atualizado com sucesso!");
+                stage.showAndWait();
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -144,13 +139,12 @@ public class ExercicioController {
         if (exercicioSelecionado != null) {
             try {
                 fachada.removerExercicio(exercicioSelecionado.getId());
-                atualizarTabelaExerciciosUsuario(); //  ATUALIZA A TABELA
+                atualizarTabelaExerciciosUsuario();
                 mensagemExercicio.setText("Exercício removido com sucesso!");
-                //ADD
                 if (mainController != null) {
                     mainController.atualizarDadosTelaPrincipal();
                 }
-            } catch (ExercicioNaoEncontradoException e) { // Captura a exceção
+            } catch (ExercicioNaoEncontradoException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover exercício", e.getMessage());
             }
         } else {
@@ -164,12 +158,10 @@ public class ExercicioController {
         Exercicio exercicioSelecionado = tabelaExerciciosPreDefinidos.getSelectionModel().getSelectedItem();
         if (exercicioSelecionado != null) {
             try {
-                // Cria uma *NOVA* instância, copiando os valores.
-                // Usa construtor que trata corretamente o caso de lista nula.
                 Exercicio novoExercicio = new Exercicio(
                         exercicioSelecionado.getNome(),
                         exercicioSelecionado.getDescricao(),
-                        exercicioSelecionado.getMusculosTrabalhados() != null ? new ArrayList<>(exercicioSelecionado.getMusculosTrabalhados()) : new ArrayList<>(), // Copia ou cria nova.
+                        exercicioSelecionado.getMusculosTrabalhados() != null ? new ArrayList<>(exercicioSelecionado.getMusculosTrabalhados()) : new ArrayList<>(),
                         exercicioSelecionado.getTipo(),
                         exercicioSelecionado.getTempo(),
                         exercicioSelecionado.getCaloriasQueimadasPorMinuto(),
@@ -180,10 +172,9 @@ public class ExercicioController {
                 fachada.configurarExercicio(novoExercicio, novoExercicio.getNome(),
                         novoExercicio.getDescricao(), novoExercicio.getTipo(),
                         novoExercicio.getTempo(), novoExercicio.getCaloriasQueimadasPorMinuto());
-                atualizarTabelaExerciciosUsuario(); // <--- ATUALIZA A TABELA
+                atualizarTabelaExerciciosUsuario();
                 mensagemExercicio.setText("Exercício adicionado com sucesso!");
 
-                //ADD
                 if(mainController != null){
                     mainController.atualizarDadosTelaPrincipal();
                 }
@@ -200,6 +191,20 @@ public class ExercicioController {
     public void atualizarTabelaExerciciosUsuario() {
         try {
             List<Exercicio> listaExercicios = fachada.listarExercicios();
+
+            // Limpa a lista de atividades recentes no MainController (importante!)
+            if(mainController != null){
+                mainController.getAtividadesRecentes().clear();
+            }
+
+
+            //Adiciona os exercicios na lista de atividades recentes.
+            for(Exercicio exercicio : listaExercicios){
+                if(mainController != null){
+                    mainController.adicionarExercicioRecente(exercicio);
+                }
+            }
+
             tabelaExerciciosUsuario.setItems(FXCollections.observableArrayList(listaExercicios));
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar exercicios", e.getMessage());

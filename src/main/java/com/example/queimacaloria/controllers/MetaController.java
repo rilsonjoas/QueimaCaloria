@@ -1,8 +1,8 @@
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
-import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
+import com.example.queimacaloria.negocio.GeradorPDF;
 import com.example.queimacaloria.negocio.InicializadorDados;
 import com.example.queimacaloria.negocio.Meta;
 import com.example.queimacaloria.negocio.Usuario;
@@ -14,16 +14,17 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+
 
 
 public class MetaController {
@@ -31,7 +32,7 @@ public class MetaController {
     @FXML private TableView<Meta> tabelaMetasUsuario;
     @FXML private TableColumn<Meta, String> colunaDescricaoUsuario;
     @FXML private TableColumn<Meta, Meta.Tipo> colunaTipoUsuario;
-    @FXML private TableColumn<Meta, Double> colunaProgressoUsuario;
+    @FXML private TableColumn<Meta, Double> colunaProgressoUsuario; // Double para o progresso
     @FXML private TableColumn<Meta, LocalDate> colunaDataConclusaoUsuario;
 
     @FXML private TableView<Meta> tabelaMetasPreDefinidas;
@@ -45,30 +46,53 @@ public class MetaController {
     private MainController mainController;
     private ObservableList<Meta> metasPreDefinidas = FXCollections.observableArrayList();
 
-    // Define o controlador principal.
+    // Botão de compartilhar
+    @FXML
+    private Button buttonCompartilhar;
+
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
-    // Inicializa o controlador, configurando as tabelas.
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
         atualizarTabelaMetasUsuario();
-
         configurarTabelaPreDefinida();
         carregarMetasPreDefinidas();
+
+        //Verifica se o botão compartilhar está presente antes de configurar o evento.
+        if(buttonCompartilhar != null){
+            buttonCompartilhar.setOnAction(event -> compartilharLista());
+        }
     }
 
-    // Configura a tabela de metas do usuário.
     private void configurarTabelaUsuario() {
         colunaDescricaoUsuario.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaTipoUsuario.setCellValueFactory(new PropertyValueFactory<>("tipo"));
 
+        // Cálculo CORRETO do progresso (agora como um Double)
         colunaProgressoUsuario.setCellValueFactory(cellData -> {
             Meta meta = cellData.getValue();
-            double progresso = (meta.getValorAlvo() > 0) ? (meta.getProgressoAtual()/meta.getValorAlvo())*100 : 0.0;
-            return new SimpleDoubleProperty(progresso).asObject();
+            double progresso = 0.0;
+            if (meta.getValorAlvo() > 0) { // Evita divisão por zero!
+                progresso = (meta.getProgressoAtual() / meta.getValorAlvo()) * 100.0;
+            }
+            return new SimpleDoubleProperty(progresso).asObject(); // Retorna como Double
+        });
+
+        colunaProgressoUsuario.setCellFactory(column -> {
+            return new TableCell<Meta, Double>() {
+                @Override
+                protected void updateItem(Double progresso, boolean empty) {
+                    super.updateItem(progresso, empty);
+                    if (empty || progresso == null) {
+                        setText(null);
+                    } else {
+                        setText(String.format("%.1f%%", progresso)); // Formata a porcentagem
+                    }
+                }
+            };
         });
 
         colunaDataConclusaoUsuario.setCellValueFactory(cellData -> {
@@ -99,27 +123,14 @@ public class MetaController {
                 }
             };
         });
-
-        tabelaMetasUsuario.getItems().addListener((javafx.collections.ListChangeListener<Meta>) change -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    for (Meta meta : change.getAddedSubList()) {
-                        meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
-                            tabelaMetasUsuario.refresh();
-                        });
-                    }
-                }
-            }
-        });
     }
 
-    // Configura a tabela de metas pré-definidas.
+
     private void configurarTabelaPreDefinida() {
         colunaDescricaoPreDefinida.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaTipoPreDefinida.setCellValueFactory(new PropertyValueFactory<>("tipo"));
     }
 
-    // Carrega as metas pré-definidas.
     private void carregarMetasPreDefinidas() {
         try {
             List<Meta> metas = InicializadorDados.inicializarMetas();
@@ -130,7 +141,6 @@ public class MetaController {
         }
     }
 
-    // Abre a tela de criação de meta.
     @FXML
     public void abrirTelaCriarMeta() {
         try {
@@ -149,8 +159,6 @@ public class MetaController {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
         }
     }
-
-    // Abre a tela de edição de meta.
     @FXML
     public void atualizarMeta() {
         Meta metaSelecionada = tabelaMetasUsuario.getSelectionModel().getSelectedItem();
@@ -181,7 +189,6 @@ public class MetaController {
         }
     }
 
-    // Remove a meta selecionada.
     @FXML
     public void removerMeta() {
         Meta metaSelecionada = tabelaMetasUsuario.getSelectionModel().getSelectedItem();
@@ -199,8 +206,6 @@ public class MetaController {
                     "Por favor, selecione uma meta para remover.");
         }
     }
-
-    // Adiciona uma meta pré-definida ao usuário.
     @FXML
     public void adicionarMetaPreDefinida() {
         Meta metaSelecionada = tabelaMetasPreDefinidas.getSelectionModel().getSelectedItem();
@@ -229,31 +234,32 @@ public class MetaController {
         }
     }
 
-    // Atualiza a tabela de metas do usuário.
     public void atualizarTabelaMetasUsuario() {
         System.out.println("MetaController.atualizarTabelaMetasUsuario() chamado.");
         try {
-            List<Meta> listaMetas = fachada.listarMetas();
-            tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas));
+            if(mainController != null && mainController.getUsuarioLogado() != null) {
+                List<Meta> listaMetas = mainController.getUsuarioLogado().getMetas();  // Busca as metas do USUÁRIO
+                tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas)); // Adiciona à tabela
 
-            for (Meta meta : tabelaMetasUsuario.getItems()) {
-                meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
-                    System.out.println("Listener de dataConclusaoProperty disparado! Meta ID: " + meta.getId());
-                    tabelaMetasUsuario.refresh();
-                });
+                // Atualiza listeners (importante para reatividade, mas pode não ser a causa da duplicação)
+                for (Meta meta : tabelaMetasUsuario.getItems()) {
+                    meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
+                        System.out.println("Listener de dataConclusaoProperty disparado! Meta ID: " + meta.getId());
+                        tabelaMetasUsuario.refresh();
+                    });
 
-                meta.progressoAtualProperty().addListener((obs, oldVal, newVal) -> {
-                    System.out.println("Listener de progressoAtualProperty disparado! Meta ID: " + meta.getId());
-                    tabelaMetasUsuario.refresh();
-                });
+                    meta.progressoAtualProperty().addListener((obs, oldVal, newVal) -> {
+                        System.out.println("Listener de progressoAtualProperty disparado! Meta ID: " + meta.getId());
+                        tabelaMetasUsuario.refresh();
+                    });
+                }
             }
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar metas", e.getMessage());
+            e.printStackTrace(); // Sempre imprima stack traces para debugging!
         }
     }
-
-    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -262,7 +268,6 @@ public class MetaController {
         alert.showAndWait();
     }
 
-    // Volta para a tela principal.
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {
@@ -270,6 +275,37 @@ public class MetaController {
         } else {
             System.err.println("Erro: MainController não foi injetado!");
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "MainController não foi configurado corretamente.");
+        }
+    }
+
+    @FXML
+    public void compartilharLista() {
+        if (mainController != null && mainController.getUsuarioLogado() != null) {
+            // Obtém a lista de metas *do usuário*.  Fundamental!
+            List<Meta> metasDoUsuario = mainController.getUsuarioLogado().getMetas();
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Salvar Relatório de Metas em PDF"); // Título mais específico
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
+            Stage stage = (Stage) tabelaMetasUsuario.getScene().getWindow(); // Usando a tabela como referência.
+            File file = fileChooser.showSaveDialog(stage);
+
+            if (file != null) {
+                try {
+                    // Chama o método correto do GeradorPDF, passando a *lista de metas*
+                    GeradorPDF.gerarRelatorioMetas(metasDoUsuario, file.getAbsolutePath());
+                    showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
+                            "O relatório de metas foi gerado com sucesso em: " + file.getAbsolutePath());
+
+                }  catch (Exception e) { // Apenas o catch genérico
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório",
+                            "Ocorreu um erro inesperado: " + e.getMessage());
+                    e.printStackTrace(); // Stack trace completa no console
+                }
+            }
+        } else {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Usuário Não Logado",
+                    "É necessário estar logado para gerar o relatório.");
         }
     }
 }

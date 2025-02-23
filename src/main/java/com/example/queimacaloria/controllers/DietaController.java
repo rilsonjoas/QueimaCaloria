@@ -11,8 +11,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 public class DietaController {
@@ -33,35 +36,40 @@ public class DietaController {
     private MainController mainController;
     private ObservableList<Dieta> dietasPreDefinidas = FXCollections.observableArrayList();
 
-    // Define o controlador principal.
+    // Botão de compartilhar
+    @FXML private Button buttonCompartilhar;
+
+
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
-    // Inicializa o controlador, configurando as tabelas.
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
         configurarTabelaPreDefinida();
         carregarDietasPreDefinidas();
         atualizarTabelaDietasUsuario();
+
+        //Verifica se o botão compartilhar está presente antes de configurar o evento.
+        if(buttonCompartilhar != null){
+            buttonCompartilhar.setOnAction(event -> compartilharLista());
+        }
+
     }
 
-    // Configura a tabela de dietas do usuário.
     private void configurarTabelaUsuario() {
         colunaNomeUsuario.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaObjetivoUsuario.setCellValueFactory(new PropertyValueFactory<>("objetivo"));
         colunaCaloriasUsuario.setCellValueFactory(new PropertyValueFactory<>("caloriasDiarias"));
     }
 
-    // Configura a tabela de dietas pré-definidas.
     private void configurarTabelaPreDefinida() {
         colunaNomePreDefinida.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaObjetivoPreDefinida.setCellValueFactory(new PropertyValueFactory<>("objetivo"));
         colunaCaloriasPreDefinida.setCellValueFactory(new PropertyValueFactory<>("caloriasDiarias"));
     }
 
-    // Carrega as dietas pré-definidas.
     private void carregarDietasPreDefinidas() {
         try {
             List<Dieta> dietas = InicializadorDados.inicializarDietas();
@@ -72,7 +80,6 @@ public class DietaController {
         }
     }
 
-    // Abre a tela de criação de dieta.
     @FXML
     public void abrirTelaCriacaoDieta() {
         try {
@@ -93,7 +100,6 @@ public class DietaController {
         }
     }
 
-    // Abre a tela de edição de dieta.
     @FXML
     public void realizarAtualizacaoDieta() {
         Dieta dietaSelecionada = tabelaDietasUsuario.getSelectionModel().getSelectedItem();
@@ -119,7 +125,6 @@ public class DietaController {
         }
     }
 
-    // Remove a dieta selecionada.
     @FXML
     public void realizarRemocaoDieta() {
         Dieta dietaSelecionada = tabelaDietasUsuario.getSelectionModel().getSelectedItem();
@@ -135,8 +140,6 @@ public class DietaController {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma dieta selecionada", "Selecione uma dieta para remover.");
         }
     }
-
-    // Adiciona uma dieta pré-definida ao usuário.
     @FXML
     public void adicionarDietaPreDefinida() {
         Dieta dietaSelecionada = tabelaDietasPreDefinidas.getSelectionModel().getSelectedItem();
@@ -146,30 +149,32 @@ public class DietaController {
         }
 
         try {
+            // Cria uma *cópia* da dieta pré-definida, para não modificar a original.
             Dieta novaDieta = new Dieta(
                     dietaSelecionada.getNome(),
                     dietaSelecionada.getObjetivo(),
                     dietaSelecionada.getCaloriasDiarias(),
-                    null
+                    null // Inicialmente, sem usuário
             );
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
+                // Define o usuário *na nova dieta*.
                 novaDieta.setUsuario(mainController.getUsuarioLogado());
+
+                // Usa configurarDieta, que agora já associa o usuário.
                 fachada.configurarDieta(novaDieta, novaDieta.getNome(), novaDieta.getObjetivo(),
                         novaDieta.getCaloriasDiarias(), novaDieta.getUsuario());
 
-                fachada.setDietaAtiva(mainController.getUsuarioLogado(), novaDieta);
+                //fachada.setDietaAtiva(mainController.getUsuarioLogado(), novaDieta); //Removido
 
                 atualizarTabelaDietasUsuario();
                 mensagemDieta.setText("Dieta adicionada.");
 
+                // Atualiza o usuário no MainController
                 if (mainController != null) {
-                    try {
-                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                        mainController.setUsuarioLogado(usuarioAtualizado);
-                    } catch (UsuarioNaoEncontradoException e) {
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.", "O usuário logado não foi encontrado.");
-                    }
+                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                    mainController.setUsuarioLogado(usuarioAtualizado);
+                    mainController.atualizarDadosTelaPrincipal(); // Atualiza a tela principal
                 }
 
             } else {
@@ -178,10 +183,10 @@ public class DietaController {
 
         } catch (DietaNaoEncontradaException | UsuarioNaoEncontradoException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    // Atualiza a tabela de dietas do usuário.
     public void atualizarTabelaDietasUsuario() {
         try {
             List<Dieta> listaDietas = fachada.listarDietas();
@@ -197,7 +202,6 @@ public class DietaController {
         }
     }
 
-    // Volta para a tela principal.
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {
@@ -207,7 +211,40 @@ public class DietaController {
         }
     }
 
-    // Exibe um alerta na tela.
+    @FXML
+    public void compartilharLista() {
+        if (mainController != null && mainController.getUsuarioLogado() != null) {
+            Usuario usuarioLogado = mainController.getUsuarioLogado();
+            //Agora que as dietas estão associadas, voltamos a filtrar
+            List<Dieta> dietasDoUsuario = fachada.listarDietas().stream()
+                    .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(usuarioLogado.getId()))
+                    .toList();
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Salvar Relatório de Dietas em PDF"); // Título mais específico
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
+            Stage stage = (Stage) tabelaDietasUsuario.getScene().getWindow(); // Usando a tabela como referência.
+            File file = fileChooser.showSaveDialog(stage);
+
+            if (file != null) {
+                try {
+                    // Chama o método correto do GeradorPDF, passando a *lista de dietas*
+                    GeradorPDF.gerarRelatorioDietas(dietasDoUsuario, file.getAbsolutePath());
+                    showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
+                            "O relatório de dietas foi gerado com sucesso em: " + file.getAbsolutePath());
+
+                } catch (Exception e) { // Apenas o catch genérico
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório",
+                            "Ocorreu um erro inesperado: " + e.getMessage());
+                    e.printStackTrace(); // Stack trace completa no console
+                }
+            }
+        } else {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Usuário Não Logado",
+                    "É necessário estar logado para gerar o relatório.");
+        }
+    }
+
     public void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

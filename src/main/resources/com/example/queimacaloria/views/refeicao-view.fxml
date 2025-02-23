@@ -33,7 +33,7 @@
                 <Button onAction="#abrirTelaCriarRefeicao" style="-fx-background-color: #55c5f5;" text="Criar refeição personalizada" />
                 <Button onAction="#atualizarRefeicao" style="-fx-background-color: #55c5f5;" text="Atualizar refeição selecionada" />
                 <Button onAction="#removerRefeicao" style="-fx-background-color: #55c5f5;" text="Remover refeição" />
-                <Button fx:id="buttonCompartilhar" style="-fx-background-color: #55c5f5;" text="Compartilhar Lista" />
+                <Button fx:id="buttonCompartilhar" style="-fx-background-color: #55c5f5;" text="Compartilhar Lista" onAction="#compartilharLista"/>
             </HBox>
 
             <Label text="Adicione refeições pré-definidas abaixo" textFill="#d7d7d7">

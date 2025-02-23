@@ -34,7 +34,7 @@
                 <Button onAction="#abrirTelaCriarTreino" style="-fx-background-color: #55c5f5;" text="Criar treino personalizado" />
                 <Button onAction="#atualizarTreino" style="-fx-background-color: #55c5f5;" text="Atualizar treino selecionado" />
                 <Button onAction="#removerTreino" style="-fx-background-color: #55c5f5;" text="Remover treino" />
-                <Button fx:id="buttonCompartilhar" style="-fx-background-color: #55c5f5;" text="Compartilhar Lista" />
+                <Button fx:id="buttonCompartilhar" style="-fx-background-color: #55c5f5;" text="Compartilhar Lista" onAction="#compartilharLista"/>
             </HBox>
 
             <Label text="Adicione um treino pré-definido abaixo" textFill="#d7d7d7">

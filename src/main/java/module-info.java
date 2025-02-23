@@ -2,6 +2,8 @@ module com.example.queimacaloria {
     requires javafx.controls;
     requires javafx.fxml;
     requires static lombok;
+    requires layout;
+    requires kernel;
 
     opens com.example.queimacaloria to javafx.graphics, javafx.fxml;
     opens com.example.queimacaloria.controllers to javafx.fxml;

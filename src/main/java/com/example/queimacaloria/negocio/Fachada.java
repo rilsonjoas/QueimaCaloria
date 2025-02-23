@@ -199,6 +199,21 @@ public class Fachada {
         controladorUsuario.cadastrarMeta(usuario, meta);
     }
 
+    public void atualizarMeta(UUID metaId, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual, LocalDate dataConclusao) throws MetaNaoEncontradaException {
+        controladorMeta.atualizarMeta(metaId, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
+
+        // Atualiza o usuário logado (injeção de dependência - MUITO importante)
+        if (mainController != null && mainController.getUsuarioLogado() != null) {
+            try {
+                Usuario usuarioAtualizado = controladorUsuario.buscarPorId(mainController.getUsuarioLogado().getId());
+                mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza o usuário no MainController
+            } catch (UsuarioNaoEncontradoException e) {
+                System.err.println("Erro ao atualizar usuário na Fachada (após atualizar meta): " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     // Métodos de Refeição
 

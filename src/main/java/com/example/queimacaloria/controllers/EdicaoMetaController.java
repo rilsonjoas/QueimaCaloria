@@ -35,29 +35,24 @@ public class EdicaoMetaController {
     private MetaController metaController;
     private MainController mainController;
 
-    // Define o controlador da tela de metas.
     public void setMetaController(MetaController metaController) {
         this.metaController = metaController;
     }
 
-    // Define o controlador principal.
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
 
-    // Define a meta a ser editada.
     public void setMeta(Meta meta) {
         this.meta = meta;
         preencherCampos();
     }
 
-    // Inicializa o controlador, configurando o ChoiceBox.
     @FXML
     public void initialize() {
         campoTipo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
     }
 
-    // Preenche os campos com os dados da meta.
     private void preencherCampos() {
         if (meta != null) {
             campoDescricao.setText(meta.getDescricao());
@@ -77,7 +72,6 @@ public class EdicaoMetaController {
         }
     }
 
-    // Atualiza os dados da meta.
     @FXML
     public void atualizarMeta() {
         try {
@@ -86,28 +80,15 @@ public class EdicaoMetaController {
             double valorAlvo = Double.parseDouble(campoValorAlvo.getText());
             double progressoAtual = Double.parseDouble(campoProgressoAtual.getText());
 
-            System.out.println("EdicaoMetaController.atualizarMeta:");
-            System.out.println("  Descrição: " + descricao);
-            System.out.println("  Tipo: " + tipo);
-            System.out.println("  Valor Alvo: " + valorAlvo);
-            System.out.println("  Progresso Atual: " + progressoAtual);
-            System.out.println("  Data Conclusão (antes): " + meta.getDataConclusao());
-
-            fachada.configurarMeta(meta, descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao());
+            // Usa o método *atualizarMeta* da Fachada, passando o ID da meta
+            fachada.atualizarMeta(meta.getId(), descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao());
             mensagemErro.setText("Meta atualizada com sucesso!");
 
-            System.out.println("  Data Conclusão (depois): " + meta.getDataConclusao());
-
-            if (mainController != null && mainController.getUsuarioLogado() != null) {
-                try {
-                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado);
-                    mainController.atualizarDadosTelaPrincipal();
-                } catch (UsuarioNaoEncontradoException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
-                            "O usuário logado não pôde ser encontrado após a atualização da meta.");
-                }
+            // Atualiza o usuário no MainController *após* a atualização
+            if (mainController != null) {
+                mainController.atualizarDadosTelaPrincipal(); // Atualiza a tela *principal*
             }
+
 
             fecharJanela();
 
@@ -122,47 +103,43 @@ public class EdicaoMetaController {
             e.printStackTrace();
         }
     }
-
-    // Conclui a meta.
     @FXML
     public void concluirMeta() {
         try {
+            // Atualiza o progresso e a data *na instância local* da meta
             meta.setProgressoAtual(meta.getValorAlvo());
             meta.setDataConclusao(LocalDate.now());
 
-            fachada.configurarMeta(meta, meta.getDescricao(), meta.getTipo(), meta.getValorAlvo(), meta.getProgressoAtual(), meta.getDataConclusao());
+            // Usa o método *atualizarMeta* da Fachada, passando o ID
+            fachada.atualizarMeta(meta.getId(), meta.getDescricao(), meta.getTipo(), meta.getValorAlvo(), meta.getProgressoAtual(), meta.getDataConclusao());
+
             labelDataConclusao.setText("Concluída em: " + meta.getDataConclusao().toString());
             buttonConcluirMeta.setDisable(true);
             campoProgressoAtual.setText(String.valueOf(meta.getProgressoAtual()));
 
             if (metaController != null) {
-                metaController.atualizarTabelaMetasUsuario();
+                metaController.atualizarTabelaMetasUsuario(); // Atualiza a tabela *na tela de metas*
             }
 
-            if (mainController != null && mainController.getUsuarioLogado() != null) {
-                try {
-                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado);
-                    mainController.atualizarDadosTelaPrincipal();
-                } catch (UsuarioNaoEncontradoException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
-                            "O usuário logado não pôde ser encontrado.");
-                }
+            // Atualiza o usuário no MainController *após* a atualização
+            if (mainController != null) {
+                mainController.atualizarDadosTelaPrincipal(); // Atualiza a tela *principal*
             }
+
             mensagemErro.setText("Meta concluída com sucesso!");
+
         } catch (MetaNaoEncontradaException e) {
             mensagemErro.setText("Erro ao concluir meta: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoDescricao.getScene().getWindow();
         stage.close();
     }
 
-    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

@@ -52,18 +52,22 @@ public class CriacaoDietaController {
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 Dieta novaDieta = new Dieta();
+                // MUITO IMPORTANTE: Define o usuário da dieta.
+                novaDieta.setUsuario(usuarioLogado);
                 fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado);
 
-                fachada.setDietaAtiva(usuarioLogado, novaDieta);
+
+                //fachada.setDietaAtiva(usuarioLogado, novaDieta); //Removido.
 
                 if (dietaController != null) {
                     dietaController.atualizarTabelaDietasUsuario();
                     dietaController.showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dieta Criada", "Dieta criada e definida como ativa com sucesso!");
                 }
 
+                // Atualiza o usuário logado *depois* de adicionar a dieta.
                 Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(usuarioLogado.getId());
                 mainController.setUsuarioLogado(usuarioAtualizado);
-                mainController.atualizarDadosTelaPrincipal();
+                mainController.atualizarDadosTelaPrincipal(); // Atualiza a tela principal.
 
                 fecharJanela();
 
@@ -73,8 +77,10 @@ public class CriacaoDietaController {
             }
         } catch (NumberFormatException | DietaNaoEncontradaException | UsuarioNaoEncontradoException e) {
             mensagemErro.setText("Erro: " + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

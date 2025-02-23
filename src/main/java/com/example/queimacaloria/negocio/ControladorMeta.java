@@ -52,6 +52,24 @@ public class ControladorMeta {
         return (meta.getProgressoAtual() / meta.getValorAlvo()) * 100;
     }
 
+    public void atualizarMeta(UUID metaId, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual, LocalDate dataConclusao)
+            throws MetaNaoEncontradaException {
+
+        Meta meta = repositorio.buscar(metaId);  // Busca a meta EXISTENTE
+        if (meta == null) {
+            throw new MetaNaoEncontradaException("Meta com ID " + metaId + " não encontrada.");
+        }
+
+        // Atualiza os campos da meta *existente*
+        meta.setDescricao(descricao);
+        meta.setTipo(tipo);
+        meta.setValorAlvo(valorAlvo);
+        meta.setProgressoAtual(progressoAtual);
+        meta.setDataConclusao(dataConclusao); // Pode ser null, e está OK
+
+        repositorio.salvar(meta); // Salva as mudanças (usa o método de *atualização* do repositório)
+    }
+
     // Conclui a meta (define a data de conclusão).
     public void concluirMeta(Meta meta) throws MetaNaoEncontradaException {
         meta.setDataConclusao(LocalDate.now());

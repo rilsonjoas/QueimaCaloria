@@ -30,10 +30,17 @@ public class Usuario {
     private ObservableList<Treino> treinos = FXCollections.observableArrayList();
     @Setter
     private ObservableList<Dieta> dietas = FXCollections.observableArrayList();
+    @Setter //Adicionado
+    private ObservableList<Exercicio> exercicios = FXCollections.observableArrayList();
 
     private ObjectProperty<Dieta> dietaAtiva = new SimpleObjectProperty<>();
 
     private IntegerProperty pontuacao = new SimpleIntegerProperty(0);
+
+    // Adicione este método:
+    public ObservableList<Exercicio> getExercicios() {
+        return this.exercicios;
+    }
 
     // Enum para o sexo do usuário.
     public enum Sexo {
@@ -50,6 +57,7 @@ public class Usuario {
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura) {
         this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList());
     }
+
 
     // Construtor completo (incluindo listas).
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas) {
@@ -68,6 +76,8 @@ public class Usuario {
         this.dietaAtiva.set(null); // Inicializa como nula pois nenhuma dieta foi selecionada ainda.
         calcularEAtualizarIMC();
     }
+
+
 
     // Getters, Setters e Properties gerais
 
@@ -227,4 +237,10 @@ public class Usuario {
     public void adicionarPontuacao(int pontos) {
         this.pontuacao.set(this.pontuacao.get() + pontos);
     }
+
+    //Getter da lista de treinos.
+    public ObservableList<Treino> getTreinos() {
+        return this.treinos;
+    }
+
 }

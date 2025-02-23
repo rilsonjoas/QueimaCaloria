@@ -4,6 +4,7 @@ import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
+import com.example.queimacaloria.negocio.GeradorPDF;
 import com.example.queimacaloria.negocio.InicializadorDados;
 import com.example.queimacaloria.negocio.Treino;
 import com.example.queimacaloria.negocio.Usuario;
@@ -15,8 +16,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +51,14 @@ public class TreinoController {
     private MainController mainController;
     private ObservableList<Treino> treinosPreDefinidos = FXCollections.observableArrayList();
 
-    // Define o controlador principal.
+    // Botão de compartilhar
+    @FXML private Button buttonCompartilhar;
+
+
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
-    // Inicializa o controlador, configurando as tabelas e listeners.
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
@@ -65,9 +71,13 @@ public class TreinoController {
                     exibirDetalhesTreino(newValue);
                 }
         );
+
+        //Verifica se o botão compartilhar está presente antes de configurar o evento.
+        if(buttonCompartilhar != null){
+            buttonCompartilhar.setOnAction(event -> compartilharLista());
+        }
     }
 
-    // Configura a tabela de treinos do usuário.
     private void configurarTabelaUsuario() {
         colunaNomeUsuario.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipoTreinoUsuario.setCellValueFactory(new PropertyValueFactory<>("tipoDeTreino"));
@@ -75,7 +85,6 @@ public class TreinoController {
         colunaNivelDificuldadeUsuario.setCellValueFactory(new PropertyValueFactory<>("nivelDeDificuldade"));
     }
 
-    // Configura a tabela de treinos pré-definidos.
     private void configurarTabelaPreDefinida() {
         colunaNomePreDefinido.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipoTreinoPreDefinido.setCellValueFactory(new PropertyValueFactory<>("tipoDeTreino"));
@@ -83,7 +92,6 @@ public class TreinoController {
         colunaNivelDificuldadePreDefinido.setCellValueFactory(new PropertyValueFactory<>("nivelDeDificuldade"));
     }
 
-    // Carrega os treinos pré-definidos.
     private void carregarTreinosPreDefinidos() {
         try {
             List<Treino> treinos = InicializadorDados.inicializarTreinos();
@@ -93,8 +101,6 @@ public class TreinoController {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar treinos pré-definidos", e.getMessage());
         }
     }
-
-    // Abre a tela de criação de treino.
     @FXML
     public void abrirTelaCriarTreino() {
         try {
@@ -115,7 +121,6 @@ public class TreinoController {
         }
     }
 
-    // Abre a tela de edição de treino.
     @FXML
     public void atualizarTreino() {
         Treino treinoSelecionado = tabelaTreinosUsuario.getSelectionModel().getSelectedItem();
@@ -143,8 +148,6 @@ public class TreinoController {
                     "Por favor, selecione um treino para atualizar.");
         }
     }
-
-    // Remove o treino selecionado.
     @FXML
     public void removerTreino() {
         Treino treinoSelecionado = tabelaTreinosUsuario.getSelectionModel().getSelectedItem();
@@ -172,8 +175,6 @@ public class TreinoController {
                     "Por favor, selecione um treino para remover.");
         }
     }
-
-    // Adiciona um treino pré-definido ao usuário.
     @FXML
     public void adicionarTreinoPreDefinido() {
         Treino treinoSelecionado = tabelaTreinosPreDefinidos.getSelectionModel().getSelectedItem();
@@ -214,7 +215,6 @@ public class TreinoController {
         }
     }
 
-    // Atualiza a tabela de treinos do usuário.
     public void atualizarTabelaTreinosUsuario() {
         try {
             List<Treino> listaTreinos = fachada.listarTreinos();
@@ -235,7 +235,6 @@ public class TreinoController {
         }
     }
 
-    // Exibe os detalhes de um treino selecionado.
     private void exibirDetalhesTreino(Treino treino) {
         if (treino != null) {
             if(labelNomeTreino != null) labelNomeTreino.setText("Nome: " + treino.getNome());
@@ -259,8 +258,6 @@ public class TreinoController {
             if(labelExerciciosTreino != null) labelExerciciosTreino.setText("Exercícios: ");
         }
     }
-
-    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -268,14 +265,41 @@ public class TreinoController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
-    // Volta para a tela principal.
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {
             mainController.mostrarTelaPrincipal();
         } else {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "MainController não foi configurado corretamente.");
+        }
+    }
+
+    @FXML
+    public void compartilharLista() {
+        if (mainController != null && mainController.getUsuarioLogado() != null) {
+            //Obtém a lista de treinos do usuário.
+            List<Treino> treinosDoUsuario = mainController.getUsuarioLogado().getTreinos();
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Salvar Relatório de Treinos em PDF");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
+            Stage stage = (Stage) tabelaTreinosUsuario.getScene().getWindow(); // Usando a tabela
+            File file = fileChooser.showSaveDialog(stage);
+
+            if (file != null) {
+                try {
+                    // Chama o método específico para treinos.
+                    GeradorPDF.gerarRelatorioTreinos(treinosDoUsuario, file.getAbsolutePath());
+                    showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
+                            "O relatório de treinos foi gerado com sucesso em: " + file.getAbsolutePath());
+
+                }  catch (Exception e) { //Apenas o catch genérico.
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro inesperado: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Usuário Não Logado", "É necessário estar logado para gerar o relatório.");
         }
     }
 }

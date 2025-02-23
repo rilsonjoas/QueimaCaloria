@@ -16,7 +16,7 @@ public class ControladorUsuario {
         this.repositorio = RepositorioUsuariosArray.getInstanciaUnica();
     }
 
-    // Método de cadastro.
+    // Método de cadastro.  ESTAVA FALTANDO!
     public void cadastrarUsuario(Usuario novoUsuario) {
         // Verifica se o e-mail já existe
         List<Usuario> usuarios = repositorio.getAll();
@@ -29,7 +29,8 @@ public class ControladorUsuario {
         repositorio.adicionar(novoUsuario);
     }
 
-    // Atualiza os dados de um usuário existente
+
+    // Atualiza os dados de um usuário existente.  ESTAVA FALTANDO!
     public void atualizarDados(UUID usuarioId, String nome, String email, String senha, LocalDate dataNascimento,
                                Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException
     {
@@ -63,6 +64,7 @@ public class ControladorUsuario {
         repositorio.salvar(usuario); // Salva o objeto ATUALIZADO
     }
 
+
     public void cadastrarMeta(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
         if (meta != null) {
             usuario.getMetas().add(meta); // Usa a lista observável EXISTENTE
@@ -82,6 +84,20 @@ public class ControladorUsuario {
             usuario.getDietas().add(dieta); // Usa a lista observável EXISTENTE
             repositorio.salvar(usuario);
         }
+    }
+    //Adicionado setDietaAtiva
+    public void setDietaAtiva(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException{
+        if(usuario != null && dieta != null){
+            usuario.setDietaAtiva(dieta); // Agora sim!
+            repositorio.salvar(usuario);
+        }
+    }
+    //Adicionado getDietaAtiva
+    public Dieta getDietaAtiva(Usuario usuario) throws UsuarioNaoEncontradoException{ //Não precisa da exceção aqui
+        if(usuario != null){
+            return usuario.getDietaAtiva();  // Agora sim!
+        }
+        return null;
     }
 
     public int getIdade(Usuario usuario) {

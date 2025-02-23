@@ -41,8 +41,31 @@ public class Fachada {
         this.mainController = mainController;
     }
 
+
     public Usuario cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
                                     Usuario.Sexo sexo, float peso, float altura) {
+        //Valida os dados do novo usuário antes de criar
+        if (nome == null || nome.isEmpty()) {
+            throw new IllegalArgumentException("O nome não pode ser nulo ou vazio.");
+        }
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("O email não pode ser nulo ou vazio.");
+        }
+        if (senha == null || senha.isEmpty()) {
+            throw new IllegalArgumentException("A senha não pode ser nula ou vazia.");
+        }
+        if (dataNascimento == null) {
+            throw new IllegalArgumentException("A data de nascimento não pode ser nula.");
+        }
+        if (sexo == null) {
+            throw new IllegalArgumentException("O sexo não pode ser nulo.");
+        }
+        if (peso <= 0) {
+            throw new IllegalArgumentException("O peso deve ser maior que zero.");
+        }
+        if (altura <= 0) {
+            throw new IllegalArgumentException("A altura deve ser maior que zero.");
+        }
         // Verifica se o e-mail já existe
         List<Usuario> usuarios = controladorUsuario.listarUsuarios();
         for (Usuario user : usuarios) {
@@ -60,22 +83,25 @@ public class Fachada {
         novoUsuario.setPeso(peso);
         novoUsuario.setAltura(altura);
 
-        controladorUsuario.cadastrarUsuario(novoUsuario);
+        // Agora sim, chama o método do CONTROLADOR.
+        controladorUsuario.cadastrarUsuario(novoUsuario);  // CORRIGIDO!
         return novoUsuario; // Retorna o usuário criado
     }
 
-    // Métodos de Usuário (Mantidos ou com pequenas adaptações)
+    // Métodos de Usuário
     public void atualizarDadosUsuario(Usuario usuario, String nome, String email, String senha,
                                       LocalDate dataNascimento,
-                                      Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException {
-        controladorUsuario.atualizarDados(usuario.getId(), nome, email, senha, dataNascimento, sexo, peso, altura);
+                                      Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException
+    {
+        // Agora sim, chama o método do CONTROLADOR, passando o ID.
+        controladorUsuario.atualizarDados(usuario.getId(), nome, email, senha, dataNascimento, sexo, peso, altura); // CORRIGIDO!
     }
 
     public void cadastrarMetaUsuario(Usuario usuario, Meta meta) throws UsuarioNaoEncontradoException {
         controladorUsuario.cadastrarMeta(usuario, meta);
     }
 
-    public Usuario buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
+    public Usuario buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException{
         return controladorUsuario.buscarPorId(id);
     }
 
@@ -87,12 +113,7 @@ public class Fachada {
         controladorUsuario.adicionarDieta(usuario, dieta);
     }
 
-    //REMOVIDO, POIS A LÓGICA AGORA ESTÁ NO MAIN CONTROLLER
-    /*
-    public double calcularProgressoGeralUsuario(Usuario usuario) {
-        return controladorUsuario.getProgresso(usuario);
-    }
-*/
+
     public int calcularIdadeUsuario(Usuario usuario) {
         return controladorUsuario.getIdade(usuario);
     }
@@ -168,7 +189,7 @@ public class Fachada {
 
     // Métodos de Refeição (Mantidos)
     public void configurarRefeicao(Refeicao refeicao, String nome, String descricao,
-                                   Map<String, Double> macronutrientes) {  // Já está correto
+                                   Map<String, Double> macronutrientes) {
         controladorRefeicao.inicializar(refeicao, nome, descricao, macronutrientes);
     }
 
@@ -230,6 +251,14 @@ public class Fachada {
 
     public List<Meta> listarMetas() {
         return controladorMeta.listarMetas();
+    }
+
+    public void setDietaAtiva(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException {
+        controladorUsuario.setDietaAtiva(usuario, dieta);
+    }
+
+    public Dieta getDietaAtiva(Usuario usuario) throws  UsuarioNaoEncontradoException{
+        return controladorUsuario.getDietaAtiva(usuario);
     }
 
     public List<Refeicao> listarRefeicoes() {

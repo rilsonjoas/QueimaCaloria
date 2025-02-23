@@ -1,25 +1,14 @@
 package com.example.queimacaloria.negocio;
 
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.UUID;
-// Importe a classe correta
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-//Novos imports:
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-
 
 @ToString
 @Getter
@@ -41,9 +30,10 @@ public class Usuario {
     @Setter
     private ObservableList<Dieta> dietas = FXCollections.observableArrayList();
 
-    // Nova propriedade para a pontuação
-    private IntegerProperty pontuacao = new SimpleIntegerProperty(0);
+    // Nova propriedade para a dieta ativa, agora com ObjectProperty
+    private ObjectProperty<Dieta> dietaAtiva = new SimpleObjectProperty<>();
 
+    private IntegerProperty pontuacao = new SimpleIntegerProperty(0);
 
     public enum Sexo {
         MASCULINO,
@@ -57,11 +47,11 @@ public class Usuario {
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura) {
         this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList());
     }
-
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas) {
         this.id = UUID.randomUUID();
         this.nome.set(nome);
         this.email.set(email);
+        this.senha.set(String.valueOf(senha));
         this.dataNascimento.set(dataNascimento);
         this.sexo.set(sexo);
         this.peso.set(peso);
@@ -69,10 +59,23 @@ public class Usuario {
         this.metas.setAll(metas);
         this.treinos.setAll(treinos);
         this.dietas.setAll(dietas);
-        //Importante, inicializa com zero.
         this.pontuacao.set(0);
+        this.dietaAtiva.set(null); // Inicializa como nula
     }
-    //Restante do código
+
+    //Getters e Setters:
+    public Dieta getDietaAtiva() {
+        return dietaAtiva.get();
+    }
+
+    public ObjectProperty<Dieta> dietaAtivaProperty() {
+        return dietaAtiva;
+    }
+
+    public void setDietaAtiva(Dieta dietaAtiva) {
+        this.dietaAtiva.set(dietaAtiva);
+    }
+
     public String getNome() {
         return nome.get();
     }

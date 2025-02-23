@@ -15,7 +15,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
-
 public class DietaController {
 
     @FXML private TableView<Dieta> tabelaDietasUsuario;
@@ -28,7 +27,7 @@ public class DietaController {
     @FXML private TableColumn<Dieta, Dieta.ObjetivoDieta> colunaObjetivoPreDefinida;
     @FXML private TableColumn<Dieta, Integer> colunaCaloriasPreDefinida;
 
-    @FXML private Label mensagemDieta;
+    @FXML private Label mensagemDieta; //Esta label continua existindo, para mostrar mensagens de sucesso/erro.
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private MainController mainController;
@@ -150,6 +149,12 @@ public class DietaController {
                 novaDieta.setUsuario(mainController.getUsuarioLogado());
                 fachada.configurarDieta(novaDieta, novaDieta.getNome(), novaDieta.getObjetivo(),
                         novaDieta.getCaloriasDiarias(), novaDieta.getUsuario());
+
+                // *****************************************
+                // DEFINE A DIETA COMO ATIVA:
+                fachada.setDietaAtiva(mainController.getUsuarioLogado(), novaDieta);
+                // *****************************************
+
                 atualizarTabelaDietasUsuario();
                 mensagemDieta.setText("Dieta adicionada.");
 
@@ -167,10 +172,17 @@ public class DietaController {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário logado", "Não foi possível adicionar a dieta.");
             }
 
-        } catch (DietaNaoEncontradaException e) {
+        } catch (DietaNaoEncontradaException | UsuarioNaoEncontradoException e) { // Captura a exceção
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", e.getMessage());
         }
     }
+    /* REMOVER ESTE MÉTODO DO DIETACONTROLLER:
+    @FXML
+    public void criarDieta() {
+       //REMOVIDO
+    }
+    */
+
 
     public void atualizarTabelaDietasUsuario() {
         try {
@@ -197,11 +209,13 @@ public class DietaController {
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+    // Mantenha este método para mostrar alertas (usado em vários lugares)
+    public void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
     }
+
 }

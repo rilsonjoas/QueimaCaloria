@@ -37,6 +37,10 @@ public class Main {
             fachada.adicionarDietaUsuario(usuario, dieta);
             System.out.println("Dieta adicionada ao usuário.");
 
+            //REMOVIDO
+            //double progressoGeral = fachada.calcularProgressoGeralUsuario(usuario);
+            //System.out.println("Progresso geral do usuário: " + progressoGeral + "%");
+
             int idadeUsuario = fachada.calcularIdadeUsuario(usuario);
             System.out.println("Idade do usuário: " + idadeUsuario);
 

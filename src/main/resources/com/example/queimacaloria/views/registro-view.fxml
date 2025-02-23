@@ -22,33 +22,33 @@
                     <Insets bottom="20.0" />
                 </VBox.margin>
             </Label>
-            <TextField fx:id="campoNome" promptText="Nome" styleClass="campo-escuro">  <!-- Aplicando a classe -->
+            <TextField fx:id="campoNome" promptText="Nome" styleClass="campo-escuro">
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </TextField>
-            <TextField fx:id="campoEmail" promptText="Email" styleClass="campo-escuro"> <!-- Aplicando a classe -->
+            <TextField fx:id="campoEmail" promptText="Email" styleClass="campo-escuro">
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </TextField>
-            <PasswordField fx:id="campoSenha" promptText="Senha" styleClass="campo-escuro"> <!-- Aplicando a classe -->
+            <PasswordField fx:id="campoSenha" promptText="Senha" styleClass="campo-escuro">
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </PasswordField>
-            <DatePicker fx:id="campoDataNascimento" prefHeight="25.0" prefWidth="210.0" promptText="Data de Nascimento" styleClass="campo-escuro" > <!-- Aplicando a classe -->
+            <DatePicker fx:id="campoDataNascimento" prefHeight="25.0" prefWidth="210.0" promptText="Data de Nascimento" styleClass="campo-escuro" >
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </DatePicker>
-            <ComboBox fx:id="campoSexo" prefHeight="25.0" prefWidth="210.0" promptText="Sexo" styleClass="campo-escuro" />  <!-- Aplicando a classe -->
-            <TextField fx:id="campoPeso" promptText="Peso (kg)" styleClass="campo-escuro"> <!-- Aplicando a classe -->
+            <ComboBox fx:id="campoSexo" prefHeight="25.0" prefWidth="210.0" promptText="Sexo" styleClass="campo-escuro" />
+            <TextField fx:id="campoPeso" promptText="Peso (kg)" styleClass="campo-escuro">
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>
             </TextField>
-            <TextField fx:id="campoAltura" promptText="Altura (em centimetros. Ex: 175 cm)" styleClass="campo-escuro"> <!-- Aplicando a classe -->
+            <TextField fx:id="campoAltura" promptText="Altura (em centimetros. Ex: 175 cm)" styleClass="campo-escuro">
                 <VBox.margin>
                     <Insets left="20.0" right="20.0" />
                 </VBox.margin>

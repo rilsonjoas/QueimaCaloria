@@ -16,7 +16,7 @@ public class Main {
         Usuario usuario = new Usuario();
         try {
             fachada.atualizarDadosUsuario(usuario, "João Silva", "joao@email.com", "senha123",
-                    LocalDate.of(1990, 5, 15), Usuario.Sexo.MASCULINO, 80.5f, 1.75f);
+                    LocalDate.of(1990, 5, 15), Usuario.Sexo.Masculino, 80.5f, 1.75f);
             System.out.println("Usuário atualizado com sucesso.");
 
             System.out.println("IMC do usuário: " + usuario.getImc());

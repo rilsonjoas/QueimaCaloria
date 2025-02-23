@@ -37,8 +37,8 @@ public class Usuario {
     private IntegerProperty pontuacao = new SimpleIntegerProperty(0);
 
     public enum Sexo {
-        MASCULINO,
-        FEMININO,
+        Masculino,
+        Feminino,
     }
 
     public Usuario() {

@@ -14,8 +14,36 @@ public class Dieta {
     private IntegerProperty caloriasDiarias = new SimpleIntegerProperty(0);
     private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
 
+    // Enum com strings associadas
     public enum ObjetivoDieta {
-        PERDA_DE_PESO, GANHO_DE_MASSA, MANUTENCAO
+        PERDA_DE_PESO("Perda de peso"),
+        GANHO_DE_MASSA("Ganho de massa"),
+        MANUTENCAO("Manutenção"); // Ponto e vírgula no último!
+
+        private final String descricao; // Campo para a string
+
+        ObjetivoDieta(String descricao) { // Construtor
+            this.descricao = descricao;
+        }
+
+        public String getDescricao() { // Getter para a string
+            return descricao;
+        }
+
+        // Método para converter de String para enum (opcional, mas útil)
+        public static ObjetivoDieta fromString(String text) {
+            for (ObjetivoDieta objetivo : ObjetivoDieta.values()) {
+                if (objetivo.descricao.equalsIgnoreCase(text)) {
+                    return objetivo;
+                }
+            }
+            return null; // Ou lançar uma exceção IllegalArgumentException, se preferir
+        }
+
+        @Override
+        public String toString() { //Para o choice box exibir a descrição
+            return descricao;
+        }
     }
 
     public Dieta(String nome, ObjetivoDieta objetivo, int caloriasDiarias, Usuario usuario) {
@@ -58,7 +86,7 @@ public class Dieta {
     }
 
     @Override
-    public String toString() { // Adicionado para facilitar debugging
+    public String toString() {
         return "Dieta{" +
                 "id=" + id +
                 ", nome=" + nome.get() +

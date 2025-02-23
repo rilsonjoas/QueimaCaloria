@@ -1,9 +1,12 @@
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Treino;
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -76,27 +79,29 @@ public class EdicaoTreinoController {
                 System.out.println("  CheckBox existe.  Estado atual: " + treino.isConcluido());
                 System.out.println("  Checkbox selecionado? " + checkboxConcluido.isSelected());
 
-                boolean estadoAnterior = treino.isConcluido();
+                boolean estadoAnterior = treino.isConcluido(); // Guarda o estado *antes* da mudança
                 treino.setConcluido(checkboxConcluido.isSelected()); //  AGORA SIM!
 
                 System.out.println("  Novo estado do treino: " + treino.isConcluido());
-
-
                 //   Adiciona a pontuação *SE* o estado mudou *E* agora está concluído
+
                 if (treino.isConcluido() && estadoAnterior != treino.isConcluido() && mainController != null && mainController.getUsuarioLogado() != null) {
                     mainController.getUsuarioLogado().adicionarPontuacao(treino.getNivelDeDificuldade());
                     System.out.println("  Pontuação adicionada!");
+
+                    // ******************************************************
+                    // MOSTRA A MENSAGEM DE PARABÉNS:
+                    showAlert(Alert.AlertType.INFORMATION, "Parabéns!", "Treino Concluído",
+                            "Você concluiu o treino \"" + treino.getNome() + "\" e ganhou " +
+                                    treino.getNivelDeDificuldade() + " pontos!");
+                    // ******************************************************
                 } else {
                     System.out.println("  Pontuação NÃO adicionada. Condições não satisfeitas.");
                 }
-
             }
 
             // 2. *AGORA* chama a fachada, DEPOIS de modificar o treino
             fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade);
-            //Como a linha acima, atualiza o treino, então a linha abaixo se torna redundante
-            //fachada.atualizarProgressoTreino(treino);
-
 
             mensagemErro.setText("Treino atualizado com sucesso!");
 
@@ -124,5 +129,13 @@ public class EdicaoTreinoController {
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();
+    }
+    // Método showAlert (para evitar repetição)
+    private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait(); // Mostra o Alert e ESPERA.
     }
 }

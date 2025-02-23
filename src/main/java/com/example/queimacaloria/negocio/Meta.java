@@ -1,13 +1,8 @@
 package com.example.queimacaloria.negocio;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.Setter; // Este import não é estritamente necessário se você não usar @Setter nos campos
 import lombok.ToString;
 
 import java.time.LocalDate;
@@ -17,27 +12,52 @@ import java.util.UUID;
 @ToString
 public class Meta {
     private final UUID id;
-    private StringProperty descricao = new SimpleStringProperty(); // Usando StringProperty
-    private ObjectProperty<Tipo> tipo = new SimpleObjectProperty<>(); // Usando ObjectProperty
-    private DoubleProperty valorAlvo = new SimpleDoubleProperty(); // DoubleProperty
-    private DoubleProperty progressoAtual = new SimpleDoubleProperty(); // DoubleProperty!
-    private ObjectProperty<LocalDate> dataCriacao = new SimpleObjectProperty<>(); // ObjectProperty
-    private ObjectProperty<LocalDate> dataConclusao = new SimpleObjectProperty<>();  // ObjectProperty!
-
+    private StringProperty descricao = new SimpleStringProperty();
+    private ObjectProperty<Tipo> tipo = new SimpleObjectProperty<>();
+    private DoubleProperty valorAlvo = new SimpleDoubleProperty();
+    private DoubleProperty progressoAtual = new SimpleDoubleProperty();
+    private ObjectProperty<LocalDate> dataCriacao = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDate> dataConclusao = new SimpleObjectProperty<>();
 
     public enum Tipo {
-        PERDA_DE_PESO, GANHO_DE_MASSA
+        PERDA_DE_PESO("Perda de Peso"),
+        GANHO_DE_MASSA("Ganho de Massa");
+
+        private final String descricao;
+
+        Tipo(String descricao) {
+            this.descricao = descricao;
+        }
+
+        public String getDescricao() {
+            return descricao;
+        }
+
+        // Opcional: Método para converter de String para enum (útil para o ChoiceBox)
+        public static Tipo fromString(String text) {
+            for (Tipo tipo : Tipo.values()) {
+                if (tipo.descricao.equalsIgnoreCase(text)) {
+                    return tipo;
+                }
+            }
+            return null; // Ou lançar IllegalArgumentException
+        }
+
+        @Override
+        public String toString() {
+            return descricao; // Para o ChoiceBox exibir a descrição
+        }
     }
 
     public Meta() {
         this.id = UUID.randomUUID();
-        this.dataCriacao.set(LocalDate.now()); // Use o set, não o campo diretamente
+        this.dataCriacao.set(LocalDate.now());
     }
 
-    public Meta(String descricao, Tipo tipo, double valorAlvo, double progressoAtual, LocalDate dataCriacao, // Alterado
+    public Meta(String descricao, Tipo tipo, double valorAlvo, double progressoAtual, LocalDate dataCriacao,
                 LocalDate dataConclusao) {
         this.id = UUID.randomUUID();
-        this.descricao.set(descricao);  // Usando os métodos set!
+        this.descricao.set(descricao);
         this.tipo.set(tipo);
         this.valorAlvo.set(valorAlvo);
         this.progressoAtual.set(progressoAtual);
@@ -45,23 +65,21 @@ public class Meta {
         this.dataConclusao.set(dataConclusao);
     }
 
-    // Métodos Property (já corrigidos, mas mostrando novamente para ficar completo):
+    // Métodos Property
     public StringProperty descricaoProperty() {
-        return this.descricao; // Retorna a *property*, não o valor.
+        return this.descricao;
     }
 
     public ObjectProperty<Tipo> tipoProperty() {
-        return this.tipo; // Retorna a *property*, não o valor.
+        return this.tipo;
     }
 
-    // Adicione os métodos property que faltavam:
-
-    public DoubleProperty valorAlvoProperty(){
+    public DoubleProperty valorAlvoProperty() {
         return this.valorAlvo;
     }
 
     public DoubleProperty progressoAtualProperty() {
-        return this.progressoAtual; // Corrigido!
+        return this.progressoAtual;
     }
 
     public ObjectProperty<LocalDate> dataCriacaoProperty() {
@@ -69,7 +87,7 @@ public class Meta {
     }
 
     public ObjectProperty<LocalDate> dataConclusaoProperty() {
-        return this.dataConclusao; // Corrigido!
+        return this.dataConclusao;
     }
 
 
@@ -118,5 +136,4 @@ public class Meta {
     public LocalDate getDataConclusao() {
         return dataConclusao.get();
     }
-
 }

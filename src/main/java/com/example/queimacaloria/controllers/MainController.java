@@ -7,19 +7,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import com.example.queimacaloria.negocio.Meta;
-import javafx.scene.control.ProgressBar;
 import javafx.collections.ListChangeListener;
 //Imports novos
 import com.example.queimacaloria.negocio.Exercicio;
@@ -421,18 +420,39 @@ public class MainController {
         */
 
     }
+
     @FXML
     public void logout() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/auth-view.fxml"));
-            Parent authView = loader.load();
-            Scene authScene = new Scene(authView);
-            primaryStage.setScene(authScene);
-            primaryStage.setTitle("YouFit - Login/Registro");
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Cria um Alert do tipo CONFIRMATION
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação de Logout");
+        alert.setHeaderText("Sair do YouFit");
+        alert.setContentText("Tem certeza que deseja sair?");
+
+        // Configura os botões (opcional, mas recomendado para clareza)
+        ButtonType buttonTypeSim = new ButtonType("Sim");
+        ButtonType buttonTypeNao = new ButtonType("Não");
+
+        alert.getButtonTypes().setAll(buttonTypeSim, buttonTypeNao);
+
+        // Mostra o Alert e espera pela resposta do usuário
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Verifica qual botão foi clicado
+        if (result.isPresent() && result.get() == buttonTypeSim) {
+            // O usuário clicou em "Sim".  Executa a lógica de logout.
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/auth-view.fxml"));
+                Parent authView = loader.load();
+                Scene authScene = new Scene(authView);
+                primaryStage.setScene(authScene);
+                primaryStage.setTitle("YouFit - Login/Registro");
+                primaryStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        // Se o usuário clicou em "Não" ou "Cancelar", o diálogo simplesmente fecha, e nada acontece.
     }
 
 }

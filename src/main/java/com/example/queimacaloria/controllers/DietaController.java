@@ -18,16 +18,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+
 public class DietaController {
 
     @FXML private TableView<Dieta> tabelaDietasUsuario;
     @FXML private TableColumn<Dieta, String> colunaNomeUsuario;
-    @FXML private TableColumn<Dieta, Dieta.ObjetivoDieta> colunaObjetivoUsuario;
+    @FXML private TableColumn<Dieta, Meta.Tipo> colunaObjetivoUsuario;
     @FXML private TableColumn<Dieta, Integer> colunaCaloriasUsuario;
 
     @FXML private TableView<Dieta> tabelaDietasPreDefinidas;
     @FXML private TableColumn<Dieta, String> colunaNomePreDefinida;
-    @FXML private TableColumn<Dieta, Dieta.ObjetivoDieta> colunaObjetivoPreDefinida;
+    @FXML private TableColumn<Dieta, Meta.Tipo> colunaObjetivoPreDefinida;
     @FXML private TableColumn<Dieta, Integer> colunaCaloriasPreDefinida;
 
     @FXML private Label mensagemDieta;
@@ -140,6 +141,7 @@ public class DietaController {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma dieta selecionada", "Selecione uma dieta para remover.");
         }
     }
+
     @FXML
     public void adicionarDietaPreDefinida() {
         Dieta dietaSelecionada = tabelaDietasPreDefinidas.getSelectionModel().getSelectedItem();
@@ -149,32 +151,38 @@ public class DietaController {
         }
 
         try {
-            // Cria uma *cópia* da dieta pré-definida, para não modificar a original.
             Dieta novaDieta = new Dieta(
                     dietaSelecionada.getNome(),
                     dietaSelecionada.getObjetivo(),
                     dietaSelecionada.getCaloriasDiarias(),
-                    null // Inicialmente, sem usuário
+                    null
             );
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
-                // Define o usuário *na nova dieta*.
+                // Define o usuário na nova dieta
                 novaDieta.setUsuario(mainController.getUsuarioLogado());
 
-                // Usa configurarDieta, que agora já associa o usuário.
                 fachada.configurarDieta(novaDieta, novaDieta.getNome(), novaDieta.getObjetivo(),
                         novaDieta.getCaloriasDiarias(), novaDieta.getUsuario());
 
-                //fachada.setDietaAtiva(mainController.getUsuarioLogado(), novaDieta); //Removido
+                // *** DEFINIR A DIETA COMO ATIVA ***
+                fachada.setDietaAtiva(mainController.getUsuarioLogado(), novaDieta);
 
                 atualizarTabelaDietasUsuario();
                 mensagemDieta.setText("Dieta adicionada.");
 
-                // Atualiza o usuário no MainController
-                if (mainController != null) {
-                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado);
-                    mainController.atualizarDadosTelaPrincipal(); // Atualiza a tela principal
+
+                // Recomendação de refeição
+                Refeicao refeicaoRecomendada = fachada.getRefeicaoAleatoria();
+                if (refeicaoRecomendada != null) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Recomendação de Refeição");
+                    alert.setHeaderText("Com base na sua nova dieta, recomendamos a seguinte refeição:");
+                    alert.setContentText(String.format("Nome: %s\nDescrição: %s\nCalorias: %d",
+                            refeicaoRecomendada.getNome(),
+                            refeicaoRecomendada.getDescricao(),
+                            refeicaoRecomendada.getCalorias()));
+                    alert.showAndWait();
                 }
 
             } else {

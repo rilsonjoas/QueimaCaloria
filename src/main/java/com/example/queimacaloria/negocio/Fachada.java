@@ -4,9 +4,7 @@ import com.example.queimacaloria.controllers.MainController;
 import com.example.queimacaloria.excecoes.*;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Fachada {
 
@@ -18,7 +16,8 @@ public class Fachada {
     private ControladorMeta controladorMeta;
     private ControladorRefeicao controladorRefeicao;
     private ControladorTreino controladorTreino;
-    private MainController mainController; // Injeção de dependência
+    private MainController mainController;
+    private static final Random random = new Random();
 
     // Construtor privado (padrão Singleton).
     private Fachada() {
@@ -106,12 +105,12 @@ public class Fachada {
 
     // Métodos de Dieta
 
-    public void configurarDieta(Dieta dieta, String nome, Dieta.ObjetivoDieta objetivo, int caloriasDiarias,
+    public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, // Meta.Tipo agora!
                                 Usuario usuario) throws DietaNaoEncontradaException {
         controladorDieta.configurarDieta(dieta, nome, objetivo, caloriasDiarias, usuario);
     }
 
-    public void setDietaAtiva(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException {
+    public void setDietaAtiva(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException{
         controladorUsuario.setDietaAtiva(usuario, dieta);
     }
 
@@ -127,6 +126,24 @@ public class Fachada {
     }
     public void adicionarDietaUsuario(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException {
         controladorUsuario.adicionarDieta(usuario, dieta);
+    }
+
+    public Dieta getDietaAleatoria(Meta.Tipo tipo) {
+        List<Dieta> dietas = InicializadorDados.inicializarDietas();
+        List<Dieta> dietasFiltradas = new ArrayList<>();
+
+        // Filtra as dietas pelo tipo.
+        for (Dieta dieta : dietas) {
+            if (dieta.getObjetivo() == tipo) {
+                dietasFiltradas.add(dieta);
+            }
+        }
+
+        if (dietasFiltradas.isEmpty()) {
+            return null;
+        }
+        int indiceAleatorio = random.nextInt(dietasFiltradas.size());
+        return dietasFiltradas.get(indiceAleatorio);
     }
 
 
@@ -236,6 +253,14 @@ public class Fachada {
         controladorRefeicao.remover(id);
     }
 
+    public Refeicao getRefeicaoAleatoria() {
+        List<Refeicao> refeicoes = InicializadorDados.inicializarRefeicoes();
+        if (refeicoes.isEmpty()) {
+            return null;
+        }
+        int indiceAleatorio = random.nextInt(refeicoes.size());
+        return refeicoes.get(indiceAleatorio);
+    }
 
     // Métodos de Treino
     public void configurarTreino(Treino treino, String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade)

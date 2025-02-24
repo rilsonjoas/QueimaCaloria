@@ -32,7 +32,7 @@ public class Main {
             System.out.println("Treino adicionado ao usuário.");
 
             Dieta dieta = new Dieta();
-            fachada.configurarDieta(dieta, "Dieta Low Carb", Dieta.ObjetivoDieta.PERDA_DE_PESO, 1800, usuario);
+            fachada.configurarDieta(dieta, "Dieta Low Carb", Meta.Tipo.PERDA_DE_PESO, 1800, usuario);
             fachada.adicionarDietaUsuario(usuario, dieta);
             System.out.println("Dieta adicionada ao usuário.");
 
@@ -43,11 +43,12 @@ public class Main {
             System.err.println("Erro no usuário: " + e.getMessage());
         }
 
+
         Dieta dieta = new Dieta();
         Usuario userDieta = new Usuario();
 
         try {
-            fachada.configurarDieta(dieta, "Dieta de Teste", Dieta.ObjetivoDieta.GANHO_DE_MASSA, 2500, userDieta);
+            fachada.configurarDieta(dieta, "Dieta de Teste", Meta.Tipo.GANHO_DE_MASSA, 2500, userDieta);
 
             Refeicao refeicao1 = new Refeicao();
             Map<String, Double> macros1 = new HashMap<>();

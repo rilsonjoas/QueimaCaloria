@@ -22,7 +22,7 @@ public class Meta {
     // Enum para os tipos de meta, com descrições amigáveis.
     public enum Tipo {
         PERDA_DE_PESO("Perda de Peso"),
-        GANHO_DE_MASSA("Ganho de Massa");
+        GANHO_DE_MASSA("Ganho de Massa"), MANUTENCAO("Manutenção");
 
         private final String descricao;
 

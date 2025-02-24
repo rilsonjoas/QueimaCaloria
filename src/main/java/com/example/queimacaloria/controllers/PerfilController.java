@@ -49,7 +49,7 @@ public class PerfilController {
                     usuarioLogado.pesoProperty()
             ));
             labelAlturaAtual.textProperty().bind(Bindings.createStringBinding(
-                    () -> String.format("%.2f", usuarioLogado.getAltura()),
+                    () -> String.format("%.0f", usuarioLogado.getAltura()),
                     usuarioLogado.alturaProperty()
             ));
             labelIMCatual.textProperty().bind(Bindings.createStringBinding(

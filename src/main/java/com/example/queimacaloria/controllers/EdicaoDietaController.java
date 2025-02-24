@@ -3,7 +3,7 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
 import com.example.queimacaloria.negocio.Dieta;
 import com.example.queimacaloria.negocio.Fachada;
-import com.example.queimacaloria.negocio.Usuario;
+import com.example.queimacaloria.negocio.Meta;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 public class EdicaoDietaController {
 
     @FXML private TextField campoNome;
-    @FXML private ChoiceBox<Dieta.ObjetivoDieta> campoObjetivo;
+    @FXML private ChoiceBox<Meta.Tipo> campoObjetivo;
     @FXML private TextField campoCalorias;
     @FXML private Label mensagemErro;
 
@@ -43,14 +43,14 @@ public class EdicaoDietaController {
     // Inicializa o controlador, configurando o ChoiceBox de objetivo.
     @FXML
     public void initialize() {
-        campoObjetivo.setItems(FXCollections.observableArrayList(Dieta.ObjetivoDieta.values()));
+        campoObjetivo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
     }
 
     // Preenche os campos com os dados da dieta.
     private void preencherCampos() {
         if (dieta != null) {
             campoNome.setText(dieta.getNome());
-            campoObjetivo.setValue(dieta.getObjetivo());
+            campoObjetivo.setValue(dieta.getObjetivo()); // Usar o valor correto (Meta.Tipo)
             campoCalorias.setText(String.valueOf(dieta.getCaloriasDiarias()));
         }
     }
@@ -60,11 +60,17 @@ public class EdicaoDietaController {
     public void atualizarDieta() {
         try {
             String nome = campoNome.getText();
-            Dieta.ObjetivoDieta objetivo = campoObjetivo.getValue();
+            Meta.Tipo objetivo = campoObjetivo.getValue();
             int calorias = Integer.parseInt(campoCalorias.getText());
 
             fachada.configurarDieta(dieta, nome, objetivo, calorias, dieta.getUsuario());
             mensagemErro.setText("Dieta atualizada com sucesso!");
+
+            // Atualizar a tabela na tela principal *após* a edição
+            if(dietaController != null){
+                dietaController.atualizarTabelaDietasUsuario();
+            }
+
             fecharJanela();
 
         } catch (NumberFormatException e) {
@@ -73,6 +79,7 @@ public class EdicaoDietaController {
             mensagemErro.setText("Erro ao atualizar dieta: " + e.getMessage());
         }
     }
+
 
     // Fecha a janela atual.
     @FXML

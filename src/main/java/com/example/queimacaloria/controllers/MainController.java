@@ -26,7 +26,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import com.example.queimacaloria.negocio.Dieta;
 
-//Novos imports:
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -89,32 +88,44 @@ public class MainController {
     public ObservableList<String> getAtividadesRecentes() {
         return this.atividadesRecentes;
     }
+    private void atualizarGraficoPeso() {
+        if (usuarioLogado != null && graficoHistoricoPeso != null) {
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Peso");
+
+            // Ordena o histórico por data (importante para o gráfico de linha)
+            List<PesoRegistro> historicoOrdenado = new ArrayList<>(usuarioLogado.getHistoricoPeso());
+            historicoOrdenado.sort((r1, r2) -> r1.getData().compareTo(r2.getData()));
+
+
+            for (PesoRegistro registro : historicoOrdenado) {
+                String dataFormatada = registro.getData().format(dateFormatter);
+                series.getData().add(new XYChart.Data<>(dataFormatada, registro.getPeso()));
+            }
+
+            graficoHistoricoPeso.getData().clear();
+            graficoHistoricoPeso.getData().add(series);
+            graficoHistoricoPeso.setLegendVisible(false);
+        }
+    }
 
     // Define o usuário logado e atualiza a interface.
     public void setUsuarioLogado(Usuario usuario) {
         this.usuarioLogado = usuario;
 
         if (usuarioLogado != null) {
-            try {
-                Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
-                if (dietaAtiva != null) {
-                    usuarioLogado.setDietaAtiva(dietaAtiva);
-                }
-            } catch (UsuarioNaoEncontradoException e) {
-                System.err.println("Usuário não encontrado ao buscar dieta ativa: " + e.getMessage());
-            }
 
             if (labelNomeUsuario != null) labelNomeUsuario.setText(usuarioLogado.getNome());
             if (labelPesoUsuario != null)
                 labelPesoUsuario.textProperty().bind(Bindings.createStringBinding(() -> String.format("Peso: %.2f kg", usuarioLogado.getPeso()), usuarioLogado.pesoProperty()));
             if (labelAlturaUsuario != null)
-                labelAlturaUsuario.textProperty().bind(Bindings.createStringBinding(() -> String.format("Altura: %.2f m", usuarioLogado.getAltura()), usuarioLogado.alturaProperty()));
+                labelAlturaUsuario.textProperty().bind(Bindings.createStringBinding(
+                        () -> String.format("Altura: %.0f cm", usuarioLogado.getAltura()),
+                        usuarioLogado.alturaProperty()));
             if (labelIMC != null)
                 labelIMC.textProperty().bind(Bindings.createStringBinding(() -> String.format("IMC: %.2f", usuarioLogado.getImc()), usuarioLogado.imcProperty()));
             if (labelIMCSituacao != null)
                 labelIMCSituacao.textProperty().bind(Bindings.createStringBinding(() -> "Situação: " + getSituacaoIMC(usuarioLogado.getImc()), usuarioLogado.imcProperty()));
-
-            atualizarCalorias();
 
             if (barraProgressoMetas != null) {
                 barraProgressoMetas.progressProperty().bind(progressoGeral);
@@ -145,20 +156,7 @@ public class MainController {
                 atualizarDadosTelaPrincipal();
             });
 
-            // Listener para o peso (atualiza o gráfico se o peso mudar)
-            usuarioLogado.pesoProperty().addListener((obs, oldVal, newVal) -> {
-                atualizarGraficoPeso(); // Atualiza o gráfico
-                atualizarDadosTelaPrincipal(); // Mantém outros dados atualizados
-            });
-
-            // Listener para o histórico de peso
-            usuarioLogado.getHistoricoPeso().addListener((ListChangeListener<PesoRegistro>) change -> {
-                atualizarGraficoPeso(); // Atualiza o gráfico se o histórico mudar.
-            });
-
-            atualizarGraficoPeso();
             atualizarDadosTelaPrincipal();
-
 
         }
         else {
@@ -182,11 +180,10 @@ public class MainController {
                 labelAguaConsumida.setText("Água: -- ml");
             }
             if (graficoHistoricoPeso != null) {
-                graficoHistoricoPeso.getData().clear(); // Limpa o gráfico
+                graficoHistoricoPeso.getData().clear();
             }
         }
 
-        atualizarDadosTelaPrincipal();
     }
 
     // Retorna a situação do IMC com base no valor.
@@ -217,6 +214,18 @@ public class MainController {
             ((TreinoController) getController(telaTreino)).setMainController(this);
             ((PerfilController) getController(telaPerfil)).setMainController(this);
             Fachada.getInstanciaUnica().setMainController(this);
+
+            // Carrega a folha de estilos CSS.
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-screen-content.fxml"));
+                Parent telaPrincipalContent = loader.load();
+
+                // Adicione esta linha para carregar o CSS:
+                telaPrincipalContent.getStylesheets().add(getClass().getResource("/com/example/queimacaloria/views/estilos.css").toExternalForm());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             mostrarTelaPrincipal();
 
@@ -360,31 +369,32 @@ public class MainController {
         }
         return total;
     }
-
-    // Atualiza o label de calorias consumidas/diárias.
+    // Atualiza o label de calorias consumidas/diárias.  Este método é *crucial*.
     private void atualizarCalorias() {
-        if (usuarioLogado != null) {
-            int caloriasConsumidas = calcularTotalCaloriasConsumidas();
-            int caloriasDiarias = 0;
-
-            try {
-                Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
-                if(dietaAtiva != null){
-                    caloriasDiarias = dietaAtiva.getCaloriasDiarias();
-                }
-            } catch (UsuarioNaoEncontradoException e){
-                System.err.println("Usuário não encontrado ao buscar dieta ativa: " + e.getMessage());
-            }
-
-            if (labelCaloriasDia != null) {
-                labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias);
-            }
-        } else {
+        if (usuarioLogado == null || labelCaloriasDia == null) {
             if (labelCaloriasDia != null) {
                 labelCaloriasDia.setText("Calorias: --/--");
             }
+            return; // Se não tem usuário ou label, não faz nada.
         }
+
+        int caloriasConsumidas = calcularTotalCaloriasConsumidas();
+        int caloriasDiarias = 0; // Valor padrão, se não houver dieta ativa.
+
+        try {
+            //Obtém a dieta ativa *corretamente*.
+            Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
+            if (dietaAtiva != null) {
+                caloriasDiarias = dietaAtiva.getCaloriasDiarias();
+            }
+        } catch (UsuarioNaoEncontradoException e) {
+            System.err.println("Usuário não encontrado ao buscar dieta ativa: " + e.getMessage());
+            // Se não encontrou o usuário, não tem o que fazer.  Mantém caloriasDiarias = 0.
+        }
+
+        labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias);
     }
+
 
     // Calcula o progresso geral do usuário em relação às metas.
     public double calcularProgressoGeralUsuario() {
@@ -440,8 +450,20 @@ public class MainController {
     // Atualiza todos os dados da tela principal.
     public void atualizarDadosTelaPrincipal() {
         if (usuarioLogado != null) {
-            atualizarCalorias();
-            atualizarAgua();
+            //Verifica se o usuário tem uma dieta ativa antes de tentar acessá-la
+            try {
+                Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
+                if (dietaAtiva != null) {
+                    usuarioLogado.setDietaAtiva(dietaAtiva);
+                }
+            }
+            catch (UsuarioNaoEncontradoException e){
+                System.err.println("Usuário não encontrado ao buscar dieta ativa: " + e.getMessage());
+            }
+
+            atualizarCalorias(); // Atualiza a exibição das calorias
+            atualizarAgua(); // Atualiza a exibição da água
+            atualizarGraficoPeso();
             progressoGeral.set(calcularProgressoGeralUsuario());
             if (telaDieta != null) ((DietaController) getController(telaDieta)).atualizarTabelaDietasUsuario();
             if (telaExercicio != null)
@@ -451,33 +473,21 @@ public class MainController {
                 ((RefeicaoController) getController(telaRefeicao)).atualizarTabelaRefeicoesUsuario();
             if (telaTreino != null)
                 ((TreinoController) getController(telaTreino)).atualizarTabelaTreinosUsuario();
+
+            usuarioLogado.pesoProperty().addListener((obs, oldVal, newVal) -> {
+                atualizarGraficoPeso();  // Atualiza o gráfico
+                atualizarDadosTelaPrincipal(); // Mantém outros dados atualizados
+            });
+
+            usuarioLogado.getHistoricoPeso().addListener((ListChangeListener<PesoRegistro>) change -> {
+                atualizarGraficoPeso(); // Atualiza o gráfico se o histórico mudar.
+            });
         }
     }
 
     // Atualiza a label de água.
     private void atualizarAgua(){
 
-    }
-
-    private void atualizarGraficoPeso() {
-        if (usuarioLogado != null && graficoHistoricoPeso != null) {
-            XYChart.Series<String, Number> series = new XYChart.Series<>();
-            series.setName("Peso");
-
-            // Ordena o histórico por data (importante para o gráfico de linha)
-            List<PesoRegistro> historicoOrdenado = new ArrayList<>(usuarioLogado.getHistoricoPeso());
-            historicoOrdenado.sort((r1, r2) -> r1.getData().compareTo(r2.getData()));
-
-
-            for (PesoRegistro registro : historicoOrdenado) {
-                String dataFormatada = registro.getData().format(dateFormatter);
-                series.getData().add(new XYChart.Data<>(dataFormatada, registro.getPeso()));
-            }
-
-            graficoHistoricoPeso.getData().clear(); // Limpa dados antigos
-            graficoHistoricoPeso.getData().add(series);
-            graficoHistoricoPeso.setLegendVisible(false); // Oculta legenda
-        }
     }
 
     // Realiza o logout do usuário.
@@ -508,6 +518,4 @@ public class MainController {
             }
         }
     }
-
-
 }

@@ -2,9 +2,7 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
-import com.example.queimacaloria.negocio.Dieta;
-import com.example.queimacaloria.negocio.Fachada;
-import com.example.queimacaloria.negocio.Usuario;
+import com.example.queimacaloria.negocio.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -16,7 +14,7 @@ import javafx.stage.Stage;
 public class CriacaoDietaController {
 
     @FXML private TextField campoNome;
-    @FXML private ChoiceBox<Dieta.ObjetivoDieta> campoObjetivo;
+    @FXML private ChoiceBox<Meta.Tipo> campoObjetivo; // Usar Meta.Tipo
     @FXML private TextField campoCalorias;
     @FXML private Label mensagemErro;
 
@@ -37,7 +35,7 @@ public class CriacaoDietaController {
     // Inicializa o controlador, configurando o ChoiceBox de objetivo.
     @FXML
     public void initialize() {
-        campoObjetivo.setItems(FXCollections.observableArrayList(Dieta.ObjetivoDieta.values()));
+        campoObjetivo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
     }
 
     // Cria uma nova dieta para o usuário logado.
@@ -46,28 +44,35 @@ public class CriacaoDietaController {
         System.out.println("CriacaoDietaController.criarDieta: Iniciando...");
         try {
             String nome = campoNome.getText();
-            Dieta.ObjetivoDieta objetivo = campoObjetivo.getValue();
+            Meta.Tipo objetivo = campoObjetivo.getValue(); // Usar Meta.Tipo
             int calorias = Integer.parseInt(campoCalorias.getText());
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 Dieta novaDieta = new Dieta();
-                // MUITO IMPORTANTE: Define o usuário da dieta.
                 novaDieta.setUsuario(usuarioLogado);
                 fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado);
 
+                fachada.setDietaAtiva(usuarioLogado, novaDieta);
 
-                //fachada.setDietaAtiva(usuarioLogado, novaDieta); //Removido.
 
                 if (dietaController != null) {
                     dietaController.atualizarTabelaDietasUsuario();
-                    dietaController.showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dieta Criada", "Dieta criada e definida como ativa com sucesso!");
+                    dietaController.showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dieta Criada", "Dieta criada com sucesso!");
                 }
 
-                // Atualiza o usuário logado *depois* de adicionar a dieta.
-                Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(usuarioLogado.getId());
-                mainController.setUsuarioLogado(usuarioAtualizado);
-                mainController.atualizarDadosTelaPrincipal(); // Atualiza a tela principal.
+                // Recomendação de refeição
+                Refeicao refeicaoRecomendada = fachada.getRefeicaoAleatoria();
+                if (refeicaoRecomendada != null) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Recomendação de Refeição");
+                    alert.setHeaderText("Com base na sua nova dieta, recomendamos a seguinte refeição:");
+                    alert.setContentText(String.format("Nome: %s\nDescrição: %s\nCalorias: %d",
+                            refeicaoRecomendada.getNome(),
+                            refeicaoRecomendada.getDescricao(),
+                            refeicaoRecomendada.getCalorias()));
+                    alert.showAndWait();
+                }
 
                 fecharJanela();
 
@@ -83,6 +88,7 @@ public class CriacaoDietaController {
             e.printStackTrace();
         }
     }
+
 
     // Fecha a janela atual.
     @FXML

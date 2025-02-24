@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import com.example.queimacaloria.negocio.Dieta;
 
 import java.time.LocalDate;
 
@@ -70,6 +71,21 @@ public class CriacaoMetaController {
                 if(mainController != null){
                     mainController.atualizarDadosTelaPrincipal();
                 }
+
+                // Recomendação de dieta
+                Dieta dietaRecomendada = fachada.getDietaAleatoria(tipo);
+                if (dietaRecomendada != null) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Recomendação de Dieta");
+                    alert.setHeaderText("Com base na sua nova meta, recomendamos a seguinte dieta:");
+                    alert.setContentText(String.format("Nome: %s\nObjetivo: %s\nCalorias: %d",
+                            dietaRecomendada.getNome(),
+                            dietaRecomendada.getObjetivo().getDescricao(),
+                            dietaRecomendada.getCaloriasDiarias()));
+                    alert.showAndWait();
+                }
+
+
             } else {
                 mensagemErro.setText("Erro, usuário não logado");
             }

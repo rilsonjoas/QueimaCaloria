@@ -1,11 +1,7 @@
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
-import com.example.queimacaloria.negocio.Fachada;
-import com.example.queimacaloria.negocio.GeradorPDF;
-import com.example.queimacaloria.negocio.InicializadorDados;
-import com.example.queimacaloria.negocio.Meta;
-import com.example.queimacaloria.negocio.Usuario;
+import com.example.queimacaloria.negocio.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -224,6 +220,19 @@ public class MetaController {
 
                 atualizarTabelaMetasUsuario();
                 mensagemMeta.setText("Meta adicionada com sucesso!");
+
+                // Recomendação de dieta
+                Dieta dietaRecomendada = fachada.getDietaAleatoria(novaMeta.getTipo());
+                if (dietaRecomendada != null) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Recomendação de Dieta");
+                    alert.setHeaderText("Com base na sua nova meta, recomendamos a seguinte dieta:");
+                    alert.setContentText(String.format("Nome: %s\nObjetivo: %s\nCalorias: %d",
+                            dietaRecomendada.getNome(),
+                            dietaRecomendada.getObjetivo().getDescricao(),
+                            dietaRecomendada.getCaloriasDiarias()));
+                    alert.showAndWait();
+                }
 
             } catch (MetaNaoEncontradaException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar meta", e.getMessage());

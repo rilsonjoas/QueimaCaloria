@@ -280,6 +280,7 @@ public class TreinoController {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
             //Obtém a lista de treinos do usuário.
             List<Treino> treinosDoUsuario = mainController.getUsuarioLogado().getTreinos();
+            String nomeUsuario = mainController.getUsuarioLogado().getNome(); // Obtém o nome do usuário
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar Relatório de Treinos em PDF");
@@ -289,12 +290,15 @@ public class TreinoController {
 
             if (file != null) {
                 try {
-                    // Chama o método específico para treinos.
-                    GeradorPDF.gerarRelatorioTreinos(treinosDoUsuario, file.getAbsolutePath());
+                    // Chama o método específico para treinos, passando o nome do usuário
+                    GeradorPDF.gerarRelatorioTreinos(treinosDoUsuario, file.getAbsolutePath(), nomeUsuario);
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de treinos foi gerado com sucesso em: " + file.getAbsolutePath());
 
-                }  catch (Exception e) { //Apenas o catch genérico.
+                } catch (IOException e) { // Captura IOException
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
+                    e.printStackTrace();
+                } catch (Exception e) { //Apenas o catch genérico.
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro inesperado: " + e.getMessage());
                     e.printStackTrace();
                 }

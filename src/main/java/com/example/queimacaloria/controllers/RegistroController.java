@@ -37,7 +37,6 @@ public class RegistroController {
 
     @FXML
     public void registrar() {
-        // ... (código de validação e criação do usuário, como você já tem) ...
         String nome = campoNome.getText();
         String email = campoEmail.getText();
         String password = campoSenha.getText();

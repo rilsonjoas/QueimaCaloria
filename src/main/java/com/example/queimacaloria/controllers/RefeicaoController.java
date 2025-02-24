@@ -198,22 +198,27 @@ public class RefeicaoController {
     public void compartilharLista() {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
             Usuario usuarioLogado = mainController.getUsuarioLogado();
+            String nomeUsuario = usuarioLogado.getNome();  // Obtém o nome do usuário
 
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Salvar Relatório de Refeições em PDF"); // Título específico
+            fileChooser.setTitle("Salvar Relatório de Refeições em PDF");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
             Stage stage = (Stage) tabelaRefeicoesUsuario.getScene().getWindow(); // Janela correta
             File file = fileChooser.showSaveDialog(stage);
 
             if (file != null) {
                 try {
-                    // Obtém a lista de *todas* as refeições.  Refeições não estão ligadas ao usuário.
+                    // Obtém a lista de *todas* as refeições.
                     List<Refeicao> todasRefeicoes = fachada.listarRefeicoes();
-                    GeradorPDF.gerarRelatorioRefeicoes(todasRefeicoes, file.getAbsolutePath()); // Método específico
+                    // Passa o nome do usuário
+                    GeradorPDF.gerarRelatorioRefeicoes(todasRefeicoes, file.getAbsolutePath(), nomeUsuario);
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de refeições foi gerado com sucesso em: " + file.getAbsolutePath());
 
-                } catch (Exception e) {  //Apenas o catch genérico.
+                } catch (IOException e) { // Captura IOException
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
+                    e.printStackTrace();
+                }catch (Exception e) {  //Apenas o catch genérico.
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro inesperado: " + e.getMessage());
                     e.printStackTrace();
                 }

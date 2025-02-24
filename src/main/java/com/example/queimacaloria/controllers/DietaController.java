@@ -214,25 +214,26 @@ public class DietaController {
     @FXML
     public void compartilharLista() {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
-            Usuario usuarioLogado = mainController.getUsuarioLogado();
-            //Agora que as dietas estão associadas, voltamos a filtrar
-            List<Dieta> dietasDoUsuario = fachada.listarDietas().stream()
-                    .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(usuarioLogado.getId()))
-                    .toList();
+            // Obtém a lista de dietas *do usuário*.
+            List<Dieta> dietasDoUsuario = mainController.getUsuarioLogado().getDietas();
+            String nomeUsuario = mainController.getUsuarioLogado().getNome();
 
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Salvar Relatório de Dietas em PDF"); // Título mais específico
+            fileChooser.setTitle("Salvar Relatório de Dietas em PDF");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
-            Stage stage = (Stage) tabelaDietasUsuario.getScene().getWindow(); // Usando a tabela como referência.
+            Stage stage = (Stage) tabelaDietasUsuario.getScene().getWindow();  // Usando a tabela como referência.
             File file = fileChooser.showSaveDialog(stage);
 
             if (file != null) {
                 try {
-                    // Chama o método correto do GeradorPDF, passando a *lista de dietas*
-                    GeradorPDF.gerarRelatorioDietas(dietasDoUsuario, file.getAbsolutePath());
+                    // Chama o método correto do GeradorPDF, passando o nome do usuário.
+                    GeradorPDF.gerarRelatorioDietas(dietasDoUsuario, file.getAbsolutePath(), nomeUsuario);
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de dietas foi gerado com sucesso em: " + file.getAbsolutePath());
 
+                } catch (IOException e) { // Captura IOException
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
+                    e.printStackTrace();
                 } catch (Exception e) { // Apenas o catch genérico
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório",
                             "Ocorreu um erro inesperado: " + e.getMessage());
@@ -240,8 +241,7 @@ public class DietaController {
                 }
             }
         } else {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Usuário Não Logado",
-                    "É necessário estar logado para gerar o relatório.");
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Usuário Não Logado", "É necessário estar logado para gerar o relatório.");
         }
     }
 

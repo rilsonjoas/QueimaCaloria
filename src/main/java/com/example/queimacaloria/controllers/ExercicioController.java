@@ -236,23 +236,26 @@ public class ExercicioController {
     @FXML
     public void compartilharLista() {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
-            // Obtém a lista de exercícios *do usuário*.
             List<Exercicio> exerciciosDoUsuario = mainController.getUsuarioLogado().getExercicios();
+            String nomeUsuario = mainController.getUsuarioLogado().getNome(); // Obtém o nome do usuário
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar Relatório de Exercícios em PDF");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
-            Stage stage = (Stage) tabelaExerciciosUsuario.getScene().getWindow(); // Usando a tabela
+            Stage stage = (Stage) tabelaExerciciosUsuario.getScene().getWindow();
             File file = fileChooser.showSaveDialog(stage);
 
             if (file != null) {
                 try {
-                    // Chama o método específico para exercícios.
-                    GeradorPDF.gerarRelatorioExercicios(exerciciosDoUsuario, file.getAbsolutePath());
+                    // Passa o nome do usuário para o método gerarRelatorioExercicios
+                    GeradorPDF.gerarRelatorioExercicios(exerciciosDoUsuario, file.getAbsolutePath(), nomeUsuario);
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de exercícios foi gerado com sucesso em: " + file.getAbsolutePath());
 
-                } catch (Exception e) { // Apenas o catch genérico
+                } catch (IOException e) { // Captura IOException especificamente
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
+                    e.printStackTrace();
+                } catch (Exception e) {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro inesperado: " + e.getMessage());
                     e.printStackTrace();
                 }

@@ -281,31 +281,32 @@ public class MetaController {
     @FXML
     public void compartilharLista() {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
-            // Obtém a lista de metas *do usuário*.  Fundamental!
             List<Meta> metasDoUsuario = mainController.getUsuarioLogado().getMetas();
+            String nomeUsuario = mainController.getUsuarioLogado().getNome(); // Obtém o nome do usuário
 
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Salvar Relatório de Metas em PDF"); // Título mais específico
+            fileChooser.setTitle("Salvar Relatório de Metas em PDF");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
-            Stage stage = (Stage) tabelaMetasUsuario.getScene().getWindow(); // Usando a tabela como referência.
+            Stage stage = (Stage) tabelaMetasUsuario.getScene().getWindow();
             File file = fileChooser.showSaveDialog(stage);
 
             if (file != null) {
                 try {
-                    // Chama o método correto do GeradorPDF, passando a *lista de metas*
-                    GeradorPDF.gerarRelatorioMetas(metasDoUsuario, file.getAbsolutePath());
+                    // Passa o nome do usuário
+                    GeradorPDF.gerarRelatorioMetas(metasDoUsuario, file.getAbsolutePath(), nomeUsuario);
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de metas foi gerado com sucesso em: " + file.getAbsolutePath());
 
-                }  catch (Exception e) { // Apenas o catch genérico
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório",
-                            "Ocorreu um erro inesperado: " + e.getMessage());
-                    e.printStackTrace(); // Stack trace completa no console
+                } catch (IOException e) { // Captura IOException
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro inesperado: " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         } else {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Usuário Não Logado",
-                    "É necessário estar logado para gerar o relatório.");
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Usuário Não Logado", "É necessário estar logado para gerar o relatório.");
         }
     }
 }

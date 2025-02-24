@@ -8,18 +8,25 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
 
-import java.io.FileNotFoundException;
-import java.io.IOException; // Importante: Importar IOException
+import java.io.IOException;
 import java.util.List;
 
 public class GeradorPDF {
 
-    // Método para gerar relatório de DIETAS
-    public static void gerarRelatorioDietas(List<Dieta> dietas, String caminhoArquivo) throws IOException { // Adicionada IOException
+    // Método genérico para adicionar cabeçalho (YouFit + Nome do Usuário)
+    private static void adicionarCabecalho(Document document, String nomeUsuario) {
+        document.add(new Paragraph("YouFit").setFontSize(24).setBold().setFontColor(ColorConstants.BLUE));
+        document.add(new Paragraph("Relatório para: " + nomeUsuario).setFontSize(16).setFontColor(ColorConstants.BLACK));
+        document.add(new Paragraph("\n")); // Linha em branco para espaçamento.
+    }
+
+    // Métodos para gerar relatórios
+    public static void gerarRelatorioDietas(List<Dieta> dietas, String caminhoArquivo, String nomeUsuario) throws IOException {
         try (PdfWriter writer = new PdfWriter(caminhoArquivo);
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
+            adicionarCabecalho(document, nomeUsuario);
             document.add(new Paragraph("Relatório de Dietas").setFontSize(18));
 
             if (dietas != null && !dietas.isEmpty()) {
@@ -27,15 +34,15 @@ public class GeradorPDF {
             } else {
                 document.add(new Paragraph("Nenhuma dieta registrada.").setFontColor(ColorConstants.GRAY));
             }
-        } // Não precisa de catch aqui, pois a exceção é propagada
+        }
     }
 
-    // Método para gerar relatório de EXERCÍCIOS
-    public static void gerarRelatorioExercicios(List<Exercicio> exercicios, String caminhoArquivo) throws IOException { // Adicionada IOException
+    public static void gerarRelatorioExercicios(List<Exercicio> exercicios, String caminhoArquivo, String nomeUsuario) throws IOException {
         try (PdfWriter writer = new PdfWriter(caminhoArquivo);
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
+            adicionarCabecalho(document, nomeUsuario);
             document.add(new Paragraph("Relatório de Exercícios").setFontSize(18));
 
             if (exercicios != null && !exercicios.isEmpty()) {
@@ -46,12 +53,13 @@ public class GeradorPDF {
         }
     }
 
-    // Método para gerar relatório de METAS
-    public static void gerarRelatorioMetas(List<Meta> metas, String caminhoArquivo) throws IOException { // Adicionada IOException
+
+    public static void gerarRelatorioMetas(List<Meta> metas, String caminhoArquivo, String nomeUsuario) throws IOException {
         try (PdfWriter writer = new PdfWriter(caminhoArquivo);
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
+            adicionarCabecalho(document, nomeUsuario);
             document.add(new Paragraph("Relatório de Metas").setFontSize(18));
 
             if (metas != null && !metas.isEmpty()) {
@@ -61,12 +69,14 @@ public class GeradorPDF {
             }
         }
     }
-    // Método para gerar relatório de Refeições
-    public static void gerarRelatorioRefeicoes(List<Refeicao> refeicoes, String caminhoArquivo) throws IOException { // Adicionada IOException
+
+
+    public static void gerarRelatorioRefeicoes(List<Refeicao> refeicoes, String caminhoArquivo, String nomeUsuario) throws IOException {
         try (PdfWriter writer = new PdfWriter(caminhoArquivo);
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
+            adicionarCabecalho(document, nomeUsuario);
             document.add(new Paragraph("Relatório de Refeições").setFontSize(18));
 
             if (refeicoes != null && !refeicoes.isEmpty()) {
@@ -78,12 +88,12 @@ public class GeradorPDF {
         }
     }
 
-    // Método para gerar relatório de TREINOS
-    public static void gerarRelatorioTreinos(List<Treino> treinos, String caminhoArquivo) throws IOException { // Adicionada IOException
+    public static void gerarRelatorioTreinos(List<Treino> treinos, String caminhoArquivo, String nomeUsuario) throws IOException {
         try (PdfWriter writer = new PdfWriter(caminhoArquivo);
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
+            adicionarCabecalho(document, nomeUsuario);
             document.add(new Paragraph("Relatório de Treinos").setFontSize(18));
 
             if (treinos != null && !treinos.isEmpty()) {
@@ -94,7 +104,8 @@ public class GeradorPDF {
         }
     }
 
-    // Métodos auxiliares para criar as seções (já existiam, mas precisam ser adaptados/chamados)
+
+    // Métodos auxiliares para criar as seções
     private static void adicionarSecaoMetas(Document document, List<Meta> metas) {
         document.add(new Paragraph("Metas:").setFontSize(14));
 
@@ -115,7 +126,7 @@ public class GeradorPDF {
             if (meta.getValorAlvo() > 0) { // Evita divisão por zero
                 progresso = (meta.getProgressoAtual() / meta.getValorAlvo()) * 100.0;
             }
-            tabela.addCell(new Paragraph(String.format("%.1f%%", progresso))); // Formata aqui!
+            tabela.addCell(new Paragraph(String.format("%.1f%%", progresso)));
         }
 
         document.add(tabela);
@@ -200,5 +211,4 @@ public class GeradorPDF {
         document.add(tabela);
     }
 
-    // Outros métodos (adicionarSecaoExercicios, adicionarSecaoRefeicoes) seriam similares.
 }

@@ -19,7 +19,7 @@ public class Treino {
 
     private final UUID id;
     @Setter private String nome;
-    @Setter private String tipoDeTreino;
+    @Setter private Exercicio.TipoExercicio tipoDeTreino;
     @Setter private int duracao;
     @Setter private int nivelDeDificuldade;
     @Setter private ArrayList<Exercicio> exercicios;
@@ -36,22 +36,9 @@ public class Treino {
         this.progresso = 0.0;
     }
 
-    // Construtor da classe Treino.
-    public Treino(String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade,
-                  ArrayList<Exercicio> exercicios, double caloriasQueimadas, double progresso, boolean concluido) {
-        this.id = UUID.randomUUID();
-        this.nome = nome;
-        this.tipoDeTreino = tipoDeTreino;
-        this.duracao = duracao;
-        this.nivelDeDificuldade = nivelDeDificuldade;
-        this.exercicios = exercicios;
-        this.caloriasQueimadas = caloriasQueimadas;
-        this.progresso = progresso;
-        this.concluido = concluido;
-    }
 
-    // Construtor da classe Treino.
-    public Treino(String nome, String tipoDeTreino, String tipo, int duracao, int nivelDeDificuldade,
+    // Construtor da classe Treino
+    public Treino(String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade,
                   ArrayList<Exercicio> exercicios, double caloriasQueimadas, double progresso, boolean concluido) {
         this.id = UUID.randomUUID();
         this.nome = nome;
@@ -63,6 +50,8 @@ public class Treino {
         this.progresso = progresso;
         this.concluido = concluido;
     }
+
+
 
     public double calcularCaloriasTotais() {
         double caloriasTotais = 0;
@@ -77,10 +66,6 @@ public class Treino {
         return new SimpleStringProperty(nome);
     }
 
-    public StringProperty tipoDeTreinoProperty() {
-        return new SimpleStringProperty(tipoDeTreino);
-    }
-
     public IntegerProperty duracaoProperty() {
         return new SimpleIntegerProperty(duracao);
     }
@@ -92,5 +77,4 @@ public class Treino {
     public DoubleProperty progressoProperty() {
         return new SimpleDoubleProperty(progresso);
     }
-
 }

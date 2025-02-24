@@ -263,9 +263,9 @@ public class Fachada {
     }
 
     // Métodos de Treino
-    public void configurarTreino(Treino treino, String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade)
+    public void configurarTreino(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade)
             throws TreinoNaoEncontradoException {
-        controladorTreino.inicializar(treino, nome, tipoDeTreino, duracao, nivelDeDificuldade);
+        controladorTreino.inicializar(treino, nome, Exercicio.TipoExercicio.valueOf(String.valueOf(tipoDeTreino)), duracao, nivelDeDificuldade);
     }
 
     public void adicionarTreinoAoUsuario(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {

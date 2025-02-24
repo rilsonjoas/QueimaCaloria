@@ -17,7 +17,7 @@ public class EdicaoExercicioController {
     @FXML private TextField campoDescricao;
     @FXML private ChoiceBox<Exercicio.TipoExercicio> campoTipo;
     @FXML private TextField campoTempo;
-    @FXML private TextField campoCaloriasQueimadas; // Mudança aqui
+    @FXML private TextField campoCaloriasQueimadas;
     @FXML private Label mensagemErro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();

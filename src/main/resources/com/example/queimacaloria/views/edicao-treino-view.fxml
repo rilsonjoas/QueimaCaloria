@@ -11,6 +11,7 @@
 <?import javafx.scene.control.CheckBox?>
 
 
+<?import javafx.scene.control.ChoiceBox?>
 <AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.EdicaoTreinoController">
     <VBox alignment="CENTER" prefHeight="350.0" prefWidth="300.0" spacing="15.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 20;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
 
@@ -27,7 +28,7 @@
         <TextField fx:id="campoNome" promptText="Nome do Treino" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
 
         <Label text="Tipo de Treino:" textFill="WHITE"/>
-        <TextField fx:id="campoTipoTreino" promptText="Tipo de Treino" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
+        <ChoiceBox fx:id="campoTipoTreino" prefWidth="150.0" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />
 
         <Label text="Duração (minutos):" textFill="WHITE"/>
         <TextField fx:id="campoDuracao" promptText="Duração (minutos)" style="-fx-background-color: #1a1922; -fx-text-fill: white;" />

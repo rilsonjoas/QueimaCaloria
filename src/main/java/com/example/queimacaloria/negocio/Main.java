@@ -27,7 +27,7 @@ public class Main {
             System.out.println("Meta cadastrada para o usuário.");
 
             Treino treino = new Treino();
-            fachada.configurarTreino(treino, "Treino de Força", "Força", 60, 3);
+            fachada.configurarTreino(treino, "Treino de Força", Exercicio.TipoExercicio.valueOf("Força"), 60, 3);
             fachada.adicionarTreinoAoUsuario(usuario, treino);
             System.out.println("Treino adicionado ao usuário.");
 
@@ -126,7 +126,7 @@ public class Main {
 
             fachada.configurarExercicio(exercicio1, "Supino", "Peito", Exercicio.TipoExercicio.FORCA, 45, 8.0);
             fachada.configurarExercicio(exercicio2, "Agachamento", "Pernas", Exercicio.TipoExercicio.FORCA, 60, 9.0);
-            fachada.configurarTreino(treino, "Treino Completo", "Full Body", 90, 4);
+            fachada.configurarTreino(treino, "Treino Completo", Exercicio.TipoExercicio.valueOf("Full Body"), 90, 4);
 
             System.out.println("Treino configurado.");
             fachada.inserirExercicioTreino(treino, exercicio1);

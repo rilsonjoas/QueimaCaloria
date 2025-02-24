@@ -20,23 +20,23 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class TreinoController {
 
     @FXML private TableView<Treino> tabelaTreinosUsuario;
     @FXML private TableColumn<Treino, String> colunaNomeUsuario;
-    @FXML private TableColumn<Treino, String> colunaTipoTreinoUsuario;
+    @FXML private TableColumn<Treino, Exercicio.TipoExercicio> colunaTipoTreinoUsuario;
     @FXML private TableColumn<Treino, Integer> colunaDuracaoUsuario;
     @FXML private TableColumn<Treino, Integer> colunaNivelDificuldadeUsuario;
 
     @FXML private TableView<Treino> tabelaTreinosPreDefinidos;
     @FXML private TableColumn<Treino, String> colunaNomePreDefinido;
-    @FXML private TableColumn<Treino, String> colunaTipoTreinoPreDefinido;
+    @FXML private TableColumn<Treino, Exercicio.TipoExercicio> colunaTipoTreinoPreDefinido;
     @FXML private TableColumn<Treino, Integer> colunaDuracaoPreDefinido;
     @FXML private TableColumn<Treino, Integer> colunaNivelDificuldadePreDefinido;
 
@@ -93,14 +93,11 @@ public class TreinoController {
     }
 
     private void carregarTreinosPreDefinidos() {
-        try {
-            List<Treino> treinos = InicializadorDados.inicializarTreinos();
-            treinosPreDefinidos.setAll(treinos);
-            tabelaTreinosPreDefinidos.setItems(treinosPreDefinidos);
-        } catch (Exception e){
-            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar treinos pré-definidos", e.getMessage());
-        }
+        // Agora carrega diretamente de InicializadorDados, SEM Fachada.
+        treinosPreDefinidos.setAll(InicializadorDados.inicializarTreinos());
+        tabelaTreinosPreDefinidos.setItems(treinosPreDefinidos);
     }
+
     @FXML
     public void abrirTelaCriarTreino() {
         try {
@@ -190,6 +187,7 @@ public class TreinoController {
                         treinoSelecionado.getProgresso(),
                         treinoSelecionado.isConcluido()
                 );
+
                 fachada.configurarTreino(novoTreino, novoTreino.getNome(),
                         novoTreino.getTipoDeTreino(), novoTreino.getDuracao(),
                         novoTreino.getNivelDeDificuldade());
@@ -206,6 +204,10 @@ public class TreinoController {
                                 "O usuário logado não pôde ser encontrado após a adição do treino.");
                     }
                 }
+
+                // Adiciona a sugestão de exercícios *após* adicionar o treino
+                sugerirExercicios(novoTreino);
+
 
             } catch (TreinoNaoEncontradoException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar treino", e.getMessage());
@@ -305,6 +307,90 @@ public class TreinoController {
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Usuário Não Logado", "É necessário estar logado para gerar o relatório.");
+        }
+    }
+
+    // Método para sugerir exercícios (NOVO)
+    protected void sugerirExercicios(Treino treino) {
+        List<Exercicio> todosExercicios = InicializadorDados.inicializarExercicios();
+        List<Exercicio> exerciciosSugeridos = new ArrayList<>();
+        Random random = new Random();
+
+        if (treino.getTipoDeTreino() == Exercicio.TipoExercicio.FORCA) {
+            for (Exercicio ex : todosExercicios) {
+                if (ex.getTipo() == Exercicio.TipoExercicio.FORCA) {
+                    exerciciosSugeridos.add(ex);
+                }
+            }
+        } else if (treino.getTipoDeTreino() == Exercicio.TipoExercicio.CARDIO) {
+            for (Exercicio ex : todosExercicios) {
+                if (ex.getTipo() == Exercicio.TipoExercicio.CARDIO) {
+                    exerciciosSugeridos.add(ex);
+                }
+            }
+        }
+        //Adicione else if para os outros tipos de exercício.
+        else if (treino.getTipoDeTreino() == Exercicio.TipoExercicio.FLEXIBILIDADE){
+            for(Exercicio ex : todosExercicios){
+                if(ex.getTipo() == Exercicio.TipoExercicio.FLEXIBILIDADE){
+                    exerciciosSugeridos.add(ex);
+                }
+            }
+        }
+        else if (treino.getTipoDeTreino() == Exercicio.TipoExercicio.EQUILIBRIO){
+            for(Exercicio ex : todosExercicios){
+                if(ex.getTipo() == Exercicio.TipoExercicio.EQUILIBRIO){
+                    exerciciosSugeridos.add(ex);
+                }
+            }
+        }
+
+        else if (treino.getTipoDeTreino() == Exercicio.TipoExercicio.AQUATICO){
+            for(Exercicio ex : todosExercicios){
+                if(ex.getTipo() == Exercicio.TipoExercicio.AQUATICO){
+                    exerciciosSugeridos.add(ex);
+                }
+            }
+        }
+        else if (treino.getTipoDeTreino() == Exercicio.TipoExercicio.OUTRO){
+            for(Exercicio ex : todosExercicios){
+                if(ex.getTipo() == Exercicio.TipoExercicio.OUTRO){
+                    exerciciosSugeridos.add(ex);
+                }
+            }
+        }
+        // Se não for um tipo específico, sugere alguns aleatórios.
+        else {
+            if (todosExercicios.size() > 3) {
+                for (int i = 0; i < 3; i++) { // Sugere 3 exercícios
+                    exerciciosSugeridos.add(todosExercicios.get(random.nextInt(todosExercicios.size())));
+                }
+            } else {
+                exerciciosSugeridos.addAll(todosExercicios);
+            }
+        }
+
+
+        if (!exerciciosSugeridos.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Com base no seu treino de ").append(treino.getTipoDeTreino()).append(", sugerimos os seguintes exercícios:\n\n");
+            for (Exercicio ex : exerciciosSugeridos) {
+                sb.append("- ").append(ex.getNome()).append(" (").append(ex.getTipo()).append(")\n");
+            }
+
+            //Sugerir uma frequência de treino aleatória
+            int frequencia = 2 + random.nextInt(4); //Gera números entre 2 e 5
+            sb.append("\nRecomendamos realizar este treino de ").append(frequencia).append(" vezes por semana.");
+
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Sugestão de Exercícios");
+            alert.setHeaderText(null);
+            alert.setContentText(sb.toString());
+            alert.showAndWait();
+        } else {
+            showAlert(Alert.AlertType.INFORMATION, "Informação", "Não há exercícios sugeridos",
+                    "Não encontramos exercícios para sugerir com base no tipo do seu treino.");
         }
     }
 }

@@ -17,7 +17,7 @@ public class ControladorTreino {
     }
 
     // Inicializa um treino, atualizando ou adicionando ao repositório.
-    public void inicializar(Treino treino, String nome, String tipoDeTreino, int duracao, int nivelDeDificuldade) throws TreinoNaoEncontradoException {
+    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade) throws TreinoNaoEncontradoException { //<- Mude aqui
         treino.setNome(nome);
         treino.setTipoDeTreino(tipoDeTreino);
         treino.setDuracao(duracao);

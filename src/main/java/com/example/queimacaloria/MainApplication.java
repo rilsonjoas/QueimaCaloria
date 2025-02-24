@@ -16,6 +16,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage palco) throws IOException {
         this.primaryStage = palco;
+
         try {
             FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/com/example/queimacaloria/views/auth-view.fxml"));
             Parent raiz = loader.load();

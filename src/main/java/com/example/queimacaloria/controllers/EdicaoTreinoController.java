@@ -2,11 +2,14 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
+import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Treino;
 import com.example.queimacaloria.negocio.Usuario;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -15,7 +18,7 @@ import javafx.scene.control.CheckBox;
 public class EdicaoTreinoController {
 
     @FXML private TextField campoNome;
-    @FXML private TextField campoTipoTreino;
+    @FXML private ChoiceBox<Exercicio.TipoExercicio> campoTipoTreino;
     @FXML private TextField campoDuracao;
     @FXML private TextField campoNivelDificuldade;
     @FXML private Label mensagemErro;
@@ -28,28 +31,30 @@ public class EdicaoTreinoController {
     private TreinoController treinoController;
     private MainController mainController;
 
-    // Define o controlador da tela de treinos.
     public void setTreinoController(TreinoController treinoController) {
         this.treinoController = treinoController;
     }
 
-    // Define o controlador principal.
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
 
-    // Define o treino a ser editado.
     public void setTreino(Treino treino) {
         System.out.println("EdicaoTreinoController.setTreino() chamado. ID do treino: " + treino.getId());
         this.treino = treino;
         preencherCampos();
     }
 
-    // Preenche os campos com os dados do treino.
+    @FXML
+    public void initialize() {
+        // Carrega os valores do enum no ChoiceBox.
+        campoTipoTreino.setItems(FXCollections.observableArrayList(Exercicio.TipoExercicio.values()));
+    }
+
     private void preencherCampos() {
         if (treino != null) {
             campoNome.setText(treino.getNome());
-            campoTipoTreino.setText(treino.getTipoDeTreino());
+            campoTipoTreino.setValue(treino.getTipoDeTreino()); // Define o valor do ChoiceBox
             campoDuracao.setText(String.valueOf(treino.getDuracao()));
             campoNivelDificuldade.setText(String.valueOf(treino.getNivelDeDificuldade()));
 
@@ -59,14 +64,13 @@ public class EdicaoTreinoController {
         }
     }
 
-    // Atualiza os dados do treino.
     @FXML
     public void atualizarTreino() {
         System.out.println("EdicaoTreinoController.atualizarTreino() chamado");
 
         try {
             String nome = campoNome.getText();
-            String tipoTreino = campoTipoTreino.getText();
+            Exercicio.TipoExercicio tipoTreino = campoTipoTreino.getValue();
             int duracao = Integer.parseInt(campoDuracao.getText());
             int nivelDificuldade = Integer.parseInt(campoNivelDificuldade.getText());
 
@@ -92,6 +96,8 @@ public class EdicaoTreinoController {
             }
 
             fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade);
+            treino.setTipoDeTreino(tipoTreino);
+
 
             mensagemErro.setText("Treino atualizado com sucesso!");
 
@@ -113,15 +119,11 @@ public class EdicaoTreinoController {
             e.printStackTrace();
         }
     }
-
-    // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();
     }
-
-    // Exibe um alerta na tela.
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

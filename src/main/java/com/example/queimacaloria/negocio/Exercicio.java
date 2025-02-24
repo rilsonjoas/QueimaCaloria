@@ -42,7 +42,7 @@ public class Exercicio {
         FLEXIBILIDADE,
         EQUILIBRIO,
         AQUATICO,
-        OUTRO
+        RESISTENCIA, OUTRO
     }
 
     // Construtor padrão da classe Exercicio.

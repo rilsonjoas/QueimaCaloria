@@ -203,7 +203,7 @@ public class GeradorPDF {
 
         for (Treino treino : treinos) {
             tabela.addCell(new Paragraph(treino.getNome()));
-            tabela.addCell(new Paragraph(treino.getTipoDeTreino()));
+            tabela.addCell(new Paragraph(String.valueOf(treino.getTipoDeTreino())));
             tabela.addCell(new Paragraph(String.valueOf(treino.getDuracao())));
             tabela.addCell(new Paragraph(String.valueOf(treino.getNivelDeDificuldade())));
         }

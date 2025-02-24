@@ -53,13 +53,14 @@ public class Usuario {
         this.id = UUID.randomUUID();
     }
 
-    // Construtor básico com os principais atributos.
+    // Construtor básico com os principais atributos
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura) {
         this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList());
+        adicionarPesoAoHistorico(peso); // Adiciona o peso inicial ao histórico!
     }
 
 
-    // Construtor completo (incluindo listas).
+    // Construtor completo (incluindo listas)
     public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas) {
         this.id = UUID.randomUUID();
         this.nome.set(nome);
@@ -73,10 +74,9 @@ public class Usuario {
         this.treinos.setAll(treinos);
         this.dietas.setAll(dietas);
         this.pontuacao.set(0);
-        this.dietaAtiva.set(null); // Inicializa como nula pois nenhuma dieta foi selecionada ainda.
+        this.dietaAtiva.set(null);
         calcularEAtualizarIMC();
     }
-
 
 
     // Getters, Setters e Properties gerais
@@ -258,6 +258,10 @@ public class Usuario {
 
     public void setHistoricoPeso(ObservableList<PesoRegistro> historicoPeso) {
         this.historicoPeso.set(historicoPeso);
+    }
+
+    public ObservableList<Exercicio> getExercicios() {
+        return this.exercicios;
     }
 
 }

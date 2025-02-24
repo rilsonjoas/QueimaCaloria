@@ -55,6 +55,7 @@ public class MainController {
     @FXML private Button buttonBeberAgua;
     @FXML private Button buttonZerarAgua;
 
+
     // Adicionando as referências ao gráfico
     @FXML private LineChart<String, Number> graficoHistoricoPeso;
     @FXML private CategoryAxis xAxis;  // Eixo X categórico (para datas)

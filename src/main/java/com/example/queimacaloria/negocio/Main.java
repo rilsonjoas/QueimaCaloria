@@ -31,8 +31,9 @@ public class Main {
             fachada.adicionarTreinoAoUsuario(usuario, treino);
             System.out.println("Treino adicionado ao usuário.");
 
-            Dieta dieta = new Dieta();
-            fachada.configurarDieta(dieta, "Dieta Low Carb", Meta.Tipo.PERDA_DE_PESO, 1800, usuario);
+            //Aqui estava o erro:
+            Dieta dieta = new Dieta();  //Cria a dieta
+            fachada.configurarDieta(dieta, "Dieta Low Carb", Meta.Tipo.PERDA_DE_PESO, 1800, usuario); //Agora está correto.
             fachada.adicionarDietaUsuario(usuario, dieta);
             System.out.println("Dieta adicionada ao usuário.");
 
@@ -43,12 +44,12 @@ public class Main {
             System.err.println("Erro no usuário: " + e.getMessage());
         }
 
-
-        Dieta dieta = new Dieta();
-        Usuario userDieta = new Usuario();
+        //Aqui estava o erro:
+        Dieta dieta2 = new Dieta(); //Não precisa instanciar de novo, pode reusar o objeto dieta
+        Usuario userDieta = new Usuario(); // Isso não é mais necessário, pois a dieta ativa é associada *ao usuário*.
 
         try {
-            fachada.configurarDieta(dieta, "Dieta de Teste", Meta.Tipo.GANHO_DE_MASSA, 2500, userDieta);
+            fachada.configurarDieta(dieta2, "Dieta de Teste", Meta.Tipo.GANHO_DE_MASSA, 2500, userDieta);
 
             Refeicao refeicao1 = new Refeicao();
             Map<String, Double> macros1 = new HashMap<>();

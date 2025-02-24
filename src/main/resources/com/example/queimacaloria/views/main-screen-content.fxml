@@ -9,6 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <VBox spacing="20" style="-fx-background-color: #1a1922; -fx-padding: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <HBox spacing="20" alignment="TOP_LEFT">
@@ -96,6 +99,24 @@
             </HBox>
             <Label fx:id="labelAguaConsumida" text="Água: -- ml" textFill="WHITE" />
             <VBox.margin><Insets top="10" /></VBox.margin>
+        </VBox>
+    </HBox>
+    <HBox spacing="20" alignment="TOP_LEFT">
+        <VBox alignment="TOP_LEFT"  style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15;" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Histórico de Peso" textFill="#d7d7d7">
+                    <font><Font name="Gill Sans MT" size="20.0" /></font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+            </HBox>
+            <LineChart fx:id="graficoHistoricoPeso" title="Histórico de Peso (kg)" style="-fx-background-color: #1a1922;">
+                <xAxis>
+                    <CategoryAxis label="Data" fx:id="xAxis"  />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="yAxis" label="Peso (kg)" side="LEFT" />
+                </yAxis>
+            </LineChart>
         </VBox>
     </HBox>
 </VBox>

@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @ToString
@@ -30,17 +32,15 @@ public class Usuario {
     private ObservableList<Treino> treinos = FXCollections.observableArrayList();
     @Setter
     private ObservableList<Dieta> dietas = FXCollections.observableArrayList();
-    @Setter //Adicionado
+    @Setter
     private ObservableList<Exercicio> exercicios = FXCollections.observableArrayList();
 
     private ObjectProperty<Dieta> dietaAtiva = new SimpleObjectProperty<>();
 
     private IntegerProperty pontuacao = new SimpleIntegerProperty(0);
 
-    // Adicione este método:
-    public ObservableList<Exercicio> getExercicios() {
-        return this.exercicios;
-    }
+    // Adicionando o histórico de peso
+    private ListProperty<PesoRegistro> historicoPeso = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     // Enum para o sexo do usuário.
     public enum Sexo {
@@ -152,6 +152,7 @@ public class Usuario {
     public void setPeso(float peso) {
         this.peso.set(peso);
         calcularEAtualizarIMC();  // Importante: recalcula o IMC sempre que o peso muda.
+        adicionarPesoAoHistorico(peso); // Adiciona o novo peso ao histórico.
     }
 
     public float getAltura() {
@@ -241,6 +242,22 @@ public class Usuario {
     //Getter da lista de treinos.
     public ObservableList<Treino> getTreinos() {
         return this.treinos;
+    }
+    // Métodos para o histórico de peso
+    public void adicionarPesoAoHistorico(float peso) {
+        historicoPeso.get().add(new PesoRegistro(peso, LocalDate.now()));
+    }
+
+    public ObservableList<PesoRegistro> getHistoricoPeso() {
+        return historicoPeso.get();
+    }
+
+    public ListProperty<PesoRegistro> historicoPesoProperty() {
+        return historicoPeso;
+    }
+
+    public void setHistoricoPeso(ObservableList<PesoRegistro> historicoPeso) {
+        this.historicoPeso.set(historicoPeso);
     }
 
 }

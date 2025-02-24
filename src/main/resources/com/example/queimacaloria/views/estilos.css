@@ -1,5 +1,3 @@
-/* estilos.css */
-
 .tabela-escura {
     -fx-background-color: #1a1922;
     -fx-text-fill: white;
@@ -60,4 +58,13 @@
 }
 .combo-box .arrow-button .arrow{
     -fx-background-color: white;
+}
+
+/* Adicione estas linhas para estilizar o gráfico */
+.chart-title {
+    -fx-text-fill: white;
+}
+
+.axis-label {
+    -fx-text-fill: white;
 }

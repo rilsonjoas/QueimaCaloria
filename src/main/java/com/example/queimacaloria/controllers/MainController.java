@@ -1,5 +1,6 @@
 package com.example.queimacaloria.controllers;
 
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Refeicao;
 import com.example.queimacaloria.negocio.Usuario;
@@ -23,8 +24,16 @@ import javafx.collections.ListChangeListener;
 import com.example.queimacaloria.negocio.Exercicio;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Dieta;
+
+//Novos imports:
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import java.time.format.DateTimeFormatter;
+import com.example.queimacaloria.negocio.PesoRegistro;
+import java.util.ArrayList;
 
 public class MainController {
 
@@ -46,7 +55,14 @@ public class MainController {
     @FXML private Label labelAguaConsumida;
     @FXML private Button buttonBeberAgua;
     @FXML private Button buttonZerarAgua;
+
+    // Adicionando as referências ao gráfico
+    @FXML private LineChart<String, Number> graficoHistoricoPeso;
+    @FXML private CategoryAxis xAxis;  // Eixo X categórico (para datas)
+    @FXML private NumberAxis yAxis;    // Eixo Y numérico (para peso)
+
     private static final int INCREMENTO_AGUA_ML = 200;
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Formato da data.
 
     private Parent telaDieta;
     private Parent telaExercicio;
@@ -128,6 +144,22 @@ public class MainController {
                 System.out.println("MainController: Listener de metas disparado!");
                 atualizarDadosTelaPrincipal();
             });
+
+            // Listener para o peso (atualiza o gráfico se o peso mudar)
+            usuarioLogado.pesoProperty().addListener((obs, oldVal, newVal) -> {
+                atualizarGraficoPeso(); // Atualiza o gráfico
+                atualizarDadosTelaPrincipal(); // Mantém outros dados atualizados
+            });
+
+            // Listener para o histórico de peso
+            usuarioLogado.getHistoricoPeso().addListener((ListChangeListener<PesoRegistro>) change -> {
+                atualizarGraficoPeso(); // Atualiza o gráfico se o histórico mudar.
+            });
+
+            atualizarGraficoPeso();
+            atualizarDadosTelaPrincipal();
+
+
         }
         else {
             if (labelNomeUsuario != null) labelNomeUsuario.setText("Nome do Usuário");
@@ -148,6 +180,9 @@ public class MainController {
             }
             if (labelAguaConsumida != null) {
                 labelAguaConsumida.setText("Água: -- ml");
+            }
+            if (graficoHistoricoPeso != null) {
+                graficoHistoricoPeso.getData().clear(); // Limpa o gráfico
             }
         }
 
@@ -184,6 +219,7 @@ public class MainController {
             Fachada.getInstanciaUnica().setMainController(this);
 
             mostrarTelaPrincipal();
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -250,6 +286,12 @@ public class MainController {
             labelAguaConsumida = (Label) telaPrincipalContent.lookup("#labelAguaConsumida");
             buttonBeberAgua = (Button) telaPrincipalContent.lookup("#buttonBeberAgua");
             buttonZerarAgua = (Button) telaPrincipalContent.lookup("#buttonZerarAgua");
+
+            // GRÁFICO (lookup)
+            graficoHistoricoPeso = (LineChart<String, Number>) telaPrincipalContent.lookup("#graficoHistoricoPeso");
+            xAxis = (CategoryAxis) telaPrincipalContent.lookup("#xAxis");
+            yAxis = (NumberAxis) telaPrincipalContent.lookup("#yAxis");
+
 
             if (buttonVerMaisMetas != null) buttonVerMaisMetas.setOnAction(e -> mostrarTelaMeta());
             if (buttonVerMaisExercicios != null)
@@ -417,6 +459,27 @@ public class MainController {
 
     }
 
+    private void atualizarGraficoPeso() {
+        if (usuarioLogado != null && graficoHistoricoPeso != null) {
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Peso");
+
+            // Ordena o histórico por data (importante para o gráfico de linha)
+            List<PesoRegistro> historicoOrdenado = new ArrayList<>(usuarioLogado.getHistoricoPeso());
+            historicoOrdenado.sort((r1, r2) -> r1.getData().compareTo(r2.getData()));
+
+
+            for (PesoRegistro registro : historicoOrdenado) {
+                String dataFormatada = registro.getData().format(dateFormatter);
+                series.getData().add(new XYChart.Data<>(dataFormatada, registro.getPeso()));
+            }
+
+            graficoHistoricoPeso.getData().clear(); // Limpa dados antigos
+            graficoHistoricoPeso.getData().add(series);
+            graficoHistoricoPeso.setLegendVisible(false); // Oculta legenda
+        }
+    }
+
     // Realiza o logout do usuário.
     @FXML
     public void logout() {
@@ -445,4 +508,6 @@ public class MainController {
             }
         }
     }
+
+
 }

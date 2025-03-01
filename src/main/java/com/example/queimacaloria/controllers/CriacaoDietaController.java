@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 public class CriacaoDietaController {
 
     @FXML private TextField campoNome;
-    @FXML private ChoiceBox<Meta.Tipo> campoObjetivo; // Usar Meta.Tipo
+    @FXML private ChoiceBox<Meta.Tipo> campoObjetivo;
     @FXML private TextField campoCalorias;
     @FXML private Label mensagemErro;
 
@@ -41,11 +41,16 @@ public class CriacaoDietaController {
     // Cria uma nova dieta para o usuário logado.
     @FXML
     public void criarDieta() {
-        System.out.println("CriacaoDietaController.criarDieta: Iniciando...");
+        String nome = campoNome.getText();
+        Meta.Tipo objetivo = campoObjetivo.getValue();
+        String caloriasStr = campoCalorias.getText();
+
+        if (!validarFormulario(nome, objetivo, caloriasStr)) {
+            return; // Aborta se a validação falhar
+        }
+
         try {
-            String nome = campoNome.getText();
-            Meta.Tipo objetivo = campoObjetivo.getValue(); // Usar Meta.Tipo
-            int calorias = Integer.parseInt(campoCalorias.getText());
+            int calorias = Integer.parseInt(caloriasStr);
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
@@ -54,7 +59,6 @@ public class CriacaoDietaController {
                 fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado);
 
                 fachada.setDietaAtiva(usuarioLogado, novaDieta);
-
 
                 if (dietaController != null) {
                     dietaController.atualizarTabelaDietasUsuario();
@@ -77,23 +81,65 @@ public class CriacaoDietaController {
                 fecharJanela();
 
             } else {
-                System.out.println("CriacaoDietaController.criarDieta: Usuário logado é nulo.");
                 mensagemErro.setText("Erro: Usuário não logado.");
             }
-        } catch (NumberFormatException | DietaNaoEncontradaException | UsuarioNaoEncontradoException e) {
+        } catch (NumberFormatException e) {
+            mensagemErro.setText("Erro: Calorias devem ser um número inteiro válido.");
+        } catch (DietaNaoEncontradaException | UsuarioNaoEncontradoException e) {
             mensagemErro.setText("Erro: " + e.getMessage());
-            e.printStackTrace();
         } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    //Função auxiliar para validar o formulário.
+    private boolean validarFormulario(String nome, Meta.Tipo objetivo, String caloriasStr) {
+        if (nome == null || nome.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O nome não pode estar vazio.");
+            return false;
+        }
+
+        if (objetivo == null) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O objetivo não pode ser nulo.");
+            return false;
+        }
+
+        if (caloriasStr == null || caloriasStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "As calorias não podem estar vazias.");
+            return false;
+        }
+
+        if (!isNumeric(caloriasStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "As calorias devem ser um número.");
+            return false;
+        }
+
+        return true;
+    }
+
+    //Função auxiliar para verificar se é um número.
+    private boolean isNumeric(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

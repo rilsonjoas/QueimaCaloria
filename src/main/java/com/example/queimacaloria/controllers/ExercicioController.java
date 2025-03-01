@@ -5,7 +5,7 @@ import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.GeradorPDF;
 import com.example.queimacaloria.negocio.InicializadorDados;
-import com.example.queimacaloria.negocio.Usuario; // Importante!
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

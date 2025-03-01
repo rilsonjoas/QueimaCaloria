@@ -50,7 +50,7 @@ public class EdicaoDietaController {
     private void preencherCampos() {
         if (dieta != null) {
             campoNome.setText(dieta.getNome());
-            campoObjetivo.setValue(dieta.getObjetivo()); // Usar o valor correto (Meta.Tipo)
+            campoObjetivo.setValue(dieta.getObjetivo());
             campoCalorias.setText(String.valueOf(dieta.getCaloriasDiarias()));
         }
     }
@@ -58,15 +58,19 @@ public class EdicaoDietaController {
     // Atualiza os dados da dieta.
     @FXML
     public void atualizarDieta() {
-        try {
-            String nome = campoNome.getText();
-            Meta.Tipo objetivo = campoObjetivo.getValue();
-            int calorias = Integer.parseInt(campoCalorias.getText());
+        String nome = campoNome.getText();
+        Meta.Tipo objetivo = campoObjetivo.getValue();
+        String caloriasStr = campoCalorias.getText();
 
+        if (!validarFormulario(nome, objetivo, caloriasStr)) {
+            return; // Aborta se a validação falhar
+        }
+
+        try {
+            int calorias = Integer.parseInt(caloriasStr);
             fachada.configurarDieta(dieta, nome, objetivo, calorias, dieta.getUsuario());
             mensagemErro.setText("Dieta atualizada com sucesso!");
 
-            // Atualizar a tabela na tela principal *após* a edição
             if(dietaController != null){
                 dietaController.atualizarTabelaDietasUsuario();
             }
@@ -80,11 +84,53 @@ public class EdicaoDietaController {
         }
     }
 
+    //Função auxiliar para validar o formulário.
+    private boolean validarFormulario(String nome, Meta.Tipo objetivo, String caloriasStr) {
+        if (nome == null || nome.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O nome não pode estar vazio.");
+            return false;
+        }
+
+        if (objetivo == null) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O objetivo não pode ser nulo.");
+            return false;
+        }
+
+        if (caloriasStr == null || caloriasStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "As calorias não podem estar vazias.");
+            return false;
+        }
+
+        if (!isNumeric(caloriasStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "As calorias devem ser um número.");
+            return false;
+        }
+
+        return true;
+    }
+
+    //Função auxiliar para verificar se é um número.
+    private boolean isNumeric(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     // Fecha a janela atual.
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

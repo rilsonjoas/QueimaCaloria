@@ -2,15 +2,13 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
-import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 public class RegistroController {
 
@@ -23,12 +21,11 @@ public class RegistroController {
     @FXML private TextField campoAltura;
     @FXML private Label mensagemRegistro;
 
-    private Fachada fachada = Fachada.getInstanciaUnica();
-    @FXML private AuthController authController;
+    private final Fachada fachada = Fachada.getInstanciaUnica();
+    @FXML
+    @Setter
+    private AuthController authController;
 
-    public void setAuthController(AuthController authController) {
-        this.authController = authController;
-    }
 
     @FXML
     public void initialize() {
@@ -42,51 +39,105 @@ public class RegistroController {
         String password = campoSenha.getText();
         LocalDate dataNascimento = campoDataNascimento.getValue();
         Usuario.Sexo sexo = campoSexo.getValue();
-        float peso = 0.0f;
-        float altura = 0.0f;
+        String pesoStr = campoPeso.getText();
+        String alturaStr = campoAltura.getText();
 
-        try {
-            peso = Float.parseFloat(campoPeso.getText());
-            altura = Float.parseFloat(campoAltura.getText());
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Dados inválidos", "Peso e altura devem ser números válidos.");
-            return;
+        if (!validarFormulario(nome, email, password, dataNascimento, sexo, pesoStr, alturaStr)) {
+            return; // Aborta se a validação falhar
         }
 
-
         try {
+            float peso = Float.parseFloat(pesoStr);
+            float altura = Float.parseFloat(alturaStr);
+
             Usuario novoUsuario = fachada.cadastrarUsuario(nome, email, password, dataNascimento, sexo, peso, altura);
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
 
-            // Pausa ANTES de mostrar a tela principal e exibir o lembrete.
-            PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
-            delay.setOnFinished(event -> {
-                if (authController != null) {
-                    authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario);
-
-                    // Lembrete de água (depois de mostrar a tela principal).
-                    Alert waterAlert = new Alert(Alert.AlertType.INFORMATION);
-                    waterAlert.setTitle("Lembrete!");
-                    waterAlert.setHeaderText(null);  // Sem cabeçalho para ser mais direto.
-                    waterAlert.setContentText("Lembre-se de beber água para se manter hidratado!");
-
-                    // Pausa para o lembrete da água.
-                    PauseTransition waterDelay = new PauseTransition(Duration.seconds(5));
-                    waterDelay.setOnFinished(e -> waterAlert.close());  // Fecha o alerta após 5 segundos.
-                    waterAlert.show();  // Mostra o alerta.
-                    waterDelay.play(); // Inicia a contagem regressiva.
-
-                } else {
-                    //erro
-                }
-            });
-            delay.play(); // Inicia a primeira pausa.
-
+            if (authController != null) {
+                authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario);
+            } else {
+                // Tratar erro
+                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao mostrar a tela principal", "AuthController não está definido.");
+            }
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao cadastrar usuário", e.getMessage());
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro inesperado", e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    // Método para validar o formulário
+    private boolean validarFormulario(String nome, String email, String password, LocalDate dataNascimento,
+                                      Usuario.Sexo sexo, String pesoStr, String alturaStr) {
+        if (nome == null || nome.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O nome não pode estar vazio.");
+            return false;
+        }
+
+        if (email == null || email.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O e-mail não pode estar vazio.");
+            return false;
+        }
+
+        if (!isValidEmail(email)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O e-mail não é válido.");
+            return false;
+        }
+
+        if (password == null || password.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A senha não pode estar vazia.");
+            return false;
+        }
+
+        if (dataNascimento == null) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A data de nascimento não pode ser nula.");
+            return false;
+        }
+
+        if (sexo == null) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O sexo não pode ser nulo.");
+            return false;
+        }
+
+        if (pesoStr == null || pesoStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O peso não pode estar vazio.");
+            return false;
+        }
+
+        if (!isNumeric(pesoStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O peso deve ser um número.");
+            return false;
+        }
+
+        if (alturaStr == null || alturaStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A altura não pode estar vazia.");
+            return false;
+        }
+
+        if (!isNumeric(alturaStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A altura deve ser um número.");
+            return false;
+        }
+
+        return true;
+    }
+
+    //Função auxiliar para validar se o email é válido
+    private boolean isValidEmail(String email) {
+        String regex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
+        java.util.regex.Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    //Função auxiliar para validar se é um valor numérico
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 
@@ -102,17 +153,6 @@ public class RegistroController {
     public void irParaLogin() {
         if (authController != null) {
             authController.mostrarTelaLogin();
-            // Limpar os campos, se desejar.
-            campoNome.clear();
-            campoSenha.clear();
-            campoAltura.clear();
-            campoEmail.clear();
-            campoPeso.clear();
-            campoSexo.setValue(null);
-            campoDataNascimento.setValue(null);
-            mensagemRegistro.setText(null);
-
-
         } else {
             System.err.println("Erro: AuthController não foi injetado!");
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "AuthController não foi configurado corretamente.");

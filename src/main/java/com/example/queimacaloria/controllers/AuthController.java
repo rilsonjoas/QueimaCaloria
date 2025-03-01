@@ -21,6 +21,8 @@ public class AuthController {
     private Parent telaLogin;
     private Parent telaRegistro;
 
+    private Stage primaryStage; // ADICIONADO
+
     // Inicializa o controlador, carregando as telas de login e registro.
     @FXML
     public void initialize(){
@@ -74,6 +76,7 @@ public class AuthController {
 
     // Exibe a tela principal, definindo o usuário logado.
     public void mostrarTelaPrincipal(Stage primaryStage, Usuario usuario) {
+        this.primaryStage = primaryStage;  //ADICIONADO
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-view.fxml"));
             Parent telaPrincipal = loader.load();
@@ -90,6 +93,87 @@ public class AuthController {
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar a tela principal", e.getMessage());
+        }
+    }
+
+    // Exibe a tela ADM diretamente
+    public void mostrarTelaAdminUsuarios(Stage primaryStage, Usuario usuario) {
+        this.primaryStage = primaryStage;
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/admin-usuarios-view.fxml"));
+            Parent telaAdmin = loader.load();
+
+            AdminUsuariosController adminUsuariosController = loader.getController();
+            adminUsuariosController.setUsuarioLogado(usuario);
+            MainController mainController = null; //Declarar maincontroller
+
+
+            Scene scene = primaryStage.getScene();
+
+            if(scene != null) {
+                Parent root = scene.getRoot();
+                FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-view.fxml"));
+                Parent telaPrincipal = mainLoader.load();
+                mainController = mainLoader.getController();
+                System.out.println("MainController recuperado com sucesso");
+
+            }
+
+            if(mainController != null){
+                adminUsuariosController.setMainController(mainController);
+            } else {
+                System.err.println("MainController is null");
+            }
+
+            adminUsuariosController.setPrimaryStage(primaryStage); //Passando o stage para o controller
+            atualizarDadosTelaAdmin(adminUsuariosController); //Passando os dados da tela principal para a tela adm
+            scene = new Scene(telaAdmin);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("YouFit - Administração de Usuários");
+            primaryStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar a tela de administração", e.getMessage());
+        }
+    }
+
+    public void atualizarDadosTelaAdmin(AdminUsuariosController adminUsuariosController) {
+        if(adminUsuariosController == null) {
+            System.err.println("AdminUsuariosController is null");
+            return;
+        }
+        //Pegando o controlador da tela principal
+        if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+            try {
+                FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-view.fxml"));
+                //Parent telaPrincipal = mainLoader.load();
+                MainController mainController = mainLoader.getController();
+                //Se o usuário a ser atualizado for o administrador, então atualize
+                //Setando como usuário logado o usuário da tela inicial
+                FXMLLoader rootLoader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-view.fxml"));
+                Parent tela = rootLoader.load();
+                MainController controllerTelaPrincipal =  rootLoader.getController();
+
+                if (controllerTelaPrincipal != null) {
+                    Usuario adminLogado = controllerTelaPrincipal.getUsuarioLogado();
+
+                    if (adminLogado != null) {
+                        System.out.println("Dados da tela principal copiados para a tela ADM.");
+                        adminUsuariosController.setUsuarioLogado(adminLogado);
+                        adminUsuariosController.setMainController(controllerTelaPrincipal);
+
+                    }
+                }
+
+                else
+                    System.err.println("MainController is null");
+            }
+            catch (IOException e) {
+                System.err.println("Erro ao carregar a tela de principal");
+                e.printStackTrace();
+            }
         }
     }
 

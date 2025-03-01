@@ -73,8 +73,20 @@ public class PerfilController {
             return;
         }
 
+        String nome = campoNome.getText();
+        String email = campoEmail.getText();
+        String pesoStr = campoPeso.getText();
+        String alturaStr = campoAltura.getText();
+
+        if (!validarFormulario(nome, email, pesoStr, alturaStr)) {
+            return; // Aborta se a validação falhar
+        }
+
         try {
-            fachada.atualizarDadosUsuario(usuarioLogado, usuarioLogado.getNome(), usuarioLogado.getEmail(), null, null, null, usuarioLogado.getPeso(), usuarioLogado.getAltura());
+            float peso = Float.parseFloat(pesoStr);
+            float altura = Float.parseFloat(alturaStr);
+            //Agora chamar o método correto passando todos os parâmetros.
+            fachada.atualizarDadosUsuario(usuarioLogado, nome, email, null, null, null, peso, altura, usuarioLogado.getTipo());
             mensagemPerfil.setText("Perfil atualizado com sucesso!");
 
         } catch (NumberFormatException e) {
@@ -84,6 +96,64 @@ public class PerfilController {
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar perfil", e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    // Validar o formulario
+    private boolean validarFormulario(String nome, String email, String pesoStr, String alturaStr) {
+        if (nome == null || nome.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O nome não pode estar vazio.");
+            return false;
+        }
+
+        if (email == null || email.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O email não pode estar vazio.");
+            return false;
+        }
+
+        if (!isValidEmail(email)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O email não é válido.");
+            return false;
+        }
+
+        if (pesoStr == null || pesoStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O peso não pode estar vazio.");
+            return false;
+        }
+
+        if (!isNumeric(pesoStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O peso deve ser um número.");
+            return false;
+        }
+
+        if (alturaStr == null || alturaStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A altura não pode estar vazia.");
+            return false;
+        }
+
+        if (!isNumeric(alturaStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A altura deve ser um número.");
+            return false;
+        }
+
+        return true;
+    }
+
+    //Validar se o email é válido.
+    private boolean isValidEmail(String email) {
+        String regex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
+        java.util.regex.Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    //Validar se é um valor numérico
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 

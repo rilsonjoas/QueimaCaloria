@@ -25,6 +25,7 @@ public class Usuario {
     private FloatProperty altura = new SimpleFloatProperty();
     private FloatProperty imc = new SimpleFloatProperty();
     private IntegerProperty aguaConsumida = new SimpleIntegerProperty(0);
+    private StringProperty tipo = new SimpleStringProperty(TipoUsuario.USUARIO_COMUM.getDescricao()); //MODIFICADO
 
     @Setter
     private ObservableList<Meta> metas = FXCollections.observableArrayList();
@@ -48,20 +49,41 @@ public class Usuario {
         Feminino,
     }
 
+    //ADICIONADO - Enum para os tipos de Usuário
+    public enum TipoUsuario {
+        USUARIO_COMUM("Usuário Comum"),
+        ADMINISTRADOR("Administrador");
+
+        private final String descricao;
+
+        TipoUsuario(String descricao) {
+            this.descricao = descricao;
+        }
+
+        public String getDescricao() {
+            return descricao;
+        }
+
+        @Override
+        public String toString() {
+            return descricao;
+        }
+    }
+
     // Construtor padrão.
     public Usuario() {
         this.id = UUID.randomUUID();
     }
 
     // Construtor básico com os principais atributos
-    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura) {
-        this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList());
+    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, TipoUsuario tipo) { //MODIFICADO
+        this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList(), tipo); //MODIFICADO
         adicionarPesoAoHistorico(peso); // Adiciona o peso inicial ao histórico!
     }
 
 
     // Construtor completo (incluindo listas)
-    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas) {
+    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas, TipoUsuario tipo) { //MODIFICADO
         this.id = UUID.randomUUID();
         this.nome.set(nome);
         this.email.set(email);
@@ -75,6 +97,7 @@ public class Usuario {
         this.dietas.setAll(dietas);
         this.pontuacao.set(0);
         this.dietaAtiva.set(null);
+        this.tipo.set(tipo.getDescricao()); //MODIFICADO
         calcularEAtualizarIMC();
     }
 
@@ -199,6 +222,18 @@ public class Usuario {
 
     public void setDietaAtiva(Dieta dietaAtiva) {
         this.dietaAtiva.set(dietaAtiva);
+    }
+
+    public String getTipo() { //ADICIONADO
+        return tipo.get();
+    }
+
+    public StringProperty tipoProperty() { //ADICIONADO
+        return tipo;
+    }
+
+    public void setTipo(String tipo) { //ADICIONADO
+        this.tipo.set(tipo);
     }
 
 

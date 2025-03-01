@@ -17,4 +17,6 @@ public interface IRepositorioUsuarios {
     Usuario buscar(UUID id) throws UsuarioNaoEncontradoException;
 
     List<Usuario> getAll();
+
+    List<Usuario> getAll(Usuario.TipoUsuario tipo);
 }

@@ -74,11 +74,18 @@ public class EdicaoMetaController {
 
     @FXML
     public void atualizarMeta() {
+        String descricao = campoDescricao.getText();
+        Meta.Tipo tipo = campoTipo.getValue();
+        String valorAlvoStr = campoValorAlvo.getText();
+        String progressoAtualStr = campoProgressoAtual.getText();
+
+        if (!validarFormulario(descricao, tipo, valorAlvoStr, progressoAtualStr)) {
+            return; // Aborta se a validação falhar
+        }
+
         try {
-            String descricao = campoDescricao.getText();
-            Meta.Tipo tipo = campoTipo.getValue();
-            double valorAlvo = Double.parseDouble(campoValorAlvo.getText());
-            double progressoAtual = Double.parseDouble(campoProgressoAtual.getText());
+            double valorAlvo = Double.parseDouble(valorAlvoStr);
+            double progressoAtual = Double.parseDouble(progressoAtualStr);
 
             // Usa o método *atualizarMeta* da Fachada, passando o ID da meta
             fachada.atualizarMeta(meta.getId(), descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao());
@@ -103,6 +110,52 @@ public class EdicaoMetaController {
             e.printStackTrace();
         }
     }
+
+    //Verifica se o formulário foi validado
+    private boolean validarFormulario(String descricao, Meta.Tipo tipo, String valorAlvoStr, String progressoAtualStr) {
+        if (descricao == null || descricao.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A descrição não pode estar vazia.");
+            return false;
+        }
+
+        if (tipo == null) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O tipo não pode ser nulo.");
+            return false;
+        }
+
+        if (valorAlvoStr == null || valorAlvoStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O valor alvo não pode estar vazio.");
+            return false;
+        }
+
+        if (!isNumeric(valorAlvoStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O valor alvo deve ser um número.");
+            return false;
+        }
+
+        if (progressoAtualStr == null || progressoAtualStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O progresso atual não pode estar vazio.");
+            return false;
+        }
+
+        if (!isNumeric(progressoAtualStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O progresso atual deve ser um número.");
+            return false;
+        }
+
+        return true;
+    }
+
+    //Função auxiliar para ver se é um número
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     @FXML
     public void concluirMeta() {
         try {

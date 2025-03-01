@@ -66,13 +66,16 @@ public class EdicaoTreinoController {
 
     @FXML
     public void atualizarTreino() {
-        System.out.println("EdicaoTreinoController.atualizarTreino() chamado");
+        String nome = campoNome.getText();
+        Exercicio.TipoExercicio tipoTreino = campoTipoTreino.getValue();
+        String duracaoStr = campoDuracao.getText();
+        String nivelDificuldadeStr = campoNivelDificuldade.getText();
 
-        try {
-            String nome = campoNome.getText();
-            Exercicio.TipoExercicio tipoTreino = campoTipoTreino.getValue();
-            int duracao = Integer.parseInt(campoDuracao.getText());
-            int nivelDificuldade = Integer.parseInt(campoNivelDificuldade.getText());
+        if (!validarFormulario(nome, tipoTreino, duracaoStr, nivelDificuldadeStr)) {
+            return; // Aborta se a validação falhar
+        }        try {
+            int duracao = Integer.parseInt(duracaoStr);
+            int nivelDificuldade = Integer.parseInt(nivelDificuldadeStr);
 
             if (checkboxConcluido != null) {
                 System.out.println("  CheckBox existe.  Estado atual: " + treino.isConcluido());
@@ -119,6 +122,52 @@ public class EdicaoTreinoController {
             e.printStackTrace();
         }
     }
+
+    //Função auxiliar para validar o formulário.
+    private boolean validarFormulario(String nome, Exercicio.TipoExercicio tipoTreino, String duracaoStr, String nivelDificuldadeStr) {
+        if (nome == null || nome.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O nome não pode estar vazio.");
+            return false;
+        }
+
+        if (tipoTreino == null) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O tipo de treino não pode ser nulo.");
+            return false;
+        }
+
+        if (duracaoStr == null || duracaoStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A duração não pode estar vazia.");
+            return false;
+        }
+
+        if (!isNumeric(duracaoStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A duração deve ser um número.");
+            return false;
+        }
+
+        if (nivelDificuldadeStr == null || nivelDificuldadeStr.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O nível de dificuldade não pode estar vazio.");
+            return false;
+        }
+
+        if (!isNumeric(nivelDificuldadeStr)) {
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O nível de dificuldade deve ser um número.");
+            return false;
+        }
+
+        return true;
+    }
+
+    //Função auxiliar para verificar se é um número.
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     @FXML
     private void fecharJanela() {
         Stage stage = (Stage) campoNome.getScene().getWindow();

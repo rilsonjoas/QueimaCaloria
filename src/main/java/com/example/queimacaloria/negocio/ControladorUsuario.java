@@ -31,7 +31,7 @@ public class ControladorUsuario {
 
     // Atualiza os dados de um usuário existente.
     public void atualizarDados(UUID usuarioId, String nome, String email, String senha, LocalDate dataNascimento,
-                               Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException
+                               Usuario.Sexo sexo, float peso, float altura, String tipo) throws UsuarioNaoEncontradoException
     {
         Usuario usuario = repositorio.buscar(usuarioId);
         if (usuario == null) {
@@ -44,7 +44,7 @@ public class ControladorUsuario {
         if (email != null && !email.isEmpty()) {
             usuario.setEmail(email);
         }
-        if (senha != null && !senha.isEmpty()) {
+        if (senha != null && senha.isEmpty()) {
             usuario.setSenha(senha);
         }
         if (dataNascimento != null) {
@@ -60,7 +60,12 @@ public class ControladorUsuario {
             usuario.setAltura(altura);
         }
 
+        usuario.setTipo(tipo);
+        System.out.println("Antes de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo());
+
         repositorio.salvar(usuario);
+        System.out.println("Depois de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo());
+
     }
 
     // Busca um usuário pelo ID.
@@ -71,6 +76,11 @@ public class ControladorUsuario {
     // Lista todos os usuários do repositório.
     public List<Usuario> listarUsuarios() {
         return repositorio.getAll();
+    }
+
+    //Lista todos os usuários por tipo
+    public List<Usuario> listarUsuarios(Usuario.TipoUsuario tipo) { //ADICIONADO
+        return repositorio.getAll(tipo);
     }
 
     // Calcula a idade do usuário.

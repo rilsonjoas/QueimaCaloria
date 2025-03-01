@@ -55,6 +55,10 @@ public class MainController {
     @FXML private Button buttonBeberAgua;
     @FXML private Button buttonZerarAgua;
 
+    // Adicionando a label do Administrador e o botão de gerenciar usuários
+    @FXML private Label labelAdmin; //ADICIONADO
+    @FXML private Button buttonGerenciarUsuarios; //ADICIONADO
+    @FXML private Label labelNumeroUsuarios; //ADICIONADO
 
     // Adicionando as referências ao gráfico
     @FXML private LineChart<String, Number> graficoHistoricoPeso;
@@ -70,6 +74,7 @@ public class MainController {
     private Parent telaRefeicao;
     private Parent telaTreino;
     private Parent telaPerfil;
+    private Parent telaAdminUsuarios; //ADICIONADO
 
     private Stage primaryStage;
     private Usuario usuarioLogado;
@@ -152,6 +157,15 @@ public class MainController {
                 ));
             }
 
+            //Admin View
+            boolean isAdmin = usuarioLogado.getTipo().equals(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao()); //ADICIONADO
+            if(labelAdmin != null) labelAdmin.setVisible(isAdmin); //ADICIONADO
+            if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(isAdmin); //ADICIONADO
+            if(labelNumeroUsuarios != null) {
+                labelNumeroUsuarios.setVisible(isAdmin); //ADICIONADO
+                atualizarNumeroUsuarios(); //ADICIONADO
+            }
+
             usuarioLogado.getMetas().addListener((ListChangeListener<Meta>) change -> {
                 System.out.println("MainController: Listener de metas disparado!");
                 atualizarDadosTelaPrincipal();
@@ -207,6 +221,7 @@ public class MainController {
             telaRefeicao = carregarTela("/com/example/queimacaloria/views/refeicao-view.fxml");
             telaTreino = carregarTela("/com/example/queimacaloria/views/treino-view.fxml");
             telaPerfil = carregarTela("/com/example/queimacaloria/views/perfil-view.fxml");
+            telaAdminUsuarios = carregarTela("/com/example/queimacaloria/views/admin-usuarios-view.fxml"); //ADICIONADO
 
             ((DietaController) getController(telaDieta)).setMainController(this);
             ((ExercicioController) getController(telaExercicio)).setMainController(this);
@@ -214,6 +229,7 @@ public class MainController {
             ((RefeicaoController) getController(telaRefeicao)).setMainController(this);
             ((TreinoController) getController(telaTreino)).setMainController(this);
             ((PerfilController) getController(telaPerfil)).setMainController(this);
+            ((AdminUsuariosController) getController(telaAdminUsuarios)).setMainController(this); //ADICIONADO
             Fachada.getInstanciaUnica().setMainController(this);
 
             // Carrega a folha de estilos CSS.
@@ -271,6 +287,13 @@ public class MainController {
         areaConteudo.getChildren().setAll(telaPerfil);
     }
 
+    //Exibe tela ADM
+    @FXML public void mostrarTelaAdminUsuarios() {
+        AdminUsuariosController adminUsuariosController = (AdminUsuariosController) getController(telaAdminUsuarios); //ADICIONADO
+        adminUsuariosController.setUsuarioLogado(usuarioLogado); //ADICIONADO
+        areaConteudo.getChildren().setAll(telaAdminUsuarios); //ADICIONADO
+    }
+
     // Exibe a tela principal (conteúdo da tela principal).
     @FXML
     public void mostrarTelaPrincipal() {
@@ -297,6 +320,11 @@ public class MainController {
             buttonBeberAgua = (Button) telaPrincipalContent.lookup("#buttonBeberAgua");
             buttonZerarAgua = (Button) telaPrincipalContent.lookup("#buttonZerarAgua");
 
+            //ADICIONADO
+            labelAdmin = (Label) telaPrincipalContent.lookup("#labelAdmin");
+            buttonGerenciarUsuarios = (Button) telaPrincipalContent.lookup("#buttonGerenciarUsuarios");
+            labelNumeroUsuarios = (Label) telaPrincipalContent.lookup("#labelNumeroUsuarios");
+
             // GRÁFICO (lookup)
             graficoHistoricoPeso = (LineChart<String, Number>) telaPrincipalContent.lookup("#graficoHistoricoPeso");
             xAxis = (CategoryAxis) telaPrincipalContent.lookup("#xAxis");
@@ -308,6 +336,8 @@ public class MainController {
                 buttonVerMaisExercicios.setOnAction(e -> mostrarTelaExercicio());
             if (buttonVerMaisDietas != null) buttonVerMaisDietas.setOnAction(e -> mostrarTelaDieta());
             if (buttonVerMaisPerfil != null) buttonVerMaisPerfil.setOnAction(e -> mostrarTelaPerfil());
+            //ADICIONADO
+            if (buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setOnAction(e -> mostrarTelaAdminUsuarios()); //ADICIONADO
 
             if (buttonBeberAgua != null) {
                 buttonBeberAgua.setOnAction(e -> {
@@ -346,6 +376,9 @@ public class MainController {
                     barraProgressoMetas.progressProperty().unbind();
                     barraProgressoMetas.setProgress(0.0);
                 }
+                if(labelAdmin != null) labelAdmin.setVisible(false); //ADICIONADO
+                if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(false); //ADICIONADO
+                if(labelNumeroUsuarios != null) labelNumeroUsuarios.setVisible(false); //ADICIONADO
 
                 if(labelPontuacao != null){
                     labelPontuacao.setText("Pontuação: --");
@@ -475,6 +508,15 @@ public class MainController {
             if (telaTreino != null)
                 ((TreinoController) getController(telaTreino)).atualizarTabelaTreinosUsuario();
 
+            //Admin View
+            boolean isAdmin = usuarioLogado.getTipo().equals(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao()); //ADICIONADO
+            if(labelAdmin != null) labelAdmin.setVisible(isAdmin); //ADICIONADO
+            if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(isAdmin); //ADICIONADO
+            if(labelNumeroUsuarios != null) {
+                labelNumeroUsuarios.setVisible(isAdmin); //ADICIONADO
+                atualizarNumeroUsuarios(); //ADICIONADO
+            }
+
             usuarioLogado.pesoProperty().addListener((obs, oldVal, newVal) -> {
                 atualizarGraficoPeso();  // Atualiza o gráfico
                 atualizarDadosTelaPrincipal(); // Mantém outros dados atualizados
@@ -483,6 +525,14 @@ public class MainController {
             usuarioLogado.getHistoricoPeso().addListener((ListChangeListener<PesoRegistro>) change -> {
                 atualizarGraficoPeso(); // Atualiza o gráfico se o histórico mudar.
             });
+        }
+    }
+
+    // Adicionado: Atualiza o número de usuários.
+    private void atualizarNumeroUsuarios() {
+        if (labelNumeroUsuarios != null) {
+            int totalUsuarios = Fachada.getInstanciaUnica().listarUsuarios().size();
+            labelNumeroUsuarios.setText("Total de Usuários: " + totalUsuarios);
         }
     }
 

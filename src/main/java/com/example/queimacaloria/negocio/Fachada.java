@@ -44,7 +44,7 @@ public class Fachada {
 
     // Métodos de Usuário
     public Usuario cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
-                                    Usuario.Sexo sexo, float peso, float altura) {
+                                    Usuario.Sexo sexo, float peso, float altura, String tipo) {
         //Validações
         if (nome == null || nome.isEmpty()) {
             throw new IllegalArgumentException("O nome não pode ser nulo ou vazio.");
@@ -75,17 +75,12 @@ public class Fachada {
             }
         }
 
-        Usuario novoUsuario = new Usuario(nome, email, dataNascimento, sexo, peso, altura);
+        Usuario novoUsuario = new Usuario(nome, email, dataNascimento, sexo, peso, altura, Usuario.TipoUsuario.USUARIO_COMUM);
+        if(nome.equals("Administrador")){
+            novoUsuario.setTipo(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao());
+        }
         controladorUsuario.cadastrarUsuario(novoUsuario);
         return novoUsuario;
-    }
-
-
-    public void atualizarDadosUsuario(Usuario usuario, String nome, String email, String senha,
-                                      LocalDate dataNascimento,
-                                      Usuario.Sexo sexo, float peso, float altura) throws UsuarioNaoEncontradoException
-    {
-        controladorUsuario.atualizarDados(usuario.getId(), nome, email, senha, dataNascimento, sexo, peso, altura);
     }
 
     public Usuario buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException{
@@ -95,6 +90,11 @@ public class Fachada {
     public List<Usuario> listarUsuarios() {
         return controladorUsuario.listarUsuarios();
     }
+
+    public List<Usuario> listarUsuarios(Usuario.TipoUsuario tipo) { //ADICIONADO
+        return controladorUsuario.listarUsuarios(tipo);
+    }
+
     public int calcularIdadeUsuario(Usuario usuario) {
         return controladorUsuario.getIdade(usuario);
     }
@@ -301,17 +301,36 @@ public class Fachada {
         controladorTreino.remover(id);
     }
 
-    // Métodos de Água
-    public int getAguaConsumida(Usuario usuario) {
-        return usuario.getAguaConsumida(); // Poderia ser um método do controlador, se houvesse mais lógica.
+    // Métodos para o Administrador
+
+    public List<Usuario> listarAdministradores() {
+        return controladorUsuario.listarUsuarios(Usuario.TipoUsuario.ADMINISTRADOR);
     }
 
-    public void zerarAgua(Usuario usuario) throws UsuarioNaoEncontradoException{
-        controladorUsuario.zerarAgua(usuario);
+    public List<Usuario> listarUsuariosComuns() {
+        return controladorUsuario.listarUsuarios(Usuario.TipoUsuario.USUARIO_COMUM);
+    }
+
+    //Sobrecarga para incluir o TipoUsuario
+    public void atualizarDadosUsuario(Usuario usuario, String nome, String email, String senha,
+                                      LocalDate dataNascimento,
+                                      Usuario.Sexo sexo, float peso, float altura, String tipo) throws UsuarioNaoEncontradoException
+    {
+        Usuario.TipoUsuario tipouser;
+        if(tipo.equals(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao())){
+            tipouser = Usuario.TipoUsuario.ADMINISTRADOR;
+        } else {
+            tipouser = Usuario.TipoUsuario.USUARIO_COMUM;
+        }
+        System.out.println("Atualizando usuário: " + usuario.getNome() + ", Tipo: " + usuario.getTipo() + " para tipo " + tipouser.getDescricao());
+        controladorUsuario.atualizarDados(usuario.getId(), nome, email, senha, dataNascimento, sexo, peso, altura, tipouser.getDescricao());
     }
 
     public void beberAgua(Usuario usuario, int ml) throws UsuarioNaoEncontradoException {
         controladorUsuario.beberAgua(usuario, ml);
     }
 
+    public void zerarAgua(Usuario usuario) throws UsuarioNaoEncontradoException {
+        controladorUsuario.zerarAgua(usuario);
+    }
 }

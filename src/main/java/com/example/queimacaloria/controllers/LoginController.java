@@ -5,6 +5,7 @@ import com.example.queimacaloria.negocio.Usuario;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -19,11 +20,19 @@ public class LoginController {
     @FXML private PasswordField campoSenha;
     @FXML private Label mensagemLogin;
     @FXML private AuthController authController;
+    @FXML private Button buttonLoginAdmin; //ADICIONADO
 
     private Fachada fachada = Fachada.getInstanciaUnica();
+    private static final String ADMIN_EMAIL = "admin"; //ADICIONADO
+    private static final String ADMIN_SENHA = "admin"; //ADICIONADO
 
     public void setAuthController(AuthController authController) {
         this.authController = authController;
+    }
+
+    @FXML
+    public void initialize(){
+        buttonLoginAdmin.setOnAction(event -> loginAdmin());
     }
 
     @FXML
@@ -76,6 +85,33 @@ public class LoginController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    public void loginAdmin() {
+        String email = campoEmail.getText();
+        String password = campoSenha.getText();
+
+        if (email.equals(ADMIN_EMAIL) && password.equals(ADMIN_SENHA)) {
+            try {
+                Usuario admin = new Usuario();
+                admin.setNome("Administrador");
+                admin.setEmail(ADMIN_EMAIL);
+                admin.setSenha(ADMIN_SENHA);
+                admin.setTipo(String.valueOf(Usuario.TipoUsuario.ADMINISTRADOR));
+
+                mensagemLogin.setText("Login de administrador efetuado com sucesso");
+                authController.mostrarTelaAdminUsuarios(getPrimaryStage(), admin);
+
+            } catch (Exception e) {
+                mensagemLogin.setText("Erro ao fazer login de administrador: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            mensagemLogin.setText("Credenciais de administrador inválidas");
+        }
+    }
+
+
     @FXML
     public void irParaRegistro() {
         if (authController != null) {

@@ -100,7 +100,7 @@ public class LoginController {
                 admin.setTipo(String.valueOf(Usuario.TipoUsuario.ADMINISTRADOR));
 
                 mensagemLogin.setText("Login de administrador efetuado com sucesso");
-                authController.mostrarTelaAdminUsuarios(getPrimaryStage(), admin);
+                authController.mostrarTelaAdmin(getPrimaryStage(), admin); //Novo
 
             } catch (Exception e) {
                 mensagemLogin.setText("Erro ao fazer login de administrador: " + e.getMessage());

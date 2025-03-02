@@ -1,6 +1,7 @@
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
+import com.example.queimacaloria.interfaces.IBaseAdmin;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Refeicao;
 import com.example.queimacaloria.negocio.Usuario;
@@ -34,7 +35,7 @@ import java.time.format.DateTimeFormatter;
 import com.example.queimacaloria.negocio.PesoRegistro;
 import java.util.ArrayList;
 
-public class MainController {
+public class MainController implements IBaseAdmin {
 
     @FXML private StackPane areaConteudo;
     @FXML private Label labelNomeUsuario;

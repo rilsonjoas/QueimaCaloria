@@ -333,4 +333,28 @@ public class Fachada {
     public void zerarAgua(Usuario usuario) throws UsuarioNaoEncontradoException {
         controladorUsuario.zerarAgua(usuario);
     }
+
+
+    // Métodos para retornar as listas predefinidas para o administrador
+    public List<Dieta> getDietasPreDefinidas() {
+        return InicializadorDados.inicializarDietas();
+    }
+
+    public List<Exercicio> getExerciciosPreDefinidos() {
+        return InicializadorDados.inicializarExercicios();
+    }
+
+    public List<Meta> getMetasPreDefinidas() {
+        return InicializadorDados.inicializarMetas();
+    }
+
+    public List<Refeicao> getRefeicoesPreDefinidas() {
+        return InicializadorDados.inicializarRefeicoes();
+    }
+
+    public List<Treino> getTreinosPreDefinidos() {
+        return InicializadorDados.inicializarTreinos();
+    }
+
+
 }

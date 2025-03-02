@@ -1,5 +1,6 @@
 package com.example.queimacaloria.controllers;
 
+import com.example.queimacaloria.interfaces.IBaseAdmin;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
@@ -39,7 +40,7 @@ public class AdminUsuariosController {
     @FXML private Label mensagem;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    @Setter private MainController mainController;
+    @Setter private IBaseAdmin mainController; //Modifiquei Aqui.
     @Setter private Usuario usuarioLogado;
     @Setter private Stage primaryStage;
 
@@ -126,38 +127,4 @@ public class AdminUsuariosController {
         tabelaUsuarios.setItems(FXCollections.observableArrayList(listaDeUsuarios));
     }
 
-    @FXML
-    public void voltarParaTelaPrincipal() {
-        if (mainController != null) {
-            mainController.mostrarTelaPrincipal();
-        }
-    }
-
-    @FXML
-    public void logout() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmação de Logout");
-        alert.setHeaderText("Sair do YouFit");
-        alert.setContentText("Tem certeza que deseja sair?");
-
-        ButtonType buttonTypeSim = new ButtonType("Sim");
-        ButtonType buttonTypeNao = new ButtonType("Não");
-
-        alert.getButtonTypes().setAll(buttonTypeSim, buttonTypeNao);
-
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.isPresent() && result.get() == buttonTypeSim) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/auth-view.fxml"));
-                Parent authView = loader.load();
-                Scene authScene = new Scene(authView);
-                primaryStage.setScene(authScene);
-                primaryStage.setTitle("YouFit - Login/Registro");
-                primaryStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

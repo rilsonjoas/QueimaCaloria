@@ -5,7 +5,6 @@ module com.example.queimacaloria {
     requires kernel;
     requires io;
     requires layout;
-    requires java.sql;
 
     opens com.example.queimacaloria to javafx.graphics, javafx.fxml;
     opens com.example.queimacaloria.controllers to javafx.fxml;

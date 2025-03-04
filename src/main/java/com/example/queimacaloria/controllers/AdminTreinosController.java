@@ -47,30 +47,8 @@ public class AdminTreinosController {
 
         campoTipo.setItems(FXCollections.observableArrayList(Exercicio.TipoExercicio.values()));
 
-        tabelaTreinos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                preencherCamposComTreinoSelecionado(newSelection);
-            } else {
-                limparCampos();
-            }
-        });
-
         carregarTreinosPreDefinidos();
         atualizarTabelaTreinos();
-    }
-
-    private void limparCampos() {
-        campoNome.setText("");
-        campoTipo.setValue(null);
-        campoDuracao.setText("");
-        campoNivelDificuldade.setText("");
-    }
-
-    private void preencherCamposComTreinoSelecionado(Treino treino) {
-        campoNome.setText(treino.getNome());
-        campoTipo.setValue(treino.getTipoDeTreino());
-        campoDuracao.setText(String.valueOf(treino.getDuracao()));
-        campoNivelDificuldade.setText(String.valueOf(treino.getNivelDeDificuldade()));
     }
 
     private void carregarTreinosPreDefinidos() {

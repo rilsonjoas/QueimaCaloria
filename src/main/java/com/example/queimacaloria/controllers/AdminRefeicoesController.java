@@ -44,34 +44,8 @@ public class AdminRefeicoesController {
         colunaDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaCalorias.setCellValueFactory(new PropertyValueFactory<>("calorias"));
 
-        tabelaRefeicoes.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                preencherCamposComRefeicaoSelecionada(newSelection);
-            } else {
-                limparCampos();
-            }
-        });
-
         carregarRefeicoesPreDefinidas();
         atualizarTabelaRefeicoes();
-    }
-
-    private void limparCampos() {
-        campoNome.setText("");
-        campoDescricao.setText("");
-        campoProteinas.setText("");
-        campoCarboidratos.setText("");
-        campoGorduras.setText("");
-    }
-    private void preencherCamposComRefeicaoSelecionada(Refeicao refeicao) {
-        campoNome.setText(refeicao.getNome());
-        campoDescricao.setText(refeicao.getDescricao());
-
-        if (refeicao.getMacronutrientes() != null) {
-            campoProteinas.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Proteínas", 0.0)));
-            campoCarboidratos.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Carboidratos", 0.0)));
-            campoGorduras.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Gorduras", 0.0)));
-        }
     }
 
     private void carregarRefeicoesPreDefinidas(){

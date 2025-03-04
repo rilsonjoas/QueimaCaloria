@@ -48,32 +48,8 @@ public class AdminExerciciosController {
 
         campoTipo.setItems(FXCollections.observableArrayList(Exercicio.TipoExercicio.values()));
 
-        tabelaExercicios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                preencherCamposComExercicioSelecionado(newSelection);
-            } else {
-                limparCampos();
-            }
-        });
-
         carregarExerciciosPreDefinidos();
         atualizarTabelaExercicios();
-    }
-
-    private void limparCampos() {
-        campoNome.setText("");
-        campoDescricao.setText("");
-        campoTipo.setValue(null);
-        campoTempo.setText("");
-        campoCalorias.setText("");
-    }
-
-    private void preencherCamposComExercicioSelecionado(Exercicio exercicio) {
-        campoNome.setText(exercicio.getNome());
-        campoDescricao.setText(exercicio.getDescricao());
-        campoTipo.setValue(exercicio.getTipo());
-        campoTempo.setText(String.valueOf(exercicio.getTempo()));
-        campoCalorias.setText(String.valueOf(exercicio.getCaloriasQueimadas()));
     }
 
     private void carregarExerciciosPreDefinidos() {

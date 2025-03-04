@@ -27,8 +27,6 @@ public class Fachada {
         this.controladorMeta = new ControladorMeta();
         this.controladorRefeicao = new ControladorRefeicao();
         this.controladorTreino = new ControladorTreino();
-
-        carregarDadosPredefinidos();
     }
 
     // Retorna a instância única da Fachada (Singleton).
@@ -267,7 +265,7 @@ public class Fachada {
     // Métodos de Treino
     public void configurarTreino(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade)
             throws TreinoNaoEncontradoException {
-        controladorTreino.inicializar(treino, nome, String.valueOf(Exercicio.TipoExercicio.valueOf(String.valueOf(tipoDeTreino))), duracao, nivelDeDificuldade);
+        controladorTreino.inicializar(treino, nome, Exercicio.TipoExercicio.valueOf(String.valueOf(tipoDeTreino)), duracao, nivelDeDificuldade);
     }
 
     public void adicionarTreinoAoUsuario(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {
@@ -358,47 +356,5 @@ public class Fachada {
         return InicializadorDados.inicializarTreinos();
     }
 
-    public void carregarDadosPredefinidos() {
-        List<Dieta> dietasPreDefinidas = InicializadorDados.inicializarDietas();
-        List<Refeicao> refeicoesPreDefinidas = InicializadorDados.inicializarRefeicoes();
-        List<Exercicio> exerciciosPreDefinidas = InicializadorDados.inicializarExercicios();
-        List<Meta> metasPreDefinidas = InicializadorDados.inicializarMetas();
-        List<Treino> treinosPreDefinidos = InicializadorDados.inicializarTreinos();
-
-        try{
-            for (Dieta dieta : dietasPreDefinidas) {
-                controladorDieta.configurarDieta(dieta, dieta.getNome(), dieta.getObjetivo(), dieta.getCaloriasDiarias(), null);
-            }
-
-            for (Refeicao refeicao : refeicoesPreDefinidas) {
-                Refeicao novaRefeicao = new Refeicao();
-                novaRefeicao.setNome(refeicao.getNome());  // Defina o nome
-                novaRefeicao.setDescricao(refeicao.getDescricao()); // Defina a descrição
-                novaRefeicao.setMacronutrientes(refeicao.getMacronutrientes()); // Defina os macronutrientes
-
-                int calorias = calcularCaloriasRefeicao(novaRefeicao);
-                novaRefeicao.setCalorias(calorias);
-                this.configurarRefeicao(novaRefeicao, novaRefeicao.getNome(), novaRefeicao.getDescricao(), novaRefeicao.getMacronutrientes());
-            }
-
-            for (Exercicio exercicio : exerciciosPreDefinidas) {
-                Exercicio novoExercicio = new Exercicio();
-                this.configurarExercicio(novoExercicio, exercicio.getNome(), exercicio.getDescricao(), exercicio.getTipo(), exercicio.getTempo(), exercicio.getCaloriasQueimadas());
-            }
-
-            for (Meta meta : metasPreDefinidas) {
-                Meta novaMeta = new Meta();
-                this.configurarMeta(novaMeta, meta.getDescricao(), meta.getTipo(), meta.getValorAlvo(), meta.getProgressoAtual(), meta.getDataConclusao());
-            }
-
-            for (Treino treino : treinosPreDefinidos) {
-                Treino novoTreino = new Treino();
-                this.configurarTreino(novoTreino, treino.getNome(), treino.getTipoDeTreino(), treino.getDuracao(), treino.getNivelDeDificuldade());
-            }
-        } catch (Exception e) {
-            System.err.println("Erro ao carregar dados predefinidos: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 
 }

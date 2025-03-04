@@ -40,11 +40,6 @@ public class AdminMainController implements IBaseAdmin {
 
     @FXML
     public void initialize() {
-        // Carrega as telas em um método separado
-        carregarTelas();
-    }
-
-    private void carregarTelas() {
         try {
             telaAdminUsuarios = carregarTela("/com/example/queimacaloria/views/admin-usuarios-view.fxml");
             telaAdminDietas = carregarTela("/com/example/queimacaloria/views/admin-dietas-view.fxml");

@@ -17,16 +17,8 @@ public class ControladorTreino {
     }
 
     // Inicializa um treino, atualizando ou adicionando ao repositório.
-
-    public void inicializar(Treino treino, String nome, String tipoDeTreinoStr, int duracao, int nivelDeDificuldade) throws TreinoNaoEncontradoException {
+    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade) throws TreinoNaoEncontradoException { //<- Mude aqui
         treino.setNome(nome);
-        Exercicio.TipoExercicio tipoDeTreino = null;
-        try{
-            tipoDeTreino = Exercicio.TipoExercicio.valueOf(tipoDeTreinoStr);
-        } catch(IllegalArgumentException e){
-            System.err.println("Valor inválido para tipo de treino:" + tipoDeTreinoStr);
-        }
-
         treino.setTipoDeTreino(tipoDeTreino);
         treino.setDuracao(duracao);
         treino.setNivelDeDificuldade(nivelDeDificuldade);
@@ -37,8 +29,6 @@ public class ControladorTreino {
             repositorio.adicionar(treino);
         }
     }
-
-
 
     // Adiciona um exercício ao treino.
     public void adicionarExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {

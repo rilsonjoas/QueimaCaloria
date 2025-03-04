@@ -1,18 +1,17 @@
 package com.example.queimacaloria.negocio;
 
 import javafx.beans.property.*;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
+@ToString
 public class Meta {
-    private  UUID id;
+    private final UUID id;
     private StringProperty descricao = new SimpleStringProperty();
     private ObjectProperty<Tipo> tipo = new SimpleObjectProperty<>();
     private DoubleProperty valorAlvo = new SimpleDoubleProperty();
@@ -53,6 +52,7 @@ public class Meta {
     // Construtor padrão da classe Meta.
     public Meta() {
         this.id = UUID.randomUUID();
+        this.dataCriacao.set(LocalDate.now());
     }
 
     // Construtor da classe Meta.
@@ -66,14 +66,6 @@ public class Meta {
         this.dataCriacao.set(dataCriacao);
         this.dataConclusao.set(dataConclusao);
     }
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
 
     // Métodos Property
     public StringProperty descricaoProperty() {
@@ -147,6 +139,4 @@ public class Meta {
     public LocalDate getDataConclusao() {
         return dataConclusao.get();
     }
-
-
 }

@@ -15,7 +15,7 @@ import java.util.UUID;
 @ToString
 @Getter
 public class Usuario {
-    private final UUID id;
+    private UUID id;
     private StringProperty nome = new SimpleStringProperty();
     private StringProperty email = new SimpleStringProperty();
     private StringProperty senha = new SimpleStringProperty();
@@ -101,6 +101,12 @@ public class Usuario {
         calcularEAtualizarIMC();
     }
 
+    public UUID getId() {
+        return id;
+    }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     // Getters, Setters e Properties gerais
 

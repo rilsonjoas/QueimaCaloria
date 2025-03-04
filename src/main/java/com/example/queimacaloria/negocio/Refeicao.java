@@ -1,11 +1,9 @@
 package com.example.queimacaloria.negocio;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
+import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
+
+import javafx.beans.property.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,45 +13,68 @@ import java.util.UUID;
 
 @ToString
 @Getter
-@Setter
 public class Refeicao {
 
-    private final UUID id;
-    private String nome;
-    private String descricao;
-    private int calorias;
+    private UUID id;
+    private StringProperty nome;
+    private StringProperty descricao;
+    private IntegerProperty calorias;
     private Map<String, Double> macronutrientes;
 
     // Construtor padrão da classe Refeicao.
     public Refeicao() {
         this.id = UUID.randomUUID();
+        this.nome = new SimpleStringProperty("");
+        this.descricao = new SimpleStringProperty("");
+        this.calorias = new SimpleIntegerProperty(0);
     }
 
     // Construtor da classe Refeicao.
     public Refeicao(String nome, String descricao, int calorias, Map<String, Double> macronutrientes) {
         this.id = UUID.randomUUID();
-        this.nome = nome;
-        this.descricao = descricao;
-        this.calorias = calorias;
+        this.nome = new SimpleStringProperty(nome);
+        this.descricao = new SimpleStringProperty(descricao);
+        this.calorias = new SimpleIntegerProperty(calorias);
         this.macronutrientes = macronutrientes;
     }
 
     // Construtor sem as calorias.
     public Refeicao(String nome, String descricao, Map<String, Double> macronutrientes) {
         this.id = UUID.randomUUID();
-        this.nome = nome;
-        this.descricao = descricao;
+        this.nome =  new SimpleStringProperty(nome);
+        this.descricao = new SimpleStringProperty(descricao);
         this.macronutrientes = macronutrientes;
     }
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
 
     // Métodos Property
     public StringProperty nomeProperty() {
-        return new SimpleStringProperty(nome);
+        return nome;
+    }
+
+    public StringProperty descricaoProperty() {
+        return descricao;
     }
 
     public IntegerProperty caloriasProperty() {
-        return new SimpleIntegerProperty(calorias);
+        return calorias;
     }
+
+    public Map<String, Double> getMacronutrientes() {
+        return macronutrientes;
+    }
+
+    public void setMacronutrientes(Map<String, Double> macronutrientes) {
+        this.macronutrientes = macronutrientes;
+    }
+
 
     // Formata os macronutrientes para exibição.
     public String getMacronutrientesFormatados() {
@@ -76,4 +97,30 @@ public class Refeicao {
     public ObjectProperty<Map<String, Double>> macronutrientesProperty() {
         return new SimpleObjectProperty<>(macronutrientes);
     }
+    public String getNome() {
+        return nome.get();
+    }
+
+    public String getDescricao() {
+        return descricao.get();
+    }
+    public int getCalorias() {
+        return calorias.get();
+    }
+    public void setNome(String nome) {
+        this.nome.set(nome);
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao.set(descricao);
+    }
+
+    public void setCalorias(int calorias) {
+        if (this.calorias == null) {
+            this.calorias = new SimpleIntegerProperty(calorias);
+        } else {
+            this.calorias.set(calorias);
+        }
+    }
+
 }

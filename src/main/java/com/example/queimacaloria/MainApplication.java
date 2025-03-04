@@ -1,6 +1,8 @@
 package com.example.queimacaloria;
 
 import com.example.queimacaloria.controllers.AuthController;
+import com.example.queimacaloria.dados.DatabaseConnector;
+import com.example.queimacaloria.dados.DatabaseInitializer;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
 import javafx.application.Application;
@@ -9,9 +11,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
-
 import javafx.scene.control.Alert;
 
 public class MainApplication extends Application {
@@ -22,11 +25,16 @@ public class MainApplication extends Application {
     public void start(Stage palco) throws IOException {
         this.primaryStage = palco;
 
-        //Garantir que a conta ADMIN exista
-        garantirAdminExistente();
-
-
         try {
+            // Inicializar a conexão com o banco de dados
+            DatabaseConnector.getConnection();
+
+            // Garantir que a conta ADMIN exista
+            garantirAdminExistente();
+
+            // Carregue os dados predefinidos
+            Fachada fachada = Fachada.getInstanciaUnica();
+
             FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/com/example/queimacaloria/views/auth-view.fxml"));
             Parent raiz = loader.load();
 
@@ -37,7 +45,7 @@ public class MainApplication extends Application {
             palco.setScene(cena);
             palco.show();
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
 
             Alert alerta = new Alert(Alert.AlertType.ERROR);
@@ -46,6 +54,13 @@ public class MainApplication extends Application {
             alerta.setContentText("Verifique o console para mais detalhes.  " + e.getMessage());
             alerta.showAndWait();
         }
+    }
+
+    @Override
+    public void stop() {
+        // Fechar a conexão com o banco de dados ao encerrar a aplicação
+        DatabaseConnector.closeConnection();
+        System.out.println("Conexão fechada antes de encerrar");
     }
 
     private void garantirAdminExistente() {

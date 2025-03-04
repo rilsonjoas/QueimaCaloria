@@ -39,8 +39,28 @@ public class AdminDietasController {
 
         campoObjetivo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
 
+        // Adicionar listener para preencher campos ao selecionar uma dieta
+        tabelaDietas.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                preencherCamposComDietaSelecionada(newSelection);
+            } else {
+                limparCampos();
+            }
+        });
+
         carregarDietasPreDefinidas();
         atualizarTabelaDietas();
+    }
+    private void limparCampos() {
+        campoNome.setText("");
+        campoCalorias.setText("");
+        campoObjetivo.setValue(null);
+    }
+
+    private void preencherCamposComDietaSelecionada(Dieta dieta) {
+        campoNome.setText(dieta.getNome());
+        campoObjetivo.setValue(dieta.getObjetivo());
+        campoCalorias.setText(String.valueOf(dieta.getCaloriasDiarias()));
     }
 
     // Carregar os exercícios do InicializadorDados

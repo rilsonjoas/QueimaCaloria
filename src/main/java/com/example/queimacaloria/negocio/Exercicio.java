@@ -19,7 +19,7 @@ import java.util.UUID;
 @ToString
 public class Exercicio {
 
-    private final UUID id;
+    private UUID id;
     @Setter
     private String nome;
     @Setter
@@ -88,5 +88,11 @@ public class Exercicio {
 
     public void setCaloriasQueimadas(double caloriasQueimadas) {
         this.caloriasQueimadas.set(caloriasQueimadas);
+    }
+    public UUID getId() {
+        return id;
+    }
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

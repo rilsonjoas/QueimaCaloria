@@ -42,8 +42,28 @@ public class AdminMetasController {
 
         campoTipo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
 
+        tabelaMetas.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                preencherCamposComMetaSelecionada(newSelection);
+            } else {
+                limparCampos();
+            }
+        });
+
         carregarMetasPreDefinidas();
         atualizarTabelaMetas();
+    }
+
+    private void limparCampos() {
+        campoDescricao.setText("");
+        campoTipo.setValue(null);
+        campoValorAlvo.setText("");
+    }
+
+    private void preencherCamposComMetaSelecionada(Meta meta) {
+        campoDescricao.setText(meta.getDescricao());
+        campoTipo.setValue(meta.getTipo());
+        campoValorAlvo.setText(String.valueOf(meta.getValorAlvo()));
     }
 
     private void carregarMetasPreDefinidas(){

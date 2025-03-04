@@ -17,7 +17,7 @@ import java.util.UUID;
 @Getter
 public class Treino {
 
-    private final UUID id;
+    private  UUID id;
     @Setter private String nome;
     @Setter private Exercicio.TipoExercicio tipoDeTreino;
     @Setter private int duracao;
@@ -50,7 +50,12 @@ public class Treino {
         this.progresso = progresso;
         this.concluido = concluido;
     }
-
+    public UUID getId() {
+        return id;
+    }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
 
     public double calcularCaloriasTotais() {

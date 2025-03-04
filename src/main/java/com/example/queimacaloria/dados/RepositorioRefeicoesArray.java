@@ -4,19 +4,19 @@ import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
 import com.example.queimacaloria.interfaces.IRepositorioRefeicoes;
 import com.example.queimacaloria.negocio.Refeicao;
 
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
-    private Refeicao[] refeicoes;
-    private int proximoIndice;
+
     private static RepositorioRefeicoesArray instanciaUnica;
 
     // Construtor privado para o padrão Singleton.
     private RepositorioRefeicoesArray() {
-        refeicoes = new Refeicao[100];
-        proximoIndice = 0;
     }
 
     // Retorna a instância única do repositório (Singleton).
@@ -27,72 +27,119 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
         return instanciaUnica;
     }
 
-    // Procura o índice de uma refeição pelo ID.
-    private int procurarIndice(UUID id) {
-        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
-        for (int i = 0; i < proximoIndice; i++) {
-            if (id.equals(refeicoes[i].getId())) return i;
-        }
-        return proximoIndice;
-    }
-
-    // Adiciona uma refeição ao repositório.
     @Override
     public void adicionar(Refeicao refeicao) throws RefeicaoNaoEncontradaException {
-        if (refeicao == null) throw new IllegalArgumentException("Refeição não pode ser nula.");
-        if (proximoIndice >= refeicoes.length) {
-            Refeicao[] temp = new Refeicao[refeicoes.length + 100];
-            System.arraycopy(refeicoes, 0, temp, 0, refeicoes.length);
-            refeicoes = temp;
+        String sql = "INSERT INTO refeicoes (id, nome, descricao, calorias) VALUES (?, ?, ?, ?)";
+        try (Connection connection = DatabaseConnector.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, refeicao.getId().toString());
+            preparedStatement.setString(2, refeicao.getNome());
+            preparedStatement.setString(3, refeicao.getDescricao());
+            preparedStatement.setInt(4, refeicao.getCalorias());
+
+            preparedStatement.executeUpdate();
+            System.out.println("Refeição adicionada ao banco de dados.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao adicionar refeição!");
+            e.printStackTrace();
         }
-        refeicoes[proximoIndice++] = refeicao;
     }
 
-    // Salva (atualiza) uma refeição no repositório.
     @Override
     public void salvar(Refeicao refeicao) throws RefeicaoNaoEncontradaException {
-        if (refeicao == null) throw new IllegalArgumentException("Refeição não pode ser nula.");
-        int indice = procurarIndice(refeicao.getId());
-        if (indice < proximoIndice) {
-            refeicoes[indice] = refeicao;
-        } else {
-            throw new RefeicaoNaoEncontradaException("Refeição não encontrada.");
+        String sql = "UPDATE refeicoes SET nome = ?, descricao = ?, calorias = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnector.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, refeicao.getNome());
+            preparedStatement.setString(2, refeicao.getDescricao());
+            preparedStatement.setInt(3, refeicao.getCalorias());
+            preparedStatement.setString(4, refeicao.getId().toString());
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated == 0) {
+                throw new RefeicaoNaoEncontradaException("Refeição com ID " + refeicao.getId() + " não encontrada.");
+            }
+
+            System.out.println("Refeição atualizada no banco de dados.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar refeição!");
+            e.printStackTrace();
         }
     }
 
-    // Remove uma refeição do repositório pelo ID.
     @Override
     public void remover(UUID id) throws RefeicaoNaoEncontradaException {
-        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
-        int indice = procurarIndice(id);
-        if (indice < proximoIndice) {
-            refeicoes[indice] = refeicoes[proximoIndice - 1];
-            refeicoes[--proximoIndice] = null;
-        } else {
-            throw new RefeicaoNaoEncontradaException("Refeição não encontrada.");
+        String sql = "DELETE FROM refeicoes WHERE id = ?";
+        try (Connection connection = DatabaseConnector.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, id.toString());
+
+            int rowsDeleted = preparedStatement.executeUpdate();
+            if (rowsDeleted == 0) {
+                throw new RefeicaoNaoEncontradaException("Refeição com ID " + id + " não encontrada.");
+            }
+
+            System.out.println("Refeição removida do banco de dados.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao remover refeição!");
+            e.printStackTrace();
         }
     }
 
-    // Busca uma refeição pelo ID.
     @Override
     public Refeicao buscar(UUID id) throws RefeicaoNaoEncontradaException {
-        if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
-        int indice = procurarIndice(id);
-        if (indice < proximoIndice) {
-            return refeicoes[indice];
-        } else {
-            throw new RefeicaoNaoEncontradaException("Refeição não encontrada.");
+        String sql = "SELECT * FROM refeicoes WHERE id = ?";
+        try (Connection connection = DatabaseConnector.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, id.toString());
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    Refeicao refeicao = new Refeicao();
+                    refeicao.setId(UUID.fromString(resultSet.getString("id")));
+                    refeicao.setNome(resultSet.getString("nome"));
+                    refeicao.setDescricao(resultSet.getString("descricao"));
+                    refeicao.setCalorias(resultSet.getInt("calorias"));
+                    return refeicao;
+                } else {
+                    throw new RefeicaoNaoEncontradaException("Refeição com ID " + id + " não encontrada.");
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar refeição!");
+            e.printStackTrace();
+            return null;
         }
     }
 
-    // Retorna todas as refeições do repositório.
     @Override
     public List<Refeicao> getAll() {
         List<Refeicao> lista = new ArrayList<>();
-        for (int i = 0; i < proximoIndice; i++) {
-            if (refeicoes[i] != null) {
-                lista.add(refeicoes[i]);
+        String sql = "SELECT * FROM refeicoes";
+        try (Connection connection = DatabaseConnector.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
+            while (resultSet.next()) {
+                Refeicao refeicao = new Refeicao();
+                refeicao.setId(UUID.fromString(resultSet.getString("id")));
+                refeicao.setNome(resultSet.getString("nome"));
+                refeicao.setDescricao(resultSet.getString("descricao"));
+                refeicao.setCalorias(resultSet.getInt("calorias"));
+                lista.add(refeicao);
             }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar refeições!");
+            e.printStackTrace();
         }
         return lista;
     }

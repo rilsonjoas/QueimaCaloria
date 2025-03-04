@@ -1,6 +1,7 @@
 package com.example.queimacaloria.negocio;
 
 import javafx.beans.property.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
@@ -8,7 +9,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Dieta {
 
-    private final UUID id = UUID.randomUUID();
+    private UUID id = UUID.randomUUID();
     private StringProperty nome = new SimpleStringProperty("");
     private ObjectProperty<Meta.Tipo> objetivo = new SimpleObjectProperty<>();
     private IntegerProperty caloriasDiarias = new SimpleIntegerProperty(0);
@@ -21,9 +22,15 @@ public class Dieta {
         this.caloriasDiarias.set(caloriasDiarias);
         this.usuario.set(usuario);
     }
+    public UUID getId() {
+        return id;
+    }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     // Getters:
-    public UUID getId() { return id; }
+    //public UUID getId() { return id; } <- Alterei
     public String getNome() { return nome.get(); }
     public Meta.Tipo getObjetivo() { return objetivo.get(); } // Retorna Meta.Tipo
     public int getCaloriasDiarias() { return caloriasDiarias.get(); }

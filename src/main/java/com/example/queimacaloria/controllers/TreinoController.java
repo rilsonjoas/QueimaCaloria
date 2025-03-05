@@ -2,12 +2,7 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
-import com.example.queimacaloria.negocio.Exercicio;
-import com.example.queimacaloria.negocio.Fachada;
-import com.example.queimacaloria.negocio.GeradorPDF;
-import com.example.queimacaloria.negocio.InicializadorDados;
-import com.example.queimacaloria.negocio.Treino;
-import com.example.queimacaloria.negocio.Usuario;
+import com.example.queimacaloria.negocio.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -24,7 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
+import java.util.stream.Collectors; // Importante para o filtro!
 
 public class TreinoController {
 
@@ -220,15 +215,28 @@ public class TreinoController {
 
     public void atualizarTabelaTreinosUsuario() {
         try {
-            List<Treino> listaTreinos = fachada.listarTreinos();
-            tabelaTreinosUsuario.setItems(FXCollections.observableArrayList(listaTreinos));
-            tabelaTreinosUsuario.refresh();
 
-            if (!tabelaTreinosUsuario.getItems().isEmpty()) {
-                tabelaTreinosUsuario.getSelectionModel().select(0);
-                exibirDetalhesTreino(tabelaTreinosUsuario.getItems().get(0));
-            } else {
-                exibirDetalhesTreino(null);
+            if(mainController != null && mainController.getUsuarioLogado() != null){
+                Usuario usuarioLogado = mainController.getUsuarioLogado();
+                List<Treino> listaTreinos = fachada.listarTreinos();
+
+                //FILTRO: Mostrar apenas os treinos do usuário logado
+                listaTreinos = listaTreinos.stream().filter(treino -> treino.getUsuario() != null && treino.getUsuario().getId.equals(usuarioLogado.getId()))
+                        .collect(Collectors.toList());
+                tabelaTreinosUsuario.setItems(FXCollections.observableArrayList(listaTreinos));
+                tabelaTreinosUsuario.refresh();
+
+                if (!tabelaTreinosUsuario.getItems().isEmpty()) {
+                    tabelaTreinosUsuario.getSelectionModel().select(0);
+                    exibirDetalhesTreino(tabelaTreinosUsuario.getItems().get(0));
+                } else {
+                    exibirDetalhesTreino(null);
+                }
+            }
+            else {
+                // Trata caso não haja usuário logado (opcional).
+                tabelaTreinosUsuario.setItems(FXCollections.observableArrayList());
+                System.err.println("TreinoController: Nenhum usuário logado ao atualizar a tabela.");
             }
 
         }

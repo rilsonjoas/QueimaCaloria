@@ -3,7 +3,6 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
-import com.example.queimacaloria.negocio.InicializadorDados;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,7 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.example.queimacaloria.interfaces.IBaseAdmin;  // Importe a interface
+import com.example.queimacaloria.interfaces.IBaseAdmin;
 import lombok.Setter;
 
 public class AdminExerciciosController {
@@ -35,28 +34,54 @@ public class AdminExerciciosController {
     private ObservableList<Exercicio> listaExerciciosPreDefinidos = FXCollections.observableArrayList();
 
 
-    public void setMainController(AdminMainController mainController) {
-        this.mainController = mainController;
-    }
-
     @FXML
     public void initialize() {
+        System.out.println("AdminExerciciosController.initialize() chamado"); // LOG
+
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colunaTempo.setCellValueFactory(new PropertyValueFactory<>("tempo"));
-        colunaCalorias.setCellValueFactory(new PropertyValueFactory<>("caloriasQueimadas"));
+        colunaCalorias.setCellValueFactory(cellData -> cellData.getValue().caloriasQueimadasProperty().asObject());
 
         campoTipo.setItems(FXCollections.observableArrayList(Exercicio.TipoExercicio.values()));
 
         carregarExerciciosPreDefinidos();
         atualizarTabelaExercicios();
+
+        // Listener para mudanças na lista
+        tabelaExercicios.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Exercicio> c) -> {
+            System.out.println("AdminExerciciosController: Mudança na lista da tabela detectada!");
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    System.out.println("  Itens adicionados: " + c.getAddedSubList());
+                }
+                if (c.wasRemoved()) {
+                    System.out.println("  Itens removidos: " + c.getRemoved());
+                }
+            }
+        });
+
+        // Listener para seleção de itens e preenchimento dos campos
+        tabelaExercicios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                System.out.println("AdminExerciciosController: Item selecionado: " + newSelection);
+                preencherCampos(newSelection); // Chama o método para preencher
+            }
+        });
+        //Verifica se tabelaExercicios é nula.
+        if (tabelaExercicios == null) {
+            System.err.println("Erro: tabelaExercicios é nula em AdminExerciciosController.initialize()");
+        }
     }
 
     private void carregarExerciciosPreDefinidos() {
+        System.out.println("AdminExerciciosController.carregarExerciciosPreDefinidos() chamado"); // LOG
         List<Exercicio> exercicios = fachada.getExerciciosPreDefinidos();
+        System.out.println("AdminExerciciosController.carregarExerciciosPreDefinidos(): Exercicios pré-definidos carregados: " + exercicios); // LOG
         listaExerciciosPreDefinidos.addAll(exercicios);
-        tabelaExercicios.setItems(FXCollections.observableArrayList(listaExerciciosPreDefinidos));
+        System.out.println("AdminExerciciosController.carregarExerciciosPreDefinidos() finalizado"); // LOG
     }
+
 
     @FXML
     public void criarExercicio() {
@@ -121,7 +146,23 @@ public class AdminExerciciosController {
     }
 
     private void atualizarTabelaExercicios() {
+        System.out.println("AdminExerciciosController.atualizarTabelaExercicios() chamado"); // LOG
         List<Exercicio> listaDeExercicios = fachada.listarExercicios();
+        System.out.println("AdminExerciciosController.atualizarTabelaExercicios(): Todos os exercícios: " + listaDeExercicios); // LOG
         tabelaExercicios.setItems(FXCollections.observableArrayList(listaDeExercicios));
+        //Verifica se a lista está vazia:
+        if(listaDeExercicios.isEmpty()){
+            System.out.println("AdminExerciciosController: A lista de exercícios está vazia.");
+        }
     }
+
+    private void preencherCampos(Exercicio exercicio){
+        campoNome.setText(exercicio.getNome());
+        campoDescricao.setText(exercicio.getDescricao());
+        campoTipo.setValue(exercicio.getTipo());
+        campoTempo.setText(String.valueOf(exercicio.getTempo()));
+        campoCalorias.setText(String.valueOf(exercicio.getCaloriasQueimadas()));
+
+    }
+
 }

@@ -15,9 +15,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors; // Importante para o filtro!
 
 public class DietaController {
 
@@ -197,14 +197,21 @@ public class DietaController {
 
     public void atualizarTabelaDietasUsuario() {
         try {
-            List<Dieta> listaDietas = fachada.listarDietas();
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
+                List<Dieta> listaDietas = fachada.listarDietas();
+
+                // FILTRO: Mostra apenas as dietas do usuário logado.
                 listaDietas = listaDietas.stream()
                         .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(usuarioLogado.getId()))
-                        .toList();
+                        .collect(Collectors.toList());
+
+                tabelaDietasUsuario.setItems(FXCollections.observableArrayList(listaDietas));
+            } else {
+                // Lida com o caso em que não há usuário logado (opcional).
+                tabelaDietasUsuario.setItems(FXCollections.observableArrayList()); // Limpa a tabela.
+                System.err.println("DietaController: Nenhum usuário logado ao atualizar a tabela.");
             }
-            tabelaDietasUsuario.setItems(FXCollections.observableArrayList(listaDietas));
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar dietas", e.getMessage());
         }
@@ -253,6 +260,7 @@ public class DietaController {
         }
     }
 
+
     public void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -260,5 +268,4 @@ public class DietaController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
 }

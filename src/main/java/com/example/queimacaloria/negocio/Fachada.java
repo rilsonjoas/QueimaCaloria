@@ -27,6 +27,8 @@ public class Fachada {
         this.controladorMeta = new ControladorMeta();
         this.controladorRefeicao = new ControladorRefeicao();
         this.controladorTreino = new ControladorTreino();
+
+        inicializarDadosPredefinidos();
     }
 
     // Retorna a instância única da Fachada (Singleton).
@@ -357,4 +359,30 @@ public class Fachada {
     }
 
 
+    private void inicializarDadosPredefinidos() {
+        try {
+            for(Dieta dieta : InicializadorDados.inicializarDietas()){
+                controladorDieta.configurarDieta(dieta, dieta.getNome(), dieta.getObjetivo(), dieta.getCaloriasDiarias(), null);
+            }
+            for(Exercicio exercicio : InicializadorDados.inicializarExercicios()){
+                controladorExercicio.inicializar(exercicio, exercicio.getNome(), exercicio.getDescricao(),exercicio.getTipo(),exercicio.getTempo(), exercicio.getCaloriasQueimadas());
+            }
+            for (Meta meta : InicializadorDados.inicializarMetas()){
+                controladorMeta.inicializar(meta, meta.getDescricao(), meta.getTipo(), meta.getValorAlvo(), meta.getProgressoAtual(), meta.getDataConclusao());
+            }
+
+            for(Refeicao refeicao: InicializadorDados.inicializarRefeicoes()){
+                controladorRefeicao.inicializar(refeicao, refeicao.getNome(), refeicao.getDescricao(), refeicao.getMacronutrientes());
+            }
+            for(Treino treino : InicializadorDados.inicializarTreinos()){
+                controladorTreino.inicializar(treino, treino.getNome(), treino.getTipoDeTreino(), treino.getDuracao(), treino.getNivelDeDificuldade());
+            }
+
+
+
+        } catch (Exception e){
+            System.err.println("Erro ao inicializar os dados na Fachada: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

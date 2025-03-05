@@ -13,13 +13,11 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
     private int proximoIndice;
     private static RepositorioRefeicoesArray instanciaUnica;
 
-    // Construtor privado para o padrão Singleton.
     private RepositorioRefeicoesArray() {
         refeicoes = new Refeicao[100];
         proximoIndice = 0;
     }
 
-    // Retorna a instância única do repositório (Singleton).
     public static RepositorioRefeicoesArray getInstanciaUnica() {
         if (instanciaUnica == null) {
             instanciaUnica = new RepositorioRefeicoesArray();
@@ -27,7 +25,6 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
         return instanciaUnica;
     }
 
-    // Procura o índice de uma refeição pelo ID.
     private int procurarIndice(UUID id) {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         for (int i = 0; i < proximoIndice; i++) {
@@ -36,7 +33,6 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
         return proximoIndice;
     }
 
-    // Adiciona uma refeição ao repositório.
     @Override
     public void adicionar(Refeicao refeicao) throws RefeicaoNaoEncontradaException {
         if (refeicao == null) throw new IllegalArgumentException("Refeição não pode ser nula.");
@@ -48,7 +44,6 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
         refeicoes[proximoIndice++] = refeicao;
     }
 
-    // Salva (atualiza) uma refeição no repositório.
     @Override
     public void salvar(Refeicao refeicao) throws RefeicaoNaoEncontradaException {
         if (refeicao == null) throw new IllegalArgumentException("Refeição não pode ser nula.");
@@ -59,8 +54,6 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
             throw new RefeicaoNaoEncontradaException("Refeição não encontrada.");
         }
     }
-
-    // Remove uma refeição do repositório pelo ID.
     @Override
     public void remover(UUID id) throws RefeicaoNaoEncontradaException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -73,7 +66,6 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
         }
     }
 
-    // Busca uma refeição pelo ID.
     @Override
     public Refeicao buscar(UUID id) throws RefeicaoNaoEncontradaException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
@@ -85,15 +77,16 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
         }
     }
 
-    // Retorna todas as refeições do repositório.
     @Override
     public List<Refeicao> getAll() {
+        System.out.println("RepositorioRefeicoesArray.getAll() chamado"); // LOG
         List<Refeicao> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {
             if (refeicoes[i] != null) {
                 lista.add(refeicoes[i]);
             }
         }
+        System.out.println("RepositorioRefeicoesArray.getAll(): Retornando lista: " + lista); // LOG
         return lista;
     }
 }

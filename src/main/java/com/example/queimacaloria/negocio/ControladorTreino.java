@@ -11,13 +11,12 @@ public class ControladorTreino {
 
     private RepositorioTreinosArray repositorio;
 
-    // Construtor, inicializa o repositório.
     public ControladorTreino() {
-        this.repositorio = RepositorioTreinosArray.getInstanciaUnica();
+        this.repositorio = RepositorioTreinosArray.getInstanciaUnica(); // Singleton!
     }
 
-    // Inicializa um treino, atualizando ou adicionando ao repositório.
-    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade) throws TreinoNaoEncontradoException { //<- Mude aqui
+
+    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade) throws TreinoNaoEncontradoException {
         treino.setNome(nome);
         treino.setTipoDeTreino(tipoDeTreino);
         treino.setDuracao(duracao);
@@ -30,7 +29,7 @@ public class ControladorTreino {
         }
     }
 
-    // Adiciona um exercício ao treino.
+
     public void adicionarExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         if (exercicio != null && !treino.getExercicios().contains(exercicio)) {
             treino.getExercicios().add(exercicio);
@@ -39,7 +38,7 @@ public class ControladorTreino {
         }
     }
 
-    // Remove um exercício do treino.
+
     public void removerExercicio(Treino treino, Exercicio exercicio) throws TreinoNaoEncontradoException, ExercicioNaoEncontradoException {
         if (exercicio != null && treino.getExercicios().contains(exercicio)) {
             treino.getExercicios().remove(exercicio);
@@ -48,7 +47,6 @@ public class ControladorTreino {
         }
     }
 
-    // Atualiza o progresso do treino.
     public void atualizarProgresso(Treino treino) throws TreinoNaoEncontradoException {
         if (treino.getExercicios().isEmpty()) {
             treino.setProgresso(0.0);
@@ -64,12 +62,15 @@ public class ControladorTreino {
         repositorio.salvar(treino);
     }
 
-    // Lista todos os treinos do repositório.
     public List<Treino> listarTreinos() {
-        return repositorio.getAll();
+        if (repositorio == null) {
+            System.err.println("ERRO CRÍTICO: Repositório nulo em ControladorTreino.listarTreinos()!");
+        }
+        List<Treino> treinos = repositorio.getAll();
+        System.out.println("ControladorTreino.listarTreinos(): Treinos retornados: " + treinos); // LOG
+        return treinos;
     }
 
-    // Remove um treino pelo ID.
     public void remover(UUID id) throws TreinoNaoEncontradoException {
         repositorio.remover(id);
     }

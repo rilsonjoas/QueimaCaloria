@@ -2,7 +2,6 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
 import com.example.queimacaloria.negocio.Fachada;
-import com.example.queimacaloria.negocio.InicializadorDados;
 import com.example.queimacaloria.negocio.Refeicao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,7 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.example.queimacaloria.interfaces.IBaseAdmin;  // Importe a interface
+import com.example.queimacaloria.interfaces.IBaseAdmin;
 import lombok.Setter;
 
 public class AdminRefeicoesController {
@@ -34,25 +33,49 @@ public class AdminRefeicoesController {
     @Setter private IBaseAdmin mainController;
     private ObservableList<Refeicao> listaRefeicoesPreDefinidas = FXCollections.observableArrayList();
 
-    public void setMainController(AdminMainController mainController) {
-        this.mainController = mainController;
-    }
 
     @FXML
     public void initialize() {
+        System.out.println("AdminRefeicoesController.initialize() chamado");
+
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaCalorias.setCellValueFactory(new PropertyValueFactory<>("calorias"));
 
         carregarRefeicoesPreDefinidas();
         atualizarTabelaRefeicoes();
+
+        // Listener para a ObservableList da tabela
+        tabelaRefeicoes.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Refeicao> c) -> {
+            System.out.println("AdminRefeicoesController: Mudança na lista da tabela detectada!");
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    System.out.println("  Itens adicionados: " + c.getAddedSubList());
+                }
+                if (c.wasRemoved()) {
+                    System.out.println("  Itens removidos: " + c.getRemoved());
+                }
+            }
+        });
+
+        // Listener para seleção e preenchimento
+        tabelaRefeicoes.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                System.out.println("AdminRefeicoesController: Item selecionado: " + newSelection);
+                preencherCampos(newSelection);
+            }
+        });
+        //Verifica se tabelaRefeicoes é nula.
+        if (tabelaRefeicoes == null) {
+            System.err.println("Erro: tabelaRefeicoes é nula em AdminRefeicoesController.initialize()");
+        }
     }
 
     private void carregarRefeicoesPreDefinidas(){
-        List<Refeicao> refeicoes = InicializadorDados.inicializarRefeicoes();
+        System.out.println("AdminRefeicoesController.carregarRefeicoesPreDefinidas() chamado");
+        List<Refeicao> refeicoes = fachada.getRefeicoesPreDefinidas();
+        System.out.println("AdminRefeicoesController.carregarRefeicoesPreDefinidas: Refeições pré-definidas: " + refeicoes);
         listaRefeicoesPreDefinidas.addAll(refeicoes);
-        tabelaRefeicoes.setItems(listaRefeicoesPreDefinidas);
-
     }
 
     @FXML
@@ -122,7 +145,30 @@ public class AdminRefeicoesController {
     }
 
     private void atualizarTabelaRefeicoes() {
+        System.out.println("AdminRefeicoesController.atualizarTabelaRefeicoes() chamado"); // LOG
         List<Refeicao> listaDeRefeicoes = fachada.listarRefeicoes();
+        System.out.println("AdminRefeicoesController.atualizarTabelaRefeicoes(): Todas as refeições: " + listaDeRefeicoes); // LOG
         tabelaRefeicoes.setItems(FXCollections.observableArrayList(listaDeRefeicoes));
+        //Verifica se a lista está vazia:
+        if(listaDeRefeicoes.isEmpty()){
+            System.out.println("AdminRefeicoesController: A lista de refeições está vazia.");
+        }
+    }
+
+    private void preencherCampos(Refeicao refeicao) {
+        campoNome.setText(refeicao.getNome());
+        campoDescricao.setText(refeicao.getDescricao());
+
+        // Preenche os campos de macronutrientes, lidando com possíveis nulos
+        if (refeicao.getMacronutrientes() != null) {
+            campoProteinas.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Proteínas", 0.0)));
+            campoCarboidratos.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Carboidratos", 0.0)));
+            campoGorduras.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Gorduras", 0.0)));
+        } else {
+            // Se macronutrientes for nulo, limpa os campos
+            campoProteinas.clear();
+            campoCarboidratos.clear();
+            campoGorduras.clear();
+        }
     }
 }

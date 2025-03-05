@@ -89,10 +89,10 @@ public class AuthController {
     public void mostrarTelaAdmin(Stage primaryStage, Usuario usuario) {
         this.primaryStage = primaryStage;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/admin-main-view.fxml")); //ADMIN
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/admin-main-view.fxml"));
             Parent telaAdmin = loader.load();
 
-            AdminMainController adminMainController = loader.getController(); //ADMIN
+            AdminMainController adminMainController = loader.getController();
             adminMainController.setPrimaryStage(primaryStage);
             adminMainController.setUsuarioLogado(usuario);
 

@@ -3,7 +3,6 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
 import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
-import com.example.queimacaloria.negocio.InicializadorDados;
 import com.example.queimacaloria.negocio.Treino;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,7 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.example.queimacaloria.interfaces.IBaseAdmin;  // Importe a interface
+import com.example.queimacaloria.interfaces.IBaseAdmin;
 import lombok.Setter;
 
 public class AdminTreinosController {
@@ -34,12 +33,11 @@ public class AdminTreinosController {
     @Setter private IBaseAdmin mainController;
     private ObservableList<Treino> listaTreinosPreDefinidos = FXCollections.observableArrayList();
 
-    public void setMainController(AdminMainController mainController) {
-        this.mainController = mainController;
-    }
 
     @FXML
     public void initialize() {
+        System.out.println("AdminTreinosController.initialize() chamado");
+
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipo.setCellValueFactory(new PropertyValueFactory<>("tipoDeTreino"));
         colunaDuracao.setCellValueFactory(new PropertyValueFactory<>("duracao"));
@@ -49,12 +47,39 @@ public class AdminTreinosController {
 
         carregarTreinosPreDefinidos();
         atualizarTabelaTreinos();
+
+        // Listener para a ObservableList
+        tabelaTreinos.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Treino> c) -> {
+            System.out.println("AdminTreinosController: Mudança na lista da tabela detectada!");
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    System.out.println("  Itens adicionados: " + c.getAddedSubList());
+                }
+                if (c.wasRemoved()) {
+                    System.out.println("  Itens removidos: " + c.getRemoved());
+                }
+            }
+        });
+
+        // Listener de seleção e preenchimento
+        tabelaTreinos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                System.out.println("AdminTreinosController: Item selecionado: " + newSelection);
+                preencherCampos(newSelection);
+            }
+        });
+        //Verifica se tabelaTreinos é nula.
+        if (tabelaTreinos == null) {
+            System.err.println("Erro: tabelaTreinos é nula em AdminTreinosController.initialize()");
+        }
     }
 
     private void carregarTreinosPreDefinidos() {
+        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos() chamado"); // LOG
         List<Treino> treinos = fachada.getTreinosPreDefinidos();
+        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos(): Treinos pré-definidos carregados: " + treinos); // LOG
         listaTreinosPreDefinidos.addAll(treinos);
-        tabelaTreinos.setItems(FXCollections.observableArrayList(listaTreinosPreDefinidos));
+        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos() finalizado");
     }
 
     @FXML
@@ -118,7 +143,20 @@ public class AdminTreinosController {
     }
 
     private void atualizarTabelaTreinos() {
+        System.out.println("AdminTreinosController.atualizarTabelaTreinos() chamado");  // LOG
         List<Treino> listaDeTreinos = fachada.listarTreinos();
+        System.out.println("AdminTreinosController.atualizarTabelaTreinos(): Todos os treinos: " + listaDeTreinos); // LOG
         tabelaTreinos.setItems(FXCollections.observableArrayList(listaDeTreinos));
+        //Verifica se a lista está vazia:
+        if(listaDeTreinos.isEmpty()){
+            System.out.println("AdminTreinosController: A lista de treinos está vazia.");
+        }
+    }
+
+    private void preencherCampos(Treino treino){
+        campoNome.setText(treino.getNome());
+        campoTipo.setValue(treino.getTipoDeTreino());
+        campoDuracao.setText(String.valueOf(treino.getDuracao()));
+        campoNivelDificuldade.setText(String.valueOf(treino.getNivelDeDificuldade()));
     }
 }

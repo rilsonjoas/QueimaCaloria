@@ -1,4 +1,3 @@
-
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioDietasArray;
@@ -32,12 +31,17 @@ public class ControladorDieta {
 
     // Lista todas as dietas do repositório.
     public List<Dieta> listarDietas() {
-        return repositorio.getAll();
+        if (repositorio == null) {
+            System.err.println("ERRO CRÍTICO: Repositório nulo em ControladorDieta.listarDietas()!");
+        }
+
+        List<Dieta> dietas = repositorio.getAll();
+        System.out.println("ControladorDieta.listarDietas(): Dietas retornadas: " + dietas);
+        return dietas;
     }
 
     // Remove uma dieta do repositório (usando o ID).
     public void removerDieta(UUID id) throws DietaNaoEncontradaException{
         repositorio.remover(id);
     }
-
 }

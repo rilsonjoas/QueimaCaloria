@@ -11,12 +11,10 @@ public class ControladorMeta {
 
     private RepositorioMetasArray repositorio;
 
-    // Construtor, inicializa o repositório.
     public ControladorMeta() {
-        this.repositorio = RepositorioMetasArray.getInstanciaUnica();
+        this.repositorio = RepositorioMetasArray.getInstanciaUnica(); // Singleton!
     }
 
-    // Inicializa uma meta, atualizando ou adicionando ao repositório.
     public void inicializar(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
                             LocalDate dataConclusao) throws MetaNaoEncontradaException {
 
@@ -39,12 +37,10 @@ public class ControladorMeta {
         }
     }
 
-    // Verifica se a meta foi concluída.
     public boolean isConcluida(Meta meta) {
         return meta.getDataConclusao() != null;
     }
 
-    // Calcula o progresso da meta (em porcentagem).
     public double getProgresso(Meta meta) {
         if (meta.getValorAlvo() == 0) {
             return 0;
@@ -55,33 +51,35 @@ public class ControladorMeta {
     public void atualizarMeta(UUID metaId, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual, LocalDate dataConclusao)
             throws MetaNaoEncontradaException {
 
-        Meta meta = repositorio.buscar(metaId);  // Busca a meta EXISTENTE
+        Meta meta = repositorio.buscar(metaId);
         if (meta == null) {
             throw new MetaNaoEncontradaException("Meta com ID " + metaId + " não encontrada.");
         }
 
-        // Atualiza os campos da meta *existente*
         meta.setDescricao(descricao);
         meta.setTipo(tipo);
         meta.setValorAlvo(valorAlvo);
         meta.setProgressoAtual(progressoAtual);
-        meta.setDataConclusao(dataConclusao); // Pode ser null, e está OK
+        meta.setDataConclusao(dataConclusao);
 
-        repositorio.salvar(meta); // Salva as mudanças (usa o método de *atualização* do repositório)
+        repositorio.salvar(meta);
     }
 
-    // Conclui a meta (define a data de conclusão).
+
     public void concluirMeta(Meta meta) throws MetaNaoEncontradaException {
         meta.setDataConclusao(LocalDate.now());
         repositorio.salvar(meta);
     }
 
-    // Lista todas as metas do repositório.
     public List<Meta> listarMetas() {
-        return repositorio.getAll();
+        if (repositorio == null) {
+            System.err.println("ERRO CRÍTICO: Repositório nulo em ControladorMeta.listarMetas()!");
+        }
+        List<Meta> metas = repositorio.getAll();
+        System.out.println("ControladorMeta.listarMetas(): Metas retornadas: " + metas);
+        return metas;
     }
 
-    // Remove uma meta pelo ID.
     public void remover(UUID id) throws MetaNaoEncontradaException {
         repositorio.remover(id);
     }

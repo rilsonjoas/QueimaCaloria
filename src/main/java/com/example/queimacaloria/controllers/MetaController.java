@@ -14,10 +14,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors; // Importante para o filtro!
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
@@ -28,7 +28,7 @@ public class MetaController {
     @FXML private TableView<Meta> tabelaMetasUsuario;
     @FXML private TableColumn<Meta, String> colunaDescricaoUsuario;
     @FXML private TableColumn<Meta, Meta.Tipo> colunaTipoUsuario;
-    @FXML private TableColumn<Meta, Double> colunaProgressoUsuario; // Double para o progresso
+    @FXML private TableColumn<Meta, Double> colunaProgressoUsuario;
     @FXML private TableColumn<Meta, LocalDate> colunaDataConclusaoUsuario;
 
     @FXML private TableView<Meta> tabelaMetasPreDefinidas;
@@ -246,9 +246,16 @@ public class MetaController {
     public void atualizarTabelaMetasUsuario() {
         System.out.println("MetaController.atualizarTabelaMetasUsuario() chamado.");
         try {
-            if(mainController != null && mainController.getUsuarioLogado() != null) {
-                List<Meta> listaMetas = mainController.getUsuarioLogado().getMetas();  // Busca as metas do USUÁRIO
-                tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas)); // Adiciona à tabela
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                Usuario usuarioLogado = mainController.getUsuarioLogado();
+                List<Meta> listaMetas = mainController.getUsuarioLogado().getMetas();
+
+                // FILTRO: Mostra apenas as metas do usuário logado
+                listaMetas = listaMetas.stream()
+                        .filter(meta -> meta != null && meta.getUsuario() != null && meta.getUsuario().getId().equals(usuarioLogado.getId()))
+                        .collect(Collectors.toList());
+
+                tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas));
 
                 // Atualiza listeners (importante para reatividade, mas pode não ser a causa da duplicação)
                 for (Meta meta : tabelaMetasUsuario.getItems()) {

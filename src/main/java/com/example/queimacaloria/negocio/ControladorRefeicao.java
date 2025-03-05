@@ -12,12 +12,10 @@ public class ControladorRefeicao {
 
     private RepositorioRefeicoesArray repositorio;
 
-    // Construtor, inicializa o repositório.
     public ControladorRefeicao() {
-        this.repositorio = RepositorioRefeicoesArray.getInstanciaUnica();
+        this.repositorio = RepositorioRefeicoesArray.getInstanciaUnica(); // Singleton!
     }
 
-    // Inicializa uma refeição, atualizando ou adicionando ao repositório.
     public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes) {
         refeicao.setNome(nome);
         refeicao.setDescricao(descricao);
@@ -31,7 +29,6 @@ public class ControladorRefeicao {
         }
     }
 
-    // Calcula o total de calorias da refeição.
     public int calcularCalorias(Refeicao refeicao) {
         double totalCalorias = 0;
         if (refeicao.getMacronutrientes() != null) {
@@ -49,17 +46,19 @@ public class ControladorRefeicao {
         return (int) Math.round(totalCalorias);
     }
 
-    // Retorna uma cópia dos macronutrientes da refeição.
     public Map<String, Double> calcularMacronutrientes(Refeicao refeicao) {
         return new HashMap<>(refeicao.getMacronutrientes());
     }
 
-    // Lista todas as refeições do repositório.
     public List<Refeicao> listarRefeicoes() {
-        return repositorio.getAll();
+        if (repositorio == null) {
+            System.err.println("ERRO CRÍTICO: Repositório nulo em ControladorRefeicao.listarRefeicoes()!");
+        }
+        List<Refeicao> refeicoes = repositorio.getAll();
+        System.out.println("ControladorRefeicao.listarRefeicoes(): Refeições retornadas: " + refeicoes); // LOG
+        return refeicoes;
     }
 
-    // Remove uma refeição pelo ID.
     public void remover(UUID id) throws RefeicaoNaoEncontradaException {
         repositorio.remover(id);
     }

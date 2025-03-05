@@ -2,8 +2,10 @@ package com.example.queimacaloria.negocio;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.Getter;
@@ -27,7 +29,9 @@ public class Treino {
     @Setter private double progresso;
     @Setter private boolean concluido;
 
-    // Construtor padrão da classe Treino.
+    // Adicionado: Campo Usuario
+    @Setter private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
+
     public Treino() {
         this.id = UUID.randomUUID();
         this.exercicios = new ArrayList<>();
@@ -37,7 +41,6 @@ public class Treino {
     }
 
 
-    // Construtor da classe Treino
     public Treino(String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade,
                   ArrayList<Exercicio> exercicios, double caloriasQueimadas, double progresso, boolean concluido) {
         this.id = UUID.randomUUID();
@@ -77,4 +80,8 @@ public class Treino {
     public DoubleProperty progressoProperty() {
         return new SimpleDoubleProperty(progresso);
     }
+
+    // Adicionado: Getter e Property para Usuario
+    public Usuario getUsuario() { return usuario.get(); }
+    public ObjectProperty<Usuario> usuarioProperty() { return usuario; }
 }

@@ -40,7 +40,7 @@ public class AdminUsuariosController {
     @FXML private Label mensagem;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    @Setter private IBaseAdmin mainController; //Modifiquei Aqui.
+    @Setter private IBaseAdmin mainController;
     @Setter private Usuario usuarioLogado;
     @Setter private Stage primaryStage;
 
@@ -92,7 +92,6 @@ public class AdminUsuariosController {
                 String email = campoEmail.getText();
                 Usuario.TipoUsuario tipo = campoTipo.getValue();
 
-                /*fachada.atualizarDadosUsuario(usuarioSelecionado, nome, email, null, null, null, 0, 0, tipo);*/
                 usuarioSelecionado.setTipo(tipo.getDescricao());
                 atualizarTabelaUsuarios();
                 mensagem.setText("Usuário atualizado com sucesso.");

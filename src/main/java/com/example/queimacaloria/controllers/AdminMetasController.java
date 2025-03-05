@@ -2,7 +2,6 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 import com.example.queimacaloria.negocio.Fachada;
-import com.example.queimacaloria.negocio.InicializadorDados;
 import com.example.queimacaloria.negocio.Meta;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,7 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.List;
-import com.example.queimacaloria.interfaces.IBaseAdmin;  // Importe a interface
+import com.example.queimacaloria.interfaces.IBaseAdmin;
 import lombok.Setter;
 
 public class AdminMetasController {
@@ -30,12 +29,11 @@ public class AdminMetasController {
     @Setter private IBaseAdmin mainController;
     private ObservableList<Meta> listaMetasPreDefinidas = FXCollections.observableArrayList();
 
-    public void setMainController(AdminMainController mainController) {
-        this.mainController = mainController;
-    }
 
     @FXML
     public void initialize() {
+        System.out.println("AdminMetasController.initialize() chamado"); // LOG
+
         colunaDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colunaValorAlvo.setCellValueFactory(new PropertyValueFactory<>("valorAlvo"));
@@ -44,13 +42,39 @@ public class AdminMetasController {
 
         carregarMetasPreDefinidas();
         atualizarTabelaMetas();
+
+        // Listener para mudanças na lista
+        tabelaMetas.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Meta> c) -> {
+            System.out.println("AdminMetasController: Mudança na lista da tabela detectada!");
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    System.out.println("  Itens adicionados: " + c.getAddedSubList());
+                }
+                if (c.wasRemoved()) {
+                    System.out.println("  Itens removidos: " + c.getRemoved());
+                }
+            }
+        });
+
+        // Listener para seleção e preenchimento
+        tabelaMetas.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                System.out.println("AdminMetasController: Item selecionado: " + newSelection);
+                preencherCampos(newSelection); // Chama o método para preencher
+            }
+        });
+        //Verifica se tabelaMetas é nula.
+        if (tabelaMetas == null) {
+            System.err.println("Erro: tabelaMetas é nula em AdminMetasController.initialize()");
+        }
     }
 
     private void carregarMetasPreDefinidas(){
+        System.out.println("AdminMetasController.carregarMetasPreDefinidas() chamado"); // LOG
         List<Meta> metas = fachada.getMetasPreDefinidas();
+        System.out.println("AdminMetasController.carregarMetasPreDefinidas(): Metas pré-definidas carregadas: " + metas); // LOG
         listaMetasPreDefinidas.addAll(metas);
-        tabelaMetas.setItems(FXCollections.observableArrayList(listaMetasPreDefinidas));
-
+        System.out.println("AdminMetasController.carregarMetasPreDefinidas() finalizado"); // LOG
     }
 
     @FXML
@@ -110,7 +134,19 @@ public class AdminMetasController {
     }
 
     private void atualizarTabelaMetas() {
+        System.out.println("AdminMetasController.atualizarTabelaMetas() chamado");  // LOG
         List<Meta> listaDeMetas = fachada.listarMetas();
+        System.out.println("AdminMetasController.atualizarTabelaMetas(): Todas as metas: " + listaDeMetas); // LOG
         tabelaMetas.setItems(FXCollections.observableArrayList(listaDeMetas));
+        //Verifica se a lista está vazia:
+        if(listaDeMetas.isEmpty()){
+            System.out.println("AdminMetasController: A lista de metas está vazia.");
+        }
+    }
+    private void preencherCampos(Meta meta){
+        campoDescricao.setText(meta.getDescricao());
+        campoTipo.setValue(meta.getTipo());
+        campoValorAlvo.setText(String.valueOf(meta.getValorAlvo()));
+
     }
 }

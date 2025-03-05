@@ -18,10 +18,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors; // Importante para o filtro!
 import lombok.Setter;
 
 public class ExercicioController {
@@ -197,19 +197,33 @@ public class ExercicioController {
 
     public void atualizarTabelaExerciciosUsuario() {
         try {
-            List<Exercicio> listaExercicios = fachada.listarExercicios();
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                Usuario usuarioLogado = mainController.getUsuarioLogado();
+                List<Exercicio> listaExercicios = fachada.listarExercicios();
 
-            if(mainController != null){
-                mainController.getAtividadesRecentes().clear();
-            }
 
-            for(Exercicio exercicio : listaExercicios){
+                // FILTRO: Mostra apenas os exercícios do usuário logado.
+                listaExercicios = listaExercicios.stream()
+                        .filter(exercicio -> exercicio.getUsuario() != null && exercicio.getUsuario().getId().equals(usuarioLogado.getId()))
+                        .collect(Collectors.toList());
+
+                tabelaExerciciosUsuario.setItems(FXCollections.observableArrayList(listaExercicios));
+
                 if(mainController != null){
-                    mainController.adicionarExercicioRecente(exercicio);
+                    mainController.getAtividadesRecentes().clear();
                 }
-            }
 
-            tabelaExerciciosUsuario.setItems(FXCollections.observableArrayList(listaExercicios));
+                for(Exercicio exercicio : listaExercicios){
+                    if(mainController != null){
+                        mainController.adicionarExercicioRecente(exercicio);
+                    }
+                }
+
+            } else {
+                // Trata caso não haja usuário logado (opcional)
+                tabelaExerciciosUsuario.setItems(FXCollections.observableArrayList());
+                System.err.println("ExercicioController: Nenhum usuário logado ao atualizar a tabela.");
+            }
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar exercicios", e.getMessage());
         }

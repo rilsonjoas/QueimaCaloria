@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface IRepositorioRefeicoes {
 
-    void adicionar(Refeicao refeicao) throws RefeicaoNaoEncontradaException; // Adicionada a exception
+    void adicionar(Refeicao refeicao) throws RefeicaoNaoEncontradaException;
 
     void salvar(Refeicao refeicao) throws RefeicaoNaoEncontradaException;
 

@@ -19,9 +19,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors; // Importante para o filtro!
 
 public class RefeicaoController {
 
@@ -81,6 +81,7 @@ public class RefeicaoController {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar refeições pré-definidas", e.getMessage());
         }
     }
+
     @FXML
     public void abrirTelaCriarRefeicao() {
         try {
@@ -171,8 +172,21 @@ public class RefeicaoController {
 
     public void atualizarTabelaRefeicoesUsuario() {
         try {
-            List<Refeicao> listaRefeicoes = fachada.listarRefeicoes();
-            tabelaRefeicoesUsuario.setItems(FXCollections.observableArrayList(listaRefeicoes));
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                Usuario usuarioLogado = mainController.getUsuarioLogado();
+                List<Refeicao> listaRefeicoes = fachada.listarRefeicoes();
+
+                // FILTRO: Mostra apenas as refeições do usuário logado
+                listaRefeicoes = listaRefeicoes.stream()
+                        .filter(refeicao -> refeicao.getUsuario() != null && refeicao.getUsuario().getId().equals(usuarioLogado.getId()))
+                        .collect(Collectors.toList());
+                tabelaRefeicoesUsuario.setItems(FXCollections.observableArrayList(listaRefeicoes));
+            }
+            else {
+                // Trata caso não haja usuário logado (opcional)
+                tabelaRefeicoesUsuario.setItems(FXCollections.observableArrayList());
+                System.err.println("RefeicaoController: Nenhum usuário logado ao atualizar a tabela.");
+            }
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar refeições", e.getMessage());
         }
@@ -185,6 +199,7 @@ public class RefeicaoController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {

@@ -64,6 +64,14 @@ public class RegistroController {
 
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
 
+            // ----  ALERTA AQUI -----
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Bem-vindo!");
+            alert.setHeaderText("Cadastro realizado com sucesso!");
+            alert.setContentText("Olá, " + novoUsuario.getNome() + "! Seja bem-vindo ao YouFit. Lembre-se de beber água para se manter hidratado! Você pode registrar seu consumo na tela principal.");
+            alert.showAndWait(); // Mostra e espera
+            // ------------------------
+
             if (authController != null) {
                 authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario);
             } else {

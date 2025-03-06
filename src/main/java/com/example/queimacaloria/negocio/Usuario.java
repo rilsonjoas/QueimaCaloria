@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@ToString
 @Getter
 public class Usuario {
     private final UUID id;
@@ -42,6 +41,14 @@ public class Usuario {
 
     // Adicionando o histórico de peso
     private ListProperty<PesoRegistro> historicoPeso = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    // NOVOS CAMPOS PARA MEDIDAS CORPORAIS
+    private DoubleProperty cintura = new SimpleDoubleProperty();
+    private DoubleProperty biceps = new SimpleDoubleProperty();
+    private DoubleProperty coxa = new SimpleDoubleProperty();
+    private DoubleProperty quadril = new SimpleDoubleProperty();
+    // Adicione outros campos conforme necessário (peito, panturrilha, etc.)
+
 
     // Enum para o sexo do usuário.
     public enum Sexo {
@@ -73,17 +80,13 @@ public class Usuario {
     // Construtor padrão.
     public Usuario() {
         this.id = UUID.randomUUID();
+        this.metas = FXCollections.observableArrayList();
+        this.treinos = FXCollections.observableArrayList();
+        this.dietas = FXCollections.observableArrayList();
+        this.exercicios = FXCollections.observableArrayList();
     }
 
-    // Construtor básico com os principais atributos
-    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, TipoUsuario tipo) { //MODIFICADO
-        this(nome, email, dataNascimento, sexo, peso, altura, FXCollections.observableArrayList(), FXCollections.observableArrayList(), FXCollections.observableArrayList(), tipo); //MODIFICADO
-        adicionarPesoAoHistorico(peso); // Adiciona o peso inicial ao histórico!
-    }
-
-
-    // Construtor completo (incluindo listas)
-    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, ObservableList<Meta> metas, ObservableList<Treino> treinos, ObservableList<Dieta> dietas, TipoUsuario tipo) { //MODIFICADO
+    public Usuario(String nome, String email, LocalDate dataNascimento, Sexo sexo, float peso, float altura, TipoUsuario tipo) {
         this.id = UUID.randomUUID();
         this.nome.set(nome);
         this.email.set(email);
@@ -92,13 +95,15 @@ public class Usuario {
         this.sexo.set(sexo);
         this.peso.set(peso);
         this.altura.set(altura);
-        this.metas.setAll(metas);
-        this.treinos.setAll(treinos);
-        this.dietas.setAll(dietas);
+        this.metas = FXCollections.observableArrayList();
+        this.treinos = FXCollections.observableArrayList();
+        this.dietas =  FXCollections.observableArrayList();
+        this.exercicios = FXCollections.observableArrayList();
         this.pontuacao.set(0);
         this.dietaAtiva.set(null);
-        this.tipo.set(tipo.getDescricao()); //MODIFICADO
+        this.tipo.set(tipo.getDescricao());
         calcularEAtualizarIMC();
+        adicionarPesoAoHistorico(peso);
     }
 
 
@@ -297,6 +302,55 @@ public class Usuario {
 
     public ObservableList<Exercicio> getExercicios() {
         return this.exercicios;
+    }
+
+    //Getters e Setters para as novas medidas (adicionado)
+    public double getCintura(){
+        return cintura.get();
+    }
+
+    public DoubleProperty cinturaProperty(){
+        return cintura;
+    }
+
+    public void setCintura(double cintura){
+        this.cintura.set(cintura);
+    }
+
+    public double getBiceps(){
+        return biceps.get();
+    }
+
+    public DoubleProperty bicepsProperty(){
+        return biceps;
+    }
+
+    public void setBiceps(double biceps){
+        this.biceps.set(biceps);
+    }
+
+    public double getCoxa(){
+        return coxa.get();
+    }
+
+    public DoubleProperty coxaProperty(){
+        return coxa;
+    }
+
+    public void setCoxa(double coxa){
+        this.coxa.set(coxa);
+    }
+
+    public double getQuadril(){
+        return quadril.get();
+    }
+
+    public DoubleProperty quadrilProperty(){
+        return quadril;
+    }
+
+    public void setQuadril(double quadril){
+        this.quadril.set(quadril);
     }
 
     // Método toString na classe Usuario (fora do enum)

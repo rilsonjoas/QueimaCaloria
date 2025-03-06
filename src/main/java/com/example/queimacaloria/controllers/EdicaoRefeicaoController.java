@@ -1,7 +1,10 @@
 package com.example.queimacaloria.controllers;
 
+import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Refeicao;
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -84,12 +87,27 @@ public class EdicaoRefeicaoController {
             fachada.configurarRefeicao(refeicao,nome, descricao, novosMacronutrientes, mainController.getUsuarioLogado());
             mensagemErro.setText("Refeição atualizada com sucesso!");
 
+            // **********  MUDANÇA AQUI ***********
+            // Atualiza o usuário logado:  Isso é *crítico*.
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                try {
+                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                    mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza o usuário no MainController
+                }
+                catch (UsuarioNaoEncontradoException e){
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
+                            "O usuário logado não pôde ser encontrado.");
+                }
+            }
+
             if (refeicaoController != null) {
-                refeicaoController.initialize();
+                refeicaoController.initialize(); //Remover, pois o listener ja atualiza.
             }
 
             if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal();
+                mainController.atualizarDadosTelaPrincipal();// Removido
+                mainController.atualizarCalorias();
+
             }
 
             fecharJanela();

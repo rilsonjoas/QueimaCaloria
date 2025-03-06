@@ -151,27 +151,30 @@ public class DietaController {
             return;
         }
 
+        // REVISÃO: Simplificando a lógica de adição
         if (mainController == null || mainController.getUsuarioLogado() == null) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário logado", "Não foi possível adicionar a dieta.");
             return;
         }
 
         try {
+            // Cria uma *cópia* da dieta pré-definida, já com o usuário.
             Dieta novaDieta = new Dieta(
                     dietaSelecionada.getNome(),
                     dietaSelecionada.getObjetivo(),
                     dietaSelecionada.getCaloriasDiarias(),
-                    mainController.getUsuarioLogado()
+                    mainController.getUsuarioLogado() // Usuário definido aqui!
             );
 
             fachada.configurarDieta(novaDieta, novaDieta.getNome(), novaDieta.getObjetivo(),
                     novaDieta.getCaloriasDiarias(), novaDieta.getUsuario());
 
+            // **********  MUDANÇA AQUI ***********
+            // ADICIONA A NOVA DIETA À LISTA DO USUÁRIO
+            mainController.getUsuarioLogado().getDietas().add(novaDieta); // <-- Adiciona à lista do usuário!
 
-            mainController.getUsuarioLogado().getDietas().add(novaDieta);
-
-            atualizarTabelaDietasUsuario();
-            mensagemDieta.setText("Dieta adicionada.");
+            atualizarTabelaDietasUsuario();  //REMOVA, O LISTENER JÁ ATUALIZA A UI
+            mensagemDieta.setText("Dieta adicionada com sucesso!");
 
         } catch (DietaNaoEncontradaException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", e.getMessage());
@@ -186,7 +189,6 @@ public class DietaController {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 List<Dieta> listaDietas = fachada.listarDietas();
 
-                // FILTRO: Mostra apenas as dietas do usuário logado.
                 listaDietas = listaDietas.stream()
                         .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(usuarioLogado.getId())) // Usa getId()
                         .collect(Collectors.toList());
@@ -194,7 +196,8 @@ public class DietaController {
                 tabelaDietasUsuario.setItems(FXCollections.observableArrayList(listaDietas));
                 tabelaDietasUsuario.refresh();
             } else {
-                // ...
+                tabelaDietasUsuario.setItems(FXCollections.observableArrayList());
+                System.err.println("DietaController: Nenhum usuário logado ao atualizar a tabela.");
             }
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar dietas", e.getMessage());

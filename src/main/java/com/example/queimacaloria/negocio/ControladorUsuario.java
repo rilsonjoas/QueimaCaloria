@@ -31,13 +31,16 @@ public class ControladorUsuario {
 
     // Atualiza os dados de um usuário existente.
     public void atualizarDados(UUID usuarioId, String nome, String email, String senha, LocalDate dataNascimento,
-                               Usuario.Sexo sexo, float peso, float altura, String tipo) throws UsuarioNaoEncontradoException
+                               Usuario.Sexo sexo, float peso, float altura, String tipo,
+                               double cintura, double biceps, double coxa, double quadril)
+            throws UsuarioNaoEncontradoException
     {
         Usuario usuario = repositorio.buscar(usuarioId);
         if (usuario == null) {
             throw new UsuarioNaoEncontradoException("Usuário com ID " + usuarioId + " não encontrado.");
         }
 
+        // Atualiza os campos existentes
         if (nome != null && !nome.isEmpty()) {
             usuario.setNome(nome);
         }
@@ -61,11 +64,15 @@ public class ControladorUsuario {
         }
 
         usuario.setTipo(tipo);
-        System.out.println("Antes de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo());
 
+        usuario.setCintura(cintura);
+        usuario.setBiceps(biceps);
+        usuario.setCoxa(coxa);
+        usuario.setQuadril(quadril);
+
+        System.out.println("Antes de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo());
         repositorio.salvar(usuario);
         System.out.println("Depois de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo());
-
     }
 
     // Busca um usuário pelo ID.

@@ -232,7 +232,7 @@ public class MetaController {
 
             // 3. *Agora* você chama a fachada para configurar a *nova* meta.
             fachada.configurarMeta(novaMeta, novaMeta.getDescricao(), novaMeta.getTipo(),
-                    novaMeta.getValorAlvo(), novaMeta.getProgressoAtual(), novaMeta.getDataConclusao());
+                    novaMeta.getValorAlvo(), novaMeta.getProgressoAtual(), novaMeta.getDataConclusao(), novaMeta.getUsuario());
 
             atualizarTabelaMetasUsuario(); // Atualiza a tabela
             mensagemMeta.setText("Meta adicionada com sucesso!");

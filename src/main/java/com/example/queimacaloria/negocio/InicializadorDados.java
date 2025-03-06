@@ -86,7 +86,7 @@ public class InicializadorDados {
         try {
             //Café da Manhã
             Refeicao refeicao1 = new Refeicao("Iogurte com Granola Caseira e Frutas Tropicais", "Iogurte natural integral com granola feita em casa (aveia, castanhas e sementes) e uma seleção de frutas tropicais como manga, mamão e kiwi.",  Map.of("Proteínas", 14.0, "Gorduras", 10.0, "Carboidratos", 38.0));
-            refeicao1.setCalorias(controladorRefeicao.calcularCalorias(refeicao1)); //Calcula e adiciona
+            refeicao1.setCalorias(controladorRefeicao.calcularCalorias(refeicao1));
             refeicoes.add(refeicao1);
             Refeicao refeicao2 = new Refeicao("Tapioca com Ovo Mexido e Queijo Coalho", "Tapioca feita na frigideira com dois ovos mexidos e fatias de queijo coalho.",  Map.of("Proteínas", 18.0, "Gorduras", 16.0, "Carboidratos", 30.0));
             refeicao2.setCalorias(controladorRefeicao.calcularCalorias(refeicao2));

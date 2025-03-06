@@ -44,7 +44,6 @@ public class CriacaoMetaController {
         this.mainController = mainController;
     }
 
-
     @FXML
     public void criarMeta() {
         String descricao = campoDescricao.getText();
@@ -73,29 +72,17 @@ public class CriacaoMetaController {
                 Meta novaMeta = new Meta();
                 // Define o usuário na nova meta
                 novaMeta.setUsuario(mainController.getUsuarioLogado());
-                fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
+                fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao, mainController.getUsuarioLogado());
 
-
-                mainController.getUsuarioLogado().getMetas().add(novaMeta); //
+                mainController.getUsuarioLogado().getMetas().add(novaMeta);
 
                 mensagemErro.setText("Meta criada com sucesso!");
 
-                try {
-                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado);
-                } catch (UsuarioNaoEncontradoException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
-                            "O usuário logado não pôde ser encontrado.");
-                }
-
                 if (metaController != null) {
-                    metaController.initialize();
-                }
-                if(mainController != null){
-                    mainController.atualizarDadosTelaPrincipal();
+                    metaController.initialize();//agora, esta linha não é mais necessária
                 }
 
-                // Recomendação de dieta
+                // Recomendação de dieta (mantém como estava)
                 Dieta dietaRecomendada = fachada.getDietaAleatoria(tipo);
                 if (dietaRecomendada != null) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -117,9 +104,12 @@ public class CriacaoMetaController {
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Valores numéricos inválidos.");
-        } catch (Exception e) {
+        } catch (MetaNaoEncontradaException e) { //Adicionado o tipo da exceção
+            mensagemErro.setText("Erro ao criar meta: " + e.getMessage());
+        }
+        catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(); //Sempre bom ter pra debugging.
         }
     }
 

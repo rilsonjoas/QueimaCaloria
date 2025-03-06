@@ -164,7 +164,7 @@ public class Fachada {
     // Métodos de Meta
     public void configurarMeta(Meta meta, String descricao, Meta.Tipo tipo,
                                double valorAlvo, double progressoAtual,
-                               LocalDate dataConclusao) throws MetaNaoEncontradaException {
+                               LocalDate dataConclusao, Usuario usuario) throws MetaNaoEncontradaException {
 
         if (meta.getUsuario() == null) {
             throw new IllegalArgumentException("A meta deve estar associada a um usuário.");
@@ -308,8 +308,9 @@ public class Fachada {
 
     //Sobrecarga para incluir o TipoUsuario
     public void atualizarDadosUsuario(Usuario usuario, String nome, String email, String senha,
-                                      LocalDate dataNascimento,
-                                      Usuario.Sexo sexo, float peso, float altura, String tipo) throws UsuarioNaoEncontradoException
+                                      LocalDate dataNascimento, Usuario.Sexo sexo, float peso, float altura, String tipo,
+                                      double cintura, double biceps, double coxa, double quadril)
+            throws UsuarioNaoEncontradoException
     {
         Usuario.TipoUsuario tipouser;
         if(tipo.equals(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao())){
@@ -318,7 +319,8 @@ public class Fachada {
             tipouser = Usuario.TipoUsuario.USUARIO_COMUM;
         }
         System.out.println("Atualizando usuário: " + usuario.getNome() + ", Tipo: " + usuario.getTipo() + " para tipo " + tipouser.getDescricao());
-        controladorUsuario.atualizarDados(usuario.getId(), nome, email, senha, dataNascimento, sexo, peso, altura, tipouser.getDescricao());
+        controladorUsuario.atualizarDados(usuario.getId(), nome, email, senha, dataNascimento, sexo, peso, altura, tipo,
+                cintura, biceps, coxa, quadril);
     }
 
     public void beberAgua(Usuario usuario, int ml) throws UsuarioNaoEncontradoException {

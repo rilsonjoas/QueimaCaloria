@@ -87,7 +87,7 @@ public class AdminMetasController {
             double valorAlvo = Double.parseDouble(valorAlvoStr);
 
             Meta novaMeta = new Meta();
-            fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, 0.0, null);
+            fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, 0.0, null, null);
 
             atualizarTabelaMetas();
             mensagem.setText("Meta criada com sucesso.");
@@ -106,7 +106,7 @@ public class AdminMetasController {
                 String valorAlvoStr = campoValorAlvo.getText();
                 double valorAlvo = Double.parseDouble(valorAlvoStr);
 
-                fachada.configurarMeta(metaSelecionada, descricao, tipo, valorAlvo, 0.0, null);
+                fachada.configurarMeta(metaSelecionada, descricao, tipo, valorAlvo, 0.0, null, null);
                 atualizarTabelaMetas();
                 mensagem.setText("Meta atualizada com sucesso.");
             } catch (Exception e) {

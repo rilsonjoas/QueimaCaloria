@@ -65,9 +65,14 @@ public class CriacaoRefeicaoController {
 
             Refeicao novaRefeicao = new Refeicao();
 
+            // **********  MUDANÇA AQUI ***********
             // Verifica se há um usuário logado e o associa à refeição
             if (mainController != null && mainController.getUsuarioLogado() != null) {
-                novaRefeicao.setUsuario(mainController.getUsuarioLogado());
+                novaRefeicao.setUsuario(mainController.getUsuarioLogado()); // Define o usuário!  MUITO IMPORTANTE
+            }
+            else{
+                mensagemErro.setText("Erro! Usuário não logado");
+                return;
             }
 
             fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes, mainController.getUsuarioLogado()); // Passa o usuário
@@ -75,11 +80,15 @@ public class CriacaoRefeicaoController {
             mensagemErro.setText("Refeição criada com sucesso!");
 
             if (refeicaoController != null) {
-                refeicaoController.atualizarTabelaRefeicoesUsuario();
+                // refeicaoController.atualizarTabelaRefeicoesUsuario();  Removido. O listener no main controller cuida disso
             }
 
             if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal();
+                //mainController.atualizarDadosTelaPrincipal(); Removido
+                // Como estamos adicionando uma refeição, o total de calorias *pode* mudar
+                // então vamos forçar uma atualização chamando diretamente o método
+                // atualizarCalorias()
+                mainController.atualizarCalorias();  // <-- ATUALIZA AS CALORIAS!
             }
 
 

@@ -429,7 +429,7 @@ public class MainController implements IBaseAdmin {
     }
 
     // Atualiza o label de calorias consumidas/diárias.  Este método é *crucial*.
-    private void atualizarCalorias() {
+    void atualizarCalorias() {
         if (usuarioLogado == null || labelCaloriasDia == null) {
             if (labelCaloriasDia != null) {
                 labelCaloriasDia.setText("Calorias: --/--");
@@ -463,17 +463,19 @@ public class MainController implements IBaseAdmin {
 
         if (usuarioLogado != null && usuarioLogado.getMetas() != null) {
             for (Meta meta : usuarioLogado.getMetas()) {
+                // VERIFICA SE A META PERTENCE AO USUÁRIO LOGADO.  Já está correto!
                 if (meta.getUsuario() != null && meta.getUsuario().getId().equals(usuarioLogado.getId())) {
-                    if (meta.getValorAlvo() > 0) {
-                        double progressoMeta = meta.getProgressoAtual() / meta.getValorAlvo();
-                        progressoTotal += progressoMeta;
+                    //Simplificando
+                    if (meta.getValorAlvo() > 0) { // Evita divisão por zero!
+                        // double progressoMeta = (meta.getProgressoAtual() / meta.getValorAlvo());  //antes
+                        // progressoTotal += progressoMeta; //Antes
+                        progressoTotal += (meta.getProgressoAtual() / meta.getValorAlvo()); //Depois, em uma linha.
                         contadorMetas++;
                     }
                 }
             }
         }
-
-        return (contadorMetas > 0) ? progressoTotal / contadorMetas : 0.0;
+        return (contadorMetas > 0) ? progressoTotal / contadorMetas : 0.0; //Evitar divisão por 0
     }
 
     // Adiciona um exercício à lista de atividades recentes.
@@ -519,9 +521,10 @@ public class MainController implements IBaseAdmin {
             }
 
             atualizarCalorias(); // Atualiza a exibição das calorias
-            atualizarAgua(); // Atualiza a exibição da água
             atualizarGraficoPeso();
-            progressoGeral.set(calcularProgressoGeralUsuario());
+
+            // **********  ATUALIZA O PROGRESSO GERAL ***********
+            progressoGeral.set(calcularProgressoGeralUsuario()); // Calcula e define o progresso
 
 
 
@@ -544,17 +547,17 @@ public class MainController implements IBaseAdmin {
 
 
             //Admin View
-            boolean isAdmin = usuarioLogado.getTipo().equals(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao()); //ADICIONADO
-            if(labelAdmin != null) labelAdmin.setVisible(isAdmin); //ADICIONADO
-            if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(isAdmin); //ADICIONADO
+            boolean isAdmin = usuarioLogado.getTipo().equals(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao());
+            if(labelAdmin != null) labelAdmin.setVisible(isAdmin);
+            if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(isAdmin);
             if(labelNumeroUsuarios != null) {
-                labelNumeroUsuarios.setVisible(isAdmin); //ADICIONADO
-                atualizarNumeroUsuarios(); //ADICIONADO
+                labelNumeroUsuarios.setVisible(isAdmin);
+                atualizarNumeroUsuarios();
             }
 
             usuarioLogado.pesoProperty().addListener((obs, oldVal, newVal) -> {
-                atualizarGraficoPeso();  // Atualiza o gráfico
-                atualizarDadosTelaPrincipal(); // Mantém outros dados atualizados
+                atualizarGraficoPeso();
+                atualizarDadosTelaPrincipal();
             });
 
             usuarioLogado.getHistoricoPeso().addListener((ListChangeListener<PesoRegistro>) change -> {

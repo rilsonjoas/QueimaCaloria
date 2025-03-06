@@ -53,17 +53,20 @@ public class CriacaoDietaController {
             int calorias = Integer.parseInt(caloriasStr);
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
-                Usuario usuarioLogado = mainController.getUsuarioLogado();
-                Dieta novaDieta = new Dieta();
-                novaDieta.setUsuario(usuarioLogado);
+                Usuario usuarioLogado = mainController.getUsuarioLogado(); // Obtém o usuário logado
+                Dieta novaDieta = new Dieta(); // Cria uma nova dieta
+                novaDieta.setUsuario(usuarioLogado); // **IMPORTANTE:** Associa o usuário à dieta
 
+                // Usa a fachada, passando o usuário
                 fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado);
-                fachada.setDietaAtiva(usuarioLogado, novaDieta);
 
-                usuarioLogado.getDietas().add(novaDieta);
+                fachada.setDietaAtiva(usuarioLogado, novaDieta); // Define a dieta como ativa (se necessário)
+
+                // *** ADICIONAR A DIETA À LISTA DO USUÁRIO ***
+                usuarioLogado.getDietas().add(novaDieta); // <-- LINHA CRUCIAL!
 
                 if (dietaController != null) {
-                    dietaController.atualizarTabelaDietasUsuario();
+                    //dietaController.atualizarTabelaDietasUsuario(); // Removido, o listener já trata
                     dietaController.showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dieta Criada", "Dieta criada com sucesso!");
                 }
 

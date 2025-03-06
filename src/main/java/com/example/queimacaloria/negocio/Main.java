@@ -16,13 +16,13 @@ public class Main {
         Usuario usuario = new Usuario();
         try {
             fachada.atualizarDadosUsuario(usuario, "João Silva", "joao@email.com", "senha123",
-                    LocalDate.of(1990, 5, 15), Usuario.Sexo.Masculino, 80.5f, 1.75f, usuario.getTipo());
+                    LocalDate.of(1990, 5, 15), Usuario.Sexo.Masculino, 80.5f, 1.75f, usuario.getTipo(), 20, 20, 20, 20);
             System.out.println("Usuário atualizado com sucesso.");
 
             System.out.println("IMC do usuário: " + usuario.getImc());
 
             Meta meta = new Meta();
-            fachada.configurarMeta(meta, "Perder 5kg", Meta.Tipo.PERDA_DE_PESO, 5.0, 0.0, LocalDate.of(2024, 12, 31));
+            fachada.configurarMeta(meta, "Perder 5kg", Meta.Tipo.PERDA_DE_PESO, 5.0, 0.0, LocalDate.of(2024, 12, 31), null);
 
             System.out.println("Meta cadastrada para o usuário.");
 
@@ -85,7 +85,7 @@ public class Main {
 
         Meta meta = new Meta();
         try {
-            fachada.configurarMeta(meta, "Ganhar 2kg de massa", Meta.Tipo.GANHO_DE_MASSA, 2.0, 0.0, LocalDate.of(2024, 10, 15));
+            fachada.configurarMeta(meta, "Ganhar 2kg de massa", Meta.Tipo.GANHO_DE_MASSA, 2.0, 0.0, LocalDate.of(2024, 10, 15), null);
             System.out.println("Meta configurada.");
 
             boolean metaConcluida = fachada.verificarMetaConcluida(meta);

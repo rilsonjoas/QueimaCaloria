@@ -8,6 +8,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.beans.binding.Bindings;
+import javafx.util.converter.NumberStringConverter;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PerfilController {
 
@@ -16,12 +20,21 @@ public class PerfilController {
     @FXML private Label labelPesoAtual;
     @FXML private Label labelAlturaAtual;
     @FXML private Label labelIMCatual;
+    @FXML private Label labelCinturaAtual;
+    @FXML private Label labelBicepsAtual;
+    @FXML private Label labelCoxaAtual;
+    @FXML private Label labelQuadrilAtual;
+    @FXML private Label mensagemPerfil;
 
     @FXML private TextField campoNome;
     @FXML private TextField campoEmail;
     @FXML private TextField campoPeso;
     @FXML private TextField campoAltura;
-    @FXML private Label mensagemPerfil;
+    @FXML private TextField campoCintura;
+    @FXML private TextField campoBiceps;
+    @FXML private TextField campoCoxa;
+    @FXML private TextField campoQuadril;
+
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private MainController mainController;
@@ -59,9 +72,17 @@ public class PerfilController {
 
             campoNome.textProperty().bindBidirectional(usuarioLogado.nomeProperty());
             campoEmail.textProperty().bindBidirectional(usuarioLogado.emailProperty());
-            campoPeso.textProperty().bindBidirectional(usuarioLogado.pesoProperty(), new javafx.util.converter.NumberStringConverter());
-            campoAltura.textProperty().bindBidirectional(usuarioLogado.alturaProperty(), new javafx.util.converter.NumberStringConverter());
+            campoPeso.textProperty().bindBidirectional(usuarioLogado.pesoProperty(), new NumberStringConverter());
+            campoAltura.textProperty().bindBidirectional(usuarioLogado.alturaProperty(), new NumberStringConverter());
+            campoCintura.textProperty().bindBidirectional(usuarioLogado.cinturaProperty(), new NumberStringConverter());
+            campoBiceps.textProperty().bindBidirectional(usuarioLogado.bicepsProperty(), new NumberStringConverter());
+            campoCoxa.textProperty().bindBidirectional(usuarioLogado.coxaProperty(), new NumberStringConverter());
+            campoQuadril.textProperty().bindBidirectional(usuarioLogado.quadrilProperty(), new NumberStringConverter());
 
+            labelCinturaAtual.textProperty().bind(Bindings.createStringBinding(() -> String.format("%.1f cm", usuarioLogado.getCintura()), usuarioLogado.cinturaProperty()));
+            labelBicepsAtual.textProperty().bind(Bindings.createStringBinding(() -> String.format("%.1f cm", usuarioLogado.getBiceps()), usuarioLogado.bicepsProperty()));
+            labelCoxaAtual.textProperty().bind(Bindings.createStringBinding(() -> String.format("%.1f cm", usuarioLogado.getCoxa()), usuarioLogado.coxaProperty()));
+            labelQuadrilAtual.textProperty().bind(Bindings.createStringBinding(() -> String.format("%.1f cm", usuarioLogado.getQuadril()), usuarioLogado.quadrilProperty()));
         }
     }
 
@@ -78,28 +99,36 @@ public class PerfilController {
         String pesoStr = campoPeso.getText();
         String alturaStr = campoAltura.getText();
 
+        //Valida os campos.
         if (!validarFormulario(nome, email, pesoStr, alturaStr)) {
-            return; // Aborta se a validação falhar
+            return;
         }
 
         try {
             float peso = Float.parseFloat(pesoStr);
             float altura = Float.parseFloat(alturaStr);
-            //Agora chamar o método correto passando todos os parâmetros.
-            fachada.atualizarDadosUsuario(usuarioLogado, nome, email, null, null, null, peso, altura, usuarioLogado.getTipo());
+            //agora chamamos o metodo certo passando os 8 argumentos esperados.
+            fachada.atualizarDadosUsuario(usuarioLogado, nome, email, null, null, null, peso, altura, usuarioLogado.getTipo(),
+                    Double.parseDouble(campoCintura.getText()),
+                    Double.parseDouble(campoBiceps.getText()),
+                    Double.parseDouble(campoCoxa.getText()),
+                    Double.parseDouble(campoQuadril.getText()));
             mensagemPerfil.setText("Perfil atualizado com sucesso!");
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal(); //Atualiza os dados.
+            }
 
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Dados inválidos", "Peso e altura devem ser números válidos.");
-        } catch (UsuarioNaoEncontradoException e) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Dados inválidos", "Peso, altura, e medidas devem ser números válidos.");
+        }  catch (UsuarioNaoEncontradoException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado", e.getMessage());
-        } catch (Exception e) {
+        } catch (Exception e) { //  Captura genérica para outros erros.
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar perfil", e.getMessage());
             e.printStackTrace();
         }
     }
 
-    // Validar o formulario
+    //Função auxiliar para validar o formulário.
     private boolean validarFormulario(String nome, String email, String pesoStr, String alturaStr) {
         if (nome == null || nome.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O nome não pode estar vazio.");
@@ -136,18 +165,39 @@ public class PerfilController {
             return false;
         }
 
+        //Validando os campos de medidas.
+        if (!isNumeric(campoCintura.getText()) || campoCintura.getText().isEmpty()){
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo Inválido", "A medida da cintura deve ser um número.");
+            return false;
+        }
+
+        if (!isNumeric(campoBiceps.getText()) || campoBiceps.getText().isEmpty()){
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo Inválido", "A medida do bíceps deve ser um número.");
+            return false;
+        }
+
+        if (!isNumeric(campoCoxa.getText()) || campoCoxa.getText().isEmpty()){
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo Inválido", "A medida da coxa deve ser um número.");
+            return false;
+        }
+
+        if (!isNumeric(campoQuadril.getText()) || campoQuadril.getText().isEmpty()){
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo Inválido", "A medida do quadril deve ser um número.");
+            return false;
+        }
+
         return true;
     }
 
-    //Validar se o email é válido.
+    //Função auxiliar para validar se o email é válido.
     private boolean isValidEmail(String email) {
         String regex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
-        java.util.regex.Matcher matcher = pattern.matcher(email);
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
 
-    //Validar se é um valor numérico
+    //Função auxiliar para validar se é um valor numérico
     private boolean isNumeric(String str) {
         try {
             Double.parseDouble(str);

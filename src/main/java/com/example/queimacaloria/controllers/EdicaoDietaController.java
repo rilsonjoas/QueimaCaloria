@@ -70,24 +70,32 @@ public class EdicaoDietaController {
 
         try {
             int calorias = Integer.parseInt(caloriasStr);
-            fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado());
+            // A principal mudança é que agora passamos o USUÁRIO LOGADO
+            fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado()); // Usuário Logado!
             mensagemErro.setText("Dieta atualizada com sucesso!");
 
-            // Atualiza o usuário logado:
+            // **********  MUDANÇA AQUI ***********
+            // Atualiza o usuário logado:  Isso é *crítico*.  A fachada atualiza
+            // o objeto no repositório, mas o objeto Usuario no MainController
+            // *não* é atualizado automaticamente!
+
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado);
-                }
-                catch (UsuarioNaoEncontradoException e){
+                    mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza o usuário no MainController
+
+                }catch (UsuarioNaoEncontradoException e){
                     showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
                             "O usuário logado não pôde ser encontrado.");
                 }
             }
 
-            if(dietaController != null){
-                dietaController.atualizarTabelaDietasUsuario();
-            }
+
+            //REMOVA ISSO
+            /*if(dietaController != null){
+                dietaController.atualizarTabelaDietasUsuario(); //Isso aqui pode ser removido.
+            }*/
+
 
             fecharJanela();
 

@@ -2,6 +2,7 @@ package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioMetasArray;
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
+import javafx.beans.property.ObjectProperty;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,8 +16,9 @@ public class ControladorMeta {
         this.repositorio = RepositorioMetasArray.getInstanciaUnica(); // Singleton!
     }
 
+    // Modificado: Recebe o Usuario
     public void inicializar(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
-                            LocalDate dataConclusao) throws MetaNaoEncontradaException {
+                            LocalDate dataConclusao, Usuario usuario) throws MetaNaoEncontradaException { // Usuario adicionado
 
         System.out.println("ControladorMeta.inicializar: ");
         System.out.println("Meta ID " + meta.getId());
@@ -27,6 +29,7 @@ public class ControladorMeta {
         meta.setValorAlvo(valorAlvo);
         meta.setProgressoAtual(progressoAtual);
         meta.setDataConclusao(dataConclusao);
+        meta.setUsuario(usuario); // Define o usuário
 
         System.out.println("Meta após setar valores no Controlador: " + meta);
 

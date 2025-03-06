@@ -3,6 +3,7 @@ package com.example.queimacaloria.negocio;
 import com.example.queimacaloria.dados.RepositorioTreinosArray;
 import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
+import javafx.beans.property.ObjectProperty;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,12 +16,13 @@ public class ControladorTreino {
         this.repositorio = RepositorioTreinosArray.getInstanciaUnica(); // Singleton!
     }
 
-
-    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade) throws TreinoNaoEncontradoException {
+    //Modificado: Recebe Usuario
+    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade, Usuario usuario) throws TreinoNaoEncontradoException { //<- Mude aqui
         treino.setNome(nome);
         treino.setTipoDeTreino(tipoDeTreino);
         treino.setDuracao(duracao);
         treino.setNivelDeDificuldade(nivelDeDificuldade);
+        treino.setUsuario(usuario); // Define o usuário
 
         try {
             repositorio.salvar(treino);

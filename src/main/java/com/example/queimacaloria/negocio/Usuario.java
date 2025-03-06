@@ -63,7 +63,7 @@ public class Usuario {
         public String getDescricao() {
             return descricao;
         }
-
+        //Aqui fica só a descrição do enum
         @Override
         public String toString() {
             return descricao;
@@ -299,4 +299,14 @@ public class Usuario {
         return this.exercicios;
     }
 
+    // Método toString na classe Usuario (fora do enum)
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "id=" + id +
+                ", nome=" + nome.get() +
+                ", email=" + email.get() +
+                ", tipo=" + tipo.get() +
+                '}';
+    }
 }

@@ -2,6 +2,7 @@ package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
 import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
+import javafx.beans.property.ObjectProperty;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,14 +14,16 @@ public class ControladorRefeicao {
     private RepositorioRefeicoesArray repositorio;
 
     public ControladorRefeicao() {
-        this.repositorio = RepositorioRefeicoesArray.getInstanciaUnica(); // Singleton!
+        this.repositorio = RepositorioRefeicoesArray.getInstanciaUnica();
     }
 
-    public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes) {
+    // Modificado: recebe o Usuario
+    public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes, Usuario usuario) {
         refeicao.setNome(nome);
         refeicao.setDescricao(descricao);
         refeicao.setMacronutrientes(macronutrientes);
         refeicao.setCalorias(calcularCalorias(refeicao));
+        refeicao.setUsuario(usuario); // Define o usuário
 
         try {
             repositorio.salvar(refeicao);

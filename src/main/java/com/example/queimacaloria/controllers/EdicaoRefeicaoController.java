@@ -80,8 +80,8 @@ public class EdicaoRefeicaoController {
                 mensagemErro.setText("Erro: Os macronutrientes devem ser números");
                 return;
             }
-
-            fachada.configurarRefeicao(refeicao,nome, descricao, novosMacronutrientes);
+            // Passamos o usuário logado.
+            fachada.configurarRefeicao(refeicao,nome, descricao, novosMacronutrientes, mainController.getUsuarioLogado());
             mensagemErro.setText("Refeição atualizada com sucesso!");
 
             if (refeicaoController != null) {

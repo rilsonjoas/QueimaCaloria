@@ -14,20 +14,13 @@ import java.time.LocalDate;
 
 public class EdicaoMetaController {
 
-    @FXML
-    private TextField campoDescricao;
-    @FXML
-    private ChoiceBox<Meta.Tipo> campoTipo;
-    @FXML
-    private TextField campoValorAlvo;
-    @FXML
-    private TextField campoProgressoAtual;
-    @FXML
-    private Label labelDataConclusao;
-    @FXML
-    private Button buttonConcluirMeta;
-    @FXML
-    private Label mensagemErro;
+    @FXML private TextField campoDescricao;
+    @FXML private ChoiceBox<Meta.Tipo> campoTipo;
+    @FXML private TextField campoValorAlvo;
+    @FXML private TextField campoProgressoAtual;
+    @FXML private Label labelDataConclusao;
+    @FXML private Button buttonConcluirMeta;
+    @FXML private Label mensagemErro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
 
@@ -80,22 +73,34 @@ public class EdicaoMetaController {
         String progressoAtualStr = campoProgressoAtual.getText();
 
         if (!validarFormulario(descricao, tipo, valorAlvoStr, progressoAtualStr)) {
-            return; // Aborta se a validação falhar
+            return;
         }
 
         try {
             double valorAlvo = Double.parseDouble(valorAlvoStr);
             double progressoAtual = Double.parseDouble(progressoAtualStr);
 
-            // Usa o método *atualizarMeta* da Fachada, passando o ID da meta
+            System.out.println("EdicaoMetaController.atualizarMeta() - Antes da fachada: Meta ID: " + meta.getId() + ", Progresso: " + meta.getProgressoAtual() + ", Usuario: " + (meta.getUsuario() != null ? meta.getUsuario().getEmail() : "null"));
             fachada.atualizarMeta(meta.getId(), descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao());
-            mensagemErro.setText("Meta atualizada com sucesso!");
 
-            // Atualiza o usuário no MainController *após* a atualização
-            if (mainController != null) {
-                mainController.atualizarDadosTelaPrincipal(); // Atualiza a tela *principal*
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                try {
+                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                    mainController.setUsuarioLogado(usuarioAtualizado);
+                }catch (UsuarioNaoEncontradoException e){
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
+                            "O usuário logado não pôde ser encontrado.");
+                }
             }
 
+            System.out.println("EdicaoMetaController.atualizarMeta() - Após a fachada: Meta ID: " + meta.getId()  + ", Progresso: " + meta.getProgressoAtual());  //DEBUG
+
+            mensagemErro.setText("Meta atualizada com sucesso!");
+
+            if (mainController != null) {
+                mainController.atualizarDadosTelaPrincipal(); // Mantém apenas UMA chamada.
+                System.out.println("MainController.atualizarDadosTelaPrincipal chamado de EdicaoMetaController.atualizarMeta()");
+            }
 
             fecharJanela();
 
@@ -110,6 +115,7 @@ public class EdicaoMetaController {
             e.printStackTrace();
         }
     }
+
 
     //Verifica se o formulário foi validado
     private boolean validarFormulario(String descricao, Meta.Tipo tipo, String valorAlvoStr, String progressoAtualStr) {
@@ -165,19 +171,22 @@ public class EdicaoMetaController {
 
             // Usa o método *atualizarMeta* da Fachada, passando o ID
             fachada.atualizarMeta(meta.getId(), meta.getDescricao(), meta.getTipo(), meta.getValorAlvo(), meta.getProgressoAtual(), meta.getDataConclusao());
+            System.out.println("Meta CONCLUÍDA: Progresso Atual = " + meta.getProgressoAtual()); // Debug
 
             labelDataConclusao.setText("Concluída em: " + meta.getDataConclusao().toString());
             buttonConcluirMeta.setDisable(true);
             campoProgressoAtual.setText(String.valueOf(meta.getProgressoAtual()));
 
+            // Atualiza o usuário no MainController *após* a atualização
+            if (mainController != null) {
+                mainController.atualizarDadosTelaPrincipal(); // Atualiza a tela *principal*
+                System.out.println("MainController.atualizarDadosTelaPrincipal chamado de EdicaoMetaController.concluirMeta()");
+            }
+
             if (metaController != null) {
                 metaController.atualizarTabelaMetasUsuario(); // Atualiza a tabela *na tela de metas*
             }
 
-            // Atualiza o usuário no MainController *após* a atualização
-            if (mainController != null) {
-                mainController.atualizarDadosTelaPrincipal(); // Atualiza a tela *principal*
-            }
 
             mensagemErro.setText("Meta concluída com sucesso!");
 

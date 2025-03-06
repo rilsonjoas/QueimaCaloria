@@ -107,6 +107,7 @@ public class ExercicioController {
             controller.setMainController(mainController);
 
             stage.showAndWait();
+            atualizarTabelaExerciciosUsuario();
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
@@ -163,35 +164,49 @@ public class ExercicioController {
     @FXML
     public void adicionarExercicioPreDefinido() {
         Exercicio exercicioSelecionado = tabelaExerciciosPreDefinidos.getSelectionModel().getSelectedItem();
-        if (exercicioSelecionado != null) {
-            try {
-                Exercicio novoExercicio = new Exercicio(
-                        exercicioSelecionado.getNome(),
-                        exercicioSelecionado.getDescricao(),
-                        exercicioSelecionado.getMusculosTrabalhados() != null ? new ArrayList<>(exercicioSelecionado.getMusculosTrabalhados()) : new ArrayList<>(),
-                        exercicioSelecionado.getTipo(),
-                        exercicioSelecionado.getTempo(),
-                        exercicioSelecionado.getCaloriasQueimadas(),
-                        false
-                );
-
-                fachada.configurarExercicio(novoExercicio, novoExercicio.getNome(),
-                        novoExercicio.getDescricao(), novoExercicio.getTipo(),
-                        novoExercicio.getTempo(), novoExercicio.getCaloriasQueimadas());
-
-                atualizarTabelaExerciciosUsuario();
-                mensagemExercicio.setText("Exercício adicionado com sucesso!");
-
-                if (mainController != null) {
-                    mainController.getUsuarioLogado().getExercicios().add(novoExercicio);
-                    mainController.atualizarDadosTelaPrincipal();
-                }
-            } catch (ExercicioNaoEncontradoException e) {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar exercício", e.getMessage());
-            }
-        } else {
+        if (exercicioSelecionado == null) { //Verifica antes
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhum exercício selecionado",
                     "Por favor, selecione um exercício pré-definido para adicionar.");
+            return;
+        }
+
+
+        if (mainController == null || mainController.getUsuarioLogado() == null) { //Verifica Usuário
+            showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário logado",
+                    "Não foi possível adicionar o exercício.");
+            return;
+        }
+
+
+        try {
+            Exercicio novoExercicio = new Exercicio(
+                    exercicioSelecionado.getNome(),
+                    exercicioSelecionado.getDescricao(),
+                    // Copia a lista de músculos ou cria uma nova se for nula
+                    exercicioSelecionado.getMusculosTrabalhados() != null ? new ArrayList<>(exercicioSelecionado.getMusculosTrabalhados()) : new ArrayList<>(),
+                    exercicioSelecionado.getTipo(),
+                    exercicioSelecionado.getTempo(),
+                    exercicioSelecionado.getCaloriasQueimadas(),
+                    false
+            );
+
+            //REVISÃO:  Definindo o usuário LOGADO.
+            novoExercicio.setUsuario(mainController.getUsuarioLogado());
+
+            fachada.configurarExercicio(novoExercicio, novoExercicio.getNome(),
+                    novoExercicio.getDescricao(), novoExercicio.getTipo(),
+                    novoExercicio.getTempo(), novoExercicio.getCaloriasQueimadas(), novoExercicio.getUsuario()); //Passa o Usuario
+
+
+            atualizarTabelaExerciciosUsuario();
+            mensagemExercicio.setText("Exercício adicionado com sucesso!");
+
+            if (mainController != null) {
+                mainController.getUsuarioLogado().getExercicios().add(novoExercicio); //Adicionado
+                mainController.atualizarDadosTelaPrincipal();
+            }
+        } catch (ExercicioNaoEncontradoException e) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar exercício", e.getMessage());
         }
     }
 
@@ -201,14 +216,13 @@ public class ExercicioController {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 List<Exercicio> listaExercicios = fachada.listarExercicios();
 
-
                 // FILTRO: Mostra apenas os exercícios do usuário logado.
                 listaExercicios = listaExercicios.stream()
                         .filter(exercicio -> exercicio.getUsuario() != null && exercicio.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
 
                 tabelaExerciciosUsuario.setItems(FXCollections.observableArrayList(listaExercicios));
-
+                tabelaExerciciosUsuario.refresh();
                 if(mainController != null){
                     mainController.getAtividadesRecentes().clear();
                 }
@@ -226,6 +240,7 @@ public class ExercicioController {
             }
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar exercicios", e.getMessage());
+            e.printStackTrace(); //  Importante para debug!
         }
     }
 

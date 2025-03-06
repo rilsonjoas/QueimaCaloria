@@ -73,7 +73,8 @@ public class EdicaoTreinoController {
 
         if (!validarFormulario(nome, tipoTreino, duracaoStr, nivelDificuldadeStr)) {
             return; // Aborta se a validação falhar
-        }        try {
+        }
+        try {
             int duracao = Integer.parseInt(duracaoStr);
             int nivelDificuldade = Integer.parseInt(nivelDificuldadeStr);
 
@@ -98,7 +99,7 @@ public class EdicaoTreinoController {
                 }
             }
 
-            fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade);
+            fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade, mainController.getUsuarioLogado()); //AGORA PASSANDO USUARIO LOGADO
             treino.setTipoDeTreino(tipoTreino);
 
 
@@ -122,6 +123,7 @@ public class EdicaoTreinoController {
             e.printStackTrace();
         }
     }
+
 
     //Função auxiliar para validar o formulário.
     private boolean validarFormulario(String nome, Exercicio.TipoExercicio tipoTreino, String duracaoStr, String nivelDificuldadeStr) {

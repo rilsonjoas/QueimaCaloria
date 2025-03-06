@@ -68,7 +68,12 @@ public class CriacaoTreinoController {
             boolean concluido = checkboxConcluido.isSelected();
 
             Treino novoTreino = new Treino();
-            fachada.configurarTreino(novoTreino, nome, tipoTreino, duracao, nivelDificuldade);
+            // Define o usuário no novo treino, se houver um usuário logado.
+            if(mainController != null && mainController.getUsuarioLogado() != null){
+                novoTreino.setUsuario(mainController.getUsuarioLogado());
+            }
+            assert mainController != null;
+            fachada.configurarTreino(novoTreino, nome, tipoTreino, duracao, novoTreino.getNivelDeDificuldade(), mainController.getUsuarioLogado()); // Passa o usuário
             novoTreino.setTipoDeTreino(tipoTreino);
             novoTreino.setConcluido(concluido);
 
@@ -79,9 +84,9 @@ public class CriacaoTreinoController {
                     mainController.setUsuarioLogado(usuarioAtualizado);
 
                     if (concluido) {
-                        mainController.getUsuarioLogado().adicionarPontuacao(nivelDificuldade);
+                        mainController.getUsuarioLogado().adicionarPontuacao(novoTreino.getNivelDeDificuldade()); // Correto!
                         showAlert(Alert.AlertType.INFORMATION, "Parabéns!", "Treino Concluído",
-                                "Você concluiu o treino e ganhou " + nivelDificuldade + " pontos!");
+                                "Você concluiu o treino e ganhou " + novoTreino.getNivelDeDificuldade() + " pontos!"); // Correto!
                     }
                 } catch (UsuarioNaoEncontradoException e) {
                     System.err.println("Erro ao buscar usuário: " + e.getMessage());
@@ -104,11 +109,12 @@ public class CriacaoTreinoController {
 
             fecharJanela();
 
-        } catch (NumberFormatException | TreinoNaoEncontradoException e) {
+
+        } catch (NumberFormatException | TreinoNaoEncontradoException e) { // Captura a exceção correta
             mensagemErro.setText("Erro: " + e.getMessage());
-        } catch (Exception e) {
+        } catch (Exception e) { // Captura genérica para outros erros
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(); // Sempre importante para debugging!
         }
     }
 

@@ -1,4 +1,3 @@
-// Meta.java
 package com.example.queimacaloria.negocio;
 
 import javafx.beans.property.*;
@@ -10,8 +9,9 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
-@ToString
+@Setter
 public class Meta {
+
     private final UUID id;
     private StringProperty descricao = new SimpleStringProperty();
     private ObjectProperty<Tipo> tipo = new SimpleObjectProperty<>();
@@ -20,11 +20,13 @@ public class Meta {
     private ObjectProperty<LocalDate> dataCriacao = new SimpleObjectProperty<>();
     private ObjectProperty<LocalDate> dataConclusao = new SimpleObjectProperty<>();
 
-    @Setter private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
+    //Usuário
+    private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
 
     public enum Tipo {
         PERDA_DE_PESO("Perda de Peso"),
-        GANHO_DE_MASSA("Ganho de Massa"), MANUTENCAO("Manutenção");
+        GANHO_DE_MASSA("Ganho de Massa"),
+        MANUTENCAO("Manutenção");
 
         private final String descricao;
 
@@ -43,11 +45,6 @@ public class Meta {
                 }
             }
             return null;
-        }
-
-        @Override
-        public String toString() {
-            return descricao;
         }
     }
 
@@ -90,8 +87,26 @@ public class Meta {
     public double getProgressoAtual() { return progressoAtual.get(); }
     public LocalDate getDataCriacao() { return dataCriacao.get(); }
     public LocalDate getDataConclusao() { return dataConclusao.get(); }
+    public UUID getId() { return id; } // Adicionei o getter para o ID.
 
-    // Adicionado: Getter e Property para Usuario
+    // Getter e Property para Usuario
     public Usuario getUsuario() { return usuario.get(); }
     public ObjectProperty<Usuario> usuarioProperty() { return usuario; }
+    public void setUsuario(Usuario usuario) {
+        this.usuario.set(usuario);
+    }
+
+    @Override
+    public String toString() {
+        return "Meta{" +
+                "id=" + id +
+                ", descricao=" + descricao.get() +
+                ", tipo=" + (tipo.get() != null ? tipo.get().getDescricao() : "null") + // Use getDescricao()
+                ", valorAlvo=" + valorAlvo.get() +
+                ", progressoAtual=" + progressoAtual.get() +
+                ", dataCriacao=" + dataCriacao.get() +
+                ", dataConclusao=" + dataConclusao.get() +
+                ", usuarioId=" + (usuario.get() != null ? usuario.get().getId() : "null") + // Apenas ID, evita recursão.
+                '}';
+    }
 }

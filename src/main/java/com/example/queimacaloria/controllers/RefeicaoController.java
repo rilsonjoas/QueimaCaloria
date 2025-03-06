@@ -147,26 +147,37 @@ public class RefeicaoController {
     @FXML
     public void adicionarRefeicaoPreDefinida() {
         Refeicao refeicaoSelecionada = tabelaRefeicoesPreDefinidas.getSelectionModel().getSelectedItem();
-        if (refeicaoSelecionada != null) {
-            try {
-                Refeicao novaRefeicao = new Refeicao(
-                        refeicaoSelecionada.getNome(),
-                        refeicaoSelecionada.getDescricao(),
-                        refeicaoSelecionada.getCalorias(),
-                        refeicaoSelecionada.getMacronutrientes()
-                );
-                fachada.configurarRefeicao(novaRefeicao, novaRefeicao.getNome(),
-                        novaRefeicao.getDescricao(), novaRefeicao.getMacronutrientes());
-                atualizarTabelaRefeicoesUsuario();
-                mensagemRefeicao.setText("Refeição adicionada com sucesso!");
+        if(refeicaoSelecionada == null){  //Verifica
+            showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma refeição selecionada", "Selecione uma refeição para adicionar.");
+            return;
+        }
 
-            } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar refeição", e.getMessage());
-                e.printStackTrace();
-            }
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma refeição selecionada",
-                    "Por favor, selecione uma refeição pré-definida para adicionar.");
+
+        if (mainController == null || mainController.getUsuarioLogado() == null) { //Verifica
+            showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário logado", "Não foi possível adicionar a refeição.");
+            return;
+        }
+
+        try {
+            Refeicao novaRefeicao = new Refeicao(
+                    refeicaoSelecionada.getNome(),
+                    refeicaoSelecionada.getDescricao(),
+                    refeicaoSelecionada.getCalorias(),
+                    refeicaoSelecionada.getMacronutrientes()
+            );
+
+            //REVISÃO: Definindo o usuário LOGADO.
+            novaRefeicao.setUsuario(mainController.getUsuarioLogado());
+
+            fachada.configurarRefeicao(novaRefeicao, novaRefeicao.getNome(),
+                    novaRefeicao.getDescricao(), novaRefeicao.getMacronutrientes(), novaRefeicao.getUsuario());//Passa o Usuario
+            atualizarTabelaRefeicoesUsuario(); //Atualiza antes.
+            mensagemRefeicao.setText("Refeição adicionada com sucesso!");
+
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar refeição", e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -180,17 +191,20 @@ public class RefeicaoController {
                 listaRefeicoes = listaRefeicoes.stream()
                         .filter(refeicao -> refeicao.getUsuario() != null && refeicao.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
+
                 tabelaRefeicoesUsuario.setItems(FXCollections.observableArrayList(listaRefeicoes));
-            }
-            else {
+                tabelaRefeicoesUsuario.refresh();
+            } else {
                 // Trata caso não haja usuário logado (opcional)
                 tabelaRefeicoesUsuario.setItems(FXCollections.observableArrayList());
                 System.err.println("RefeicaoController: Nenhum usuário logado ao atualizar a tabela.");
             }
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar refeições", e.getMessage());
+            e.printStackTrace(); // Sempre útil para debugging
         }
     }
+
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
@@ -199,7 +213,6 @@ public class RefeicaoController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
     @FXML
     public void voltarParaTelaPrincipal() {
         if (mainController != null) {

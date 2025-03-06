@@ -55,7 +55,7 @@ public class CriacaoExercicioController {
         String caloriasQueimadasStr = campoCaloriasQueimadas.getText();
 
         if (!validarFormulario(nome, descricao, tipo, tempoStr, caloriasQueimadasStr)) {
-            return; // Aborta se a validação falhar
+            return;
         }
 
         try {
@@ -63,16 +63,22 @@ public class CriacaoExercicioController {
             double caloriasQueimadas = Double.parseDouble(caloriasQueimadasStr);
 
             Exercicio novoExercicio = new Exercicio();
-            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, caloriasQueimadas);
+
+            // Verifica se há um usuário logado e o associa ao exercício
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                novoExercicio.setUsuario(mainController.getUsuarioLogado()); // Define o usuário
+            }
+
+
+            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, caloriasQueimadas, mainController.getUsuarioLogado()); // Passa o usuário
 
             mensagemErro.setText("Exercício criado com sucesso!");
 
             if (exercicioController != null) {
-                exercicioController.initialize();
+                exercicioController.initialize(); // Ou um método mais específico para atualizar a tabela
             }
-
             if(mainController != null){
-                mainController.getUsuarioLogado().getExercicios().add(novoExercicio);
+                mainController.getUsuarioLogado().getExercicios().add(novoExercicio); //Adiciona aos exercícios do usuario logado
                 mainController.atualizarDadosTelaPrincipal();
             }
 
@@ -80,12 +86,12 @@ public class CriacaoExercicioController {
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Tempo e calorias devem ser números válidos.");
-        } catch (ExercicioNaoEncontradoException e) {
+        } catch (ExercicioNaoEncontradoException e) {  // Captura a exceção específica
             mensagemErro.setText("Erro ao criar exercicio: " + e.getMessage());
-        } catch (Exception e) {
+        } catch (Exception e) { // Captura genérica para outros erros
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
+            e.printStackTrace();
         }
-
     }
 
     //Função auxiliar para validar o formulário.

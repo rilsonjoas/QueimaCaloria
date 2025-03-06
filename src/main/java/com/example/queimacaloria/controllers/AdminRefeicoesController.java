@@ -93,7 +93,7 @@ public class AdminRefeicoesController {
             macronutrientes.put("Gorduras", Double.parseDouble(gordurasStr));
 
             Refeicao novaRefeicao = new Refeicao();
-            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes);
+            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes, null);
             atualizarTabelaRefeicoes();
             mensagem.setText("Refeição criada com sucesso.");
         } catch (Exception e) {
@@ -117,7 +117,7 @@ public class AdminRefeicoesController {
                 macronutrientes.put("Carboidratos", Double.parseDouble(carboidratosStr));
                 macronutrientes.put("Gorduras", Double.parseDouble(gordurasStr));
 
-                fachada.configurarRefeicao(refeicaoSelecionada, nome, descricao, macronutrientes);
+                fachada.configurarRefeicao(refeicaoSelecionada, nome, descricao, macronutrientes, null);
                 atualizarTabelaRefeicoes();
                 mensagem.setText("Refeição atualizada com sucesso.");
             } catch (Exception e) {

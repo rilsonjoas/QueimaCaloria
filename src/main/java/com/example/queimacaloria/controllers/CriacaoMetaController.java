@@ -53,7 +53,7 @@ public class CriacaoMetaController {
         String progressoAtualStr = campoProgressoAtual.getText();
 
         if (!validarFormulario(descricao, tipo, valorAlvoStr, progressoAtualStr)) {
-            return; // Aborta se a validação falhar
+            return;
         }
 
         try {
@@ -64,14 +64,19 @@ public class CriacaoMetaController {
                 return;
             }
 
-            LocalDate dataConclusao = null; // Inicialmente, nulo.
-            if (buttonConcluirMeta.isDisabled()) { // Se o botão foi desativado, a meta foi concluída.
-                dataConclusao = LocalDate.now();  // Pega a data atual
+            LocalDate dataConclusao = null;
+            if (buttonConcluirMeta.isDisabled()) {
+                dataConclusao = LocalDate.now();
             }
 
-            if(mainController != null && mainController.getUsuarioLogado() != null){
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Meta novaMeta = new Meta();
+                // Define o usuário na nova meta
+                novaMeta.setUsuario(mainController.getUsuarioLogado());
                 fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
+
+
+                mainController.getUsuarioLogado().getMetas().add(novaMeta); //
 
                 mensagemErro.setText("Meta criada com sucesso!");
 
@@ -112,10 +117,9 @@ public class CriacaoMetaController {
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Valores numéricos inválidos.");
-        } catch (MetaNaoEncontradaException e) {
-            mensagemErro.setText("Erro ao criar meta: " + e.getMessage());
         } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

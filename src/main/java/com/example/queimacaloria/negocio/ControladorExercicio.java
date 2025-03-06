@@ -2,8 +2,10 @@ package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioExerciciosArray;
 import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
+import javafx.beans.property.ObjectProperty;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 public class ControladorExercicio {
 
@@ -13,13 +15,15 @@ public class ControladorExercicio {
         this.repositorio = RepositorioExerciciosArray.getInstanciaUnica(); // Singleton!
     }
 
+    // Modificado: Recebe o Usuario
     public void inicializar(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
-                            int tempo, double caloriasQueimadas) throws ExercicioNaoEncontradoException {
+                            int tempo, double caloriasQueimadas, Usuario usuario) throws ExercicioNaoEncontradoException {
         exercicio.setNome(nome);
         exercicio.setDescricao(descricao);
         exercicio.setTipo(tipo);
         exercicio.setTempo(tempo);
         exercicio.setCaloriasQueimadas(caloriasQueimadas);
+        exercicio.setUsuario(usuario);
 
         try {
             repositorio.salvar(exercicio);

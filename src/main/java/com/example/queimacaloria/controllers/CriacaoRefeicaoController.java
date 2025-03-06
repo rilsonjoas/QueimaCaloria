@@ -54,7 +54,7 @@ public class CriacaoRefeicaoController {
         String gordurasStr = campoGorduras.getText();
 
         if (!validarFormulario(nome, descricao, proteinasStr, carboidratosStr, gordurasStr)) {
-            return; // Aborta se a validação falhar
+            return;
         }
 
         try {
@@ -64,7 +64,13 @@ public class CriacaoRefeicaoController {
             macronutrientes.put("Gorduras", Double.parseDouble(gordurasStr));
 
             Refeicao novaRefeicao = new Refeicao();
-            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes);
+
+            // Verifica se há um usuário logado e o associa à refeição
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                novaRefeicao.setUsuario(mainController.getUsuarioLogado());
+            }
+
+            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes, mainController.getUsuarioLogado()); // Passa o usuário
 
             mensagemErro.setText("Refeição criada com sucesso!");
 
@@ -72,16 +78,19 @@ public class CriacaoRefeicaoController {
                 refeicaoController.atualizarTabelaRefeicoesUsuario();
             }
 
-            if (mainController != null) {
+            if(mainController != null){
                 mainController.atualizarDadosTelaPrincipal();
             }
+
 
             fecharJanela();
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Valores de macronutrientes inválidos.");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
+            e.printStackTrace(); // Sempre útil para debugging.
         }
     }
 

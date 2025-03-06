@@ -1,9 +1,11 @@
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Dieta;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Meta;
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -63,13 +65,25 @@ public class EdicaoDietaController {
         String caloriasStr = campoCalorias.getText();
 
         if (!validarFormulario(nome, objetivo, caloriasStr)) {
-            return; // Aborta se a validação falhar
+            return;
         }
 
         try {
             int calorias = Integer.parseInt(caloriasStr);
-            fachada.configurarDieta(dieta, nome, objetivo, calorias, dieta.getUsuario());
+            fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado());
             mensagemErro.setText("Dieta atualizada com sucesso!");
+
+            // Atualiza o usuário logado:
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                try {
+                    Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
+                    mainController.setUsuarioLogado(usuarioAtualizado);
+                }
+                catch (UsuarioNaoEncontradoException e){
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
+                            "O usuário logado não pôde ser encontrado.");
+                }
+            }
 
             if(dietaController != null){
                 dietaController.atualizarTabelaDietasUsuario();

@@ -20,11 +20,11 @@ public class LoginController {
     @FXML private PasswordField campoSenha;
     @FXML private Label mensagemLogin;
     @FXML private AuthController authController;
-    @FXML private Button buttonLoginAdmin; //ADICIONADO
+    @FXML private Button buttonLoginAdmin;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    private static final String ADMIN_EMAIL = "admin"; //ADICIONADO
-    private static final String ADMIN_SENHA = "admin"; //ADICIONADO
+    private static final String ADMIN_EMAIL = "admin";
+    private static final String ADMIN_SENHA = "admin";
 
     public void setAuthController(AuthController authController) {
         this.authController = authController;

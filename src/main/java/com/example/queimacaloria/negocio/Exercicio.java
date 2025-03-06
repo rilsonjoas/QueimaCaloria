@@ -1,4 +1,3 @@
-// Exercicio.java
 package com.example.queimacaloria.negocio;
 
 import javafx.beans.property.*;
@@ -58,8 +57,25 @@ public class Exercicio {
     public double getCaloriasQueimadas() { return caloriasQueimadas.get(); }
     public void setCaloriasQueimadas(double caloriasQueimadas) { this.caloriasQueimadas.set(caloriasQueimadas); }
 
-    // Adicionado: Getter e Property para Usuario
+    // Getter e Property para Usuario
     public Usuario getUsuario() { return usuario.get(); }
     public ObjectProperty<Usuario> usuarioProperty() { return usuario; }
 
+    public void setUsuario(Usuario usuario) {
+        this.usuario.set(usuario);
+    }
+
+    @Override
+    public String toString() {
+        return "Exercicio{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", descricao='" + descricao + '\'' +
+                ", tipo=" + tipo +
+                ", tempo=" + tempo +
+                ", caloriasQueimadas=" + caloriasQueimadas.get() +
+                ", concluido=" + concluido +
+                ", usuarioId=" + (usuario.get() != null ? usuario.get().getId() : "null") + // Apenas o ID
+                '}';
+    }
 }

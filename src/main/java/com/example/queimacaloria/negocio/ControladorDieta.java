@@ -15,8 +15,7 @@ public class ControladorDieta {
         this.repositorio = RepositorioDietasArray.getInstanciaUnica();
     }
 
-    // Configura uma dieta, atualizando ou adicionando ao repositório.
-    public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario) throws DietaNaoEncontradaException {
+    public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario) throws DietaNaoEncontradaException { // Usuario adicionado
         dieta.setNome(nome);
         dieta.setObjetivo(objetivo);
         dieta.setCaloriasDiarias(caloriasDiarias);
@@ -44,4 +43,5 @@ public class ControladorDieta {
     public void removerDieta(UUID id) throws DietaNaoEncontradaException{
         repositorio.remover(id);
     }
+
 }

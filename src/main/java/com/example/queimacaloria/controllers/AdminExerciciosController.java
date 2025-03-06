@@ -97,7 +97,7 @@ public class AdminExerciciosController {
 
             Exercicio novoExercicio = new Exercicio();
             novoExercicio.setMusculosTrabalhados(new ArrayList<>());
-            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, calorias);
+            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, calorias, null);
             atualizarTabelaExercicios();
             mensagem.setText("Exercício criado com sucesso.");
         } catch (Exception e) {
@@ -118,7 +118,7 @@ public class AdminExerciciosController {
                 int tempo = Integer.parseInt(tempoStr);
                 double calorias = Double.parseDouble(caloriasStr);
 
-                fachada.configurarExercicio(exercicioSelecionado, nome, descricao, tipo, tempo, calorias);
+                fachada.configurarExercicio(exercicioSelecionado, nome, descricao, tipo, tempo, calorias, null);
                 atualizarTabelaExercicios();
                 mensagem.setText("Exercício atualizado com sucesso.");
             } catch (Exception e) {

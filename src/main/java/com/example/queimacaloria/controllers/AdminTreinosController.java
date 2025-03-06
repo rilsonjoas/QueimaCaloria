@@ -95,7 +95,7 @@ public class AdminTreinosController {
 
             Treino novoTreino = new Treino();
             novoTreino.setExercicios(new ArrayList<>());
-            fachada.configurarTreino(novoTreino, nome, tipo, duracao, nivelDificuldade);
+            fachada.configurarTreino(novoTreino, nome, tipo, duracao, nivelDificuldade, null);
             atualizarTabelaTreinos();
             mensagem.setText("Treino criado com sucesso.");
         } catch (Exception e) {
@@ -115,7 +115,7 @@ public class AdminTreinosController {
                 int duracao = Integer.parseInt(duracaoStr);
                 int nivelDificuldade = Integer.parseInt(nivelDificuldadeStr);
 
-                fachada.configurarTreino(treinoSelecionado, nome, tipo, duracao, nivelDificuldade);
+                fachada.configurarTreino(treinoSelecionado, nome, tipo, duracao, nivelDificuldade, null);
                 atualizarTabelaTreinos();
                 mensagem.setText("Treino atualizado com sucesso.");
             } catch (Exception e) {

@@ -56,16 +56,18 @@ public class CriacaoDietaController {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 Dieta novaDieta = new Dieta();
                 novaDieta.setUsuario(usuarioLogado);
-                fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado);
 
+                fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado);
                 fachada.setDietaAtiva(usuarioLogado, novaDieta);
+
+                usuarioLogado.getDietas().add(novaDieta);
 
                 if (dietaController != null) {
                     dietaController.atualizarTabelaDietasUsuario();
                     dietaController.showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dieta Criada", "Dieta criada com sucesso!");
                 }
 
-                // Recomendação de refeição
+                // Recomendação de refeição (mantém como estava)
                 Refeicao refeicaoRecomendada = fachada.getRefeicaoAleatoria();
                 if (refeicaoRecomendada != null) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -77,7 +79,6 @@ public class CriacaoDietaController {
                             refeicaoRecomendada.getCalorias()));
                     alert.showAndWait();
                 }
-
                 fecharJanela();
 
             } else {
@@ -85,11 +86,11 @@ public class CriacaoDietaController {
             }
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Calorias devem ser um número inteiro válido.");
-        } catch (DietaNaoEncontradaException | UsuarioNaoEncontradoException e) {
+        } catch (DietaNaoEncontradaException | UsuarioNaoEncontradoException e) { // Captura ambas as exceções
             mensagemErro.setText("Erro: " + e.getMessage());
-        } catch (Exception e) {
+        } catch (Exception e) { // Captura genérica para outros erros
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(); // Sempre importante para debugging
         }
     }
 

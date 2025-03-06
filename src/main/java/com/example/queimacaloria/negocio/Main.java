@@ -23,18 +23,15 @@ public class Main {
 
             Meta meta = new Meta();
             fachada.configurarMeta(meta, "Perder 5kg", Meta.Tipo.PERDA_DE_PESO, 5.0, 0.0, LocalDate.of(2024, 12, 31));
-            fachada.cadastrarMetaUsuario(usuario, meta);
+
             System.out.println("Meta cadastrada para o usuário.");
 
             Treino treino = new Treino();
-            fachada.configurarTreino(treino, "Treino de Força", Exercicio.TipoExercicio.valueOf("FORCA"), 60, 3);
-            fachada.adicionarTreinoAoUsuario(usuario, treino);
+            fachada.configurarTreino(treino, "Treino de Força", Exercicio.TipoExercicio.FORCA, 60, 3,  usuario);
             System.out.println("Treino adicionado ao usuário.");
 
-            //Aqui estava o erro:
-            Dieta dieta = new Dieta();  //Cria a dieta
-            fachada.configurarDieta(dieta, "Dieta Low Carb", Meta.Tipo.PERDA_DE_PESO, 1800, usuario); //Agora está correto.
-            fachada.adicionarDietaUsuario(usuario, dieta);
+            Dieta dieta = new Dieta();
+            fachada.configurarDieta(dieta, "Dieta Low Carb", Meta.Tipo.PERDA_DE_PESO, 1800, usuario);
             System.out.println("Dieta adicionada ao usuário.");
 
             int idadeUsuario = fachada.calcularIdadeUsuario(usuario);
@@ -44,8 +41,8 @@ public class Main {
             System.err.println("Erro no usuário: " + e.getMessage());
         }
 
-        //Aqui estava o erro:
-        Dieta dieta2 = new Dieta(); //Não precisa instanciar de novo, pode reusar o objeto dieta
+
+        Dieta dieta2 = new Dieta();
         Usuario userDieta = new Usuario(); // Isso não é mais necessário, pois a dieta ativa é associada *ao usuário*.
 
         try {
@@ -56,7 +53,7 @@ public class Main {
             macros1.put("Proteínas", 50.0);
             macros1.put("Carboidratos", 100.0);
             macros1.put("Gorduras", 30.0);
-            fachada.configurarRefeicao(refeicao1, "Café da Manhã", "Ovos mexidos com bacon", macros1);
+            fachada.configurarRefeicao(refeicao1, "Café da Manhã", "Ovos mexidos com bacon", macros1, usuario);
 
             Refeicao refeicao2 = new Refeicao();
             Map<String, Double> macros2 = new HashMap<>();
@@ -64,7 +61,7 @@ public class Main {
             macros2.put("Carboidratos", 80.0);
             macros2.put("Gorduras", 40.0);
 
-            fachada.configurarRefeicao(refeicao2, "Almoço", "Frango grelhado com batata doce", macros2);
+            fachada.configurarRefeicao(refeicao2, "Almoço", "Frango grelhado com batata doce", macros2,  usuario);
 
 
         } catch (DietaNaoEncontradaException e) {
@@ -73,7 +70,7 @@ public class Main {
 
         Exercicio exercicio = new Exercicio();
         try {
-            fachada.configurarExercicio(exercicio, "Corrida", "Corrida leve", Exercicio.TipoExercicio.CARDIO, 30, 10.0);
+            fachada.configurarExercicio(exercicio, "Corrida", "Corrida leve", Exercicio.TipoExercicio.CARDIO, 30, 10.0,  usuario);
             fachada.adicionarMusculoExercicio(exercicio, "Pernas");
             System.out.println("Exercício configurado.");
 
@@ -109,7 +106,7 @@ public class Main {
         macronutrientesRefeicao.put("Proteínas", 40.0);
         macronutrientesRefeicao.put("Carboidratos", 60.0);
         macronutrientesRefeicao.put("Gorduras", 20.0);
-        fachada.configurarRefeicao(refeicao, "Jantar", "Salmão com legumes", macronutrientesRefeicao);
+        fachada.configurarRefeicao(refeicao, "Jantar", "Salmão com legumes", macronutrientesRefeicao,  usuario);
         System.out.println("Refeição configurada.");
 
         int caloriasRefeicao = fachada.calcularCaloriasRefeicao(refeicao);
@@ -124,9 +121,9 @@ public class Main {
 
         try {
 
-            fachada.configurarExercicio(exercicio1, "Supino", "Peito", Exercicio.TipoExercicio.FORCA, 45, 8.0);
-            fachada.configurarExercicio(exercicio2, "Agachamento", "Pernas", Exercicio.TipoExercicio.FORCA, 60, 9.0);
-            fachada.configurarTreino(treino, "Treino Completo", Exercicio.TipoExercicio.valueOf("Full Body"), 90, 4);
+            fachada.configurarExercicio(exercicio1, "Supino", "Peito", Exercicio.TipoExercicio.FORCA, 45, 8.0,  usuario);
+            fachada.configurarExercicio(exercicio2, "Agachamento", "Pernas", Exercicio.TipoExercicio.FORCA, 60, 9.0, usuario);
+            fachada.configurarTreino(treino, "Treino Completo", Exercicio.TipoExercicio.valueOf("Full Body"), 90, 4,  usuario);
 
             System.out.println("Treino configurado.");
             fachada.inserirExercicioTreino(treino, exercicio1);

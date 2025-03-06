@@ -5,6 +5,7 @@ import com.example.queimacaloria.interfaces.IBaseAdmin;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Refeicao;
 import com.example.queimacaloria.negocio.Usuario;
+import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -169,6 +170,11 @@ public class MainController implements IBaseAdmin {
 
             usuarioLogado.getMetas().addListener((ListChangeListener<Meta>) change -> {
                 System.out.println("MainController: Listener de metas disparado!");
+                atualizarDadosTelaPrincipal();  // Atualiza se a *lista* de metas mudar
+            });
+
+            usuarioLogado.getDietas().addListener((ListChangeListener<Dieta>) change ->{
+                System.out.println("MainController: Listener de dietas disparado!");
                 atualizarDadosTelaPrincipal();
             });
 
@@ -397,13 +403,31 @@ public class MainController implements IBaseAdmin {
         if (usuarioLogado == null) {
             return 0;
         }
-        int total = 0;
-        List<Refeicao> todasRefeicoes = Fachada.getInstanciaUnica().listarRefeicoes();
-        for(Refeicao r : todasRefeicoes) {
-            total += r.getCalorias();
+
+        try {
+            Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
+            if (dietaAtiva == null) {
+                return 0; // Sem dieta ativa, zero calorias consumidas.
+            }
+
+            int total = 0;
+            List<Refeicao> todasRefeicoes = Fachada.getInstanciaUnica().listarRefeicoes();
+
+            // Filtra para pegar apenas as refeições do usuário logado.
+            for (Refeicao r : todasRefeicoes) {
+                if (r.getUsuario() != null && r.getUsuario().getId().equals(usuarioLogado.getId())) {
+                    total += r.getCalorias();
+                }
+            }
+            return total;
+
+
+        } catch (UsuarioNaoEncontradoException e) {
+            System.err.println("Usuário não encontrado ao calcular calorias consumidas: " + e.getMessage());
+            return 0;
         }
-        return total;
     }
+
     // Atualiza o label de calorias consumidas/diárias.  Este método é *crucial*.
     private void atualizarCalorias() {
         if (usuarioLogado == null || labelCaloriasDia == null) {
@@ -417,14 +441,15 @@ public class MainController implements IBaseAdmin {
         int caloriasDiarias = 0; // Valor padrão, se não houver dieta ativa.
 
         try {
-            //Obtém a dieta ativa *corretamente*.
-            Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
+            // Obtém a dieta ativa *corretamente*.  A Fachada já tem um método para isso!
+            Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado); //Usando o método da fachada
             if (dietaAtiva != null) {
-                caloriasDiarias = dietaAtiva.getCaloriasDiarias();
+                caloriasDiarias = dietaAtiva.getCaloriasDiarias(); // Obtém as calorias da dieta
             }
         } catch (UsuarioNaoEncontradoException e) {
             System.err.println("Usuário não encontrado ao buscar dieta ativa: " + e.getMessage());
             // Se não encontrou o usuário, não tem o que fazer.  Mantém caloriasDiarias = 0.
+            // Opcional: mostrar um alerta para o usuário, se apropriado.
         }
 
         labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias);
@@ -436,11 +461,11 @@ public class MainController implements IBaseAdmin {
         double progressoTotal = 0.0;
         int contadorMetas = 0;
 
-        if (usuarioLogado != null) {
-            if (usuarioLogado.getMetas() != null) {
-                for (Meta meta : usuarioLogado.getMetas()) {
+        if (usuarioLogado != null && usuarioLogado.getMetas() != null) {
+            for (Meta meta : usuarioLogado.getMetas()) {
+                if (meta.getUsuario() != null && meta.getUsuario().getId().equals(usuarioLogado.getId())) {
                     if (meta.getValorAlvo() > 0) {
-                        double progressoMeta = (meta.getProgressoAtual() / meta.getValorAlvo());
+                        double progressoMeta = meta.getProgressoAtual() / meta.getValorAlvo();
                         progressoTotal += progressoMeta;
                         contadorMetas++;
                     }
@@ -448,11 +473,7 @@ public class MainController implements IBaseAdmin {
             }
         }
 
-        if (contadorMetas > 0) {
-            return progressoTotal / contadorMetas;
-        } else {
-            return 0.0;
-        }
+        return (contadorMetas > 0) ? progressoTotal / contadorMetas : 0.0;
     }
 
     // Adiciona um exercício à lista de atividades recentes.
@@ -484,6 +505,7 @@ public class MainController implements IBaseAdmin {
 
     // Atualiza todos os dados da tela principal.
     public void atualizarDadosTelaPrincipal() {
+        System.out.println("MainController.atualizarDadosTelaPrincipal() chamado"); // Debug
         if (usuarioLogado != null) {
             //Verifica se o usuário tem uma dieta ativa antes de tentar acessá-la
             try {
@@ -500,14 +522,26 @@ public class MainController implements IBaseAdmin {
             atualizarAgua(); // Atualiza a exibição da água
             atualizarGraficoPeso();
             progressoGeral.set(calcularProgressoGeralUsuario());
-            if (telaDieta != null) ((DietaController) getController(telaDieta)).atualizarTabelaDietasUsuario();
-            if (telaExercicio != null)
+
+
+
+            // Atualiza as tabelas nas outras telas *através dos controllers delas*.  Isso é MUITO importante.
+            if (telaDieta != null) {
+                ((DietaController) getController(telaDieta)).atualizarTabelaDietasUsuario();
+            }
+            if (telaExercicio != null) {
                 ((ExercicioController) getController(telaExercicio)).atualizarTabelaExerciciosUsuario();
-            if (telaMeta != null) ((MetaController) getController(telaMeta)).atualizarTabelaMetasUsuario();
-            if (telaRefeicao != null)
+            }
+            if (telaMeta != null) {
+                ((MetaController) getController(telaMeta)).atualizarTabelaMetasUsuario();
+            }
+            if (telaRefeicao != null) {
                 ((RefeicaoController) getController(telaRefeicao)).atualizarTabelaRefeicoesUsuario();
-            if (telaTreino != null)
+            }
+            if (telaTreino != null) {
                 ((TreinoController) getController(telaTreino)).atualizarTabelaTreinosUsuario();
+            }
+
 
             //Admin View
             boolean isAdmin = usuarioLogado.getTipo().equals(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao()); //ADICIONADO
@@ -525,6 +559,31 @@ public class MainController implements IBaseAdmin {
 
             usuarioLogado.getHistoricoPeso().addListener((ListChangeListener<PesoRegistro>) change -> {
                 atualizarGraficoPeso(); // Atualiza o gráfico se o histórico mudar.
+            });
+
+            // Adicionado listener para progressoAtual de cada meta
+            usuarioLogado.getMetas().addListener((ListChangeListener<Meta>) change -> {
+                while (change.next()) {
+                    if (change.wasUpdated() || change.wasAdded() || change.wasRemoved()) { //Verifica todos os tipos de mudança.
+                        atualizarDadosTelaPrincipal();
+                        break; // Uma atualização é suficiente
+                    }
+
+                    // Adicione um listener *individual* a cada meta *nova*
+                    if (change.wasAdded()) {
+                        for (Meta meta : change.getAddedSubList()) {
+                            meta.progressoAtualProperty().addListener((obs, oldVal, newVal) -> {
+                                System.out.println("Meta (" + meta.getDescricao() + ") progressoAtualProperty mudou. Novo valor: " + newVal); //DEBUG
+                                atualizarDadosTelaPrincipal();
+                            });
+                            // Adicione um listener para dataConclusaoProperty
+                            meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
+                                System.out.println("Meta (" + meta.getDescricao() + ") dataConclusaoProperty mudou. Novo valor: " + newVal); //DEBUG
+                                atualizarDadosTelaPrincipal();
+                            });
+                        }
+                    }
+                }
             });
         }
     }

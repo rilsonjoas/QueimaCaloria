@@ -170,67 +170,69 @@ public class TreinoController {
     @FXML
     public void adicionarTreinoPreDefinido() {
         Treino treinoSelecionado = tabelaTreinosPreDefinidos.getSelectionModel().getSelectedItem();
-        if (treinoSelecionado != null) {
-            try {
-                Treino novoTreino = new Treino(
-                        treinoSelecionado.getNome(),
-                        treinoSelecionado.getTipoDeTreino(),
-                        treinoSelecionado.getDuracao(),
-                        treinoSelecionado.getNivelDeDificuldade(),
-                        new ArrayList<>(treinoSelecionado.getExercicios()),
-                        treinoSelecionado.getCaloriasQueimadas(),
-                        treinoSelecionado.getProgresso(),
-                        treinoSelecionado.isConcluido()
-                );
-
-                fachada.configurarTreino(novoTreino, novoTreino.getNome(),
-                        novoTreino.getTipoDeTreino(), novoTreino.getDuracao(),
-                        novoTreino.getNivelDeDificuldade());
-                atualizarTabelaTreinosUsuario();
-                mensagemTreino.setText("Treino adicionado com sucesso!");
-
-                if (mainController != null && mainController.getUsuarioLogado() != null) {
-                    try {
-                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                        fachada.adicionarTreinoAoUsuario(usuarioAtualizado, novoTreino);
-                        mainController.setUsuarioLogado(usuarioAtualizado);
-                    } catch (UsuarioNaoEncontradoException e) {
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
-                                "O usuário logado não pôde ser encontrado após a adição do treino.");
-                    }
-                }
-
-                // Adiciona a sugestão de exercícios *após* adicionar o treino
-                sugerirExercicios(novoTreino);
-
-
-            } catch (TreinoNaoEncontradoException e) {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar treino", e.getMessage());
-            }
-        } else {
+        if (treinoSelecionado == null) {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhum treino selecionado",
                     "Por favor, selecione um treino pré-definido para adicionar.");
+            return;
+        }
+
+        if (mainController == null || mainController.getUsuarioLogado() == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não logado", "Não é possível adicionar o treino.");
+            return;
+        }
+
+        try {
+            Treino novoTreino = new Treino(
+                    treinoSelecionado.getNome(),
+                    treinoSelecionado.getTipoDeTreino(),
+                    treinoSelecionado.getDuracao(),
+                    treinoSelecionado.getNivelDeDificuldade(),
+                    new ArrayList<>(treinoSelecionado.getExercicios()), // Copia a lista
+                    treinoSelecionado.getCaloriasQueimadas(),
+                    treinoSelecionado.getProgresso(),
+                    treinoSelecionado.isConcluido()
+            );
+            // REVISÃO: Definindo o usuário *antes* de chamar configurarTreino.
+            novoTreino.setUsuario(mainController.getUsuarioLogado());
+
+            fachada.configurarTreino(novoTreino, novoTreino.getNome(),
+                    novoTreino.getTipoDeTreino(), novoTreino.getDuracao(),
+                    novoTreino.getNivelDeDificuldade(), novoTreino.getUsuario()); //Passa o Usuário
+
+            // Agora, adicionamos o treino ao usuário *através da Fachada*
+            fachada.adicionarTreinoAoUsuario(mainController.getUsuarioLogado(), novoTreino); // Usa o método da fachada
+            atualizarTabelaTreinosUsuario();
+
+            mensagemTreino.setText("Treino adicionado com sucesso!");
+            // Adiciona a sugestão de exercícios *após* adicionar o treino
+            sugerirExercicios(novoTreino);
+
+
+        } catch (TreinoNaoEncontradoException | UsuarioNaoEncontradoException e) { // Captura UsuarioNaoEncontradoException
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar treino", e.getMessage());
         }
     }
 
+
     public void atualizarTabelaTreinosUsuario() {
         try {
-
-            if(mainController != null && mainController.getUsuarioLogado() != null){
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 List<Treino> listaTreinos = fachada.listarTreinos();
 
-                //FILTRO: Mostrar apenas os treinos do usuário logado
-                listaTreinos = listaTreinos.stream().filter(treino -> treino.getUsuario() != null && treino.getUsuario().getId.equals(usuarioLogado.getId()))
+                //FILTRO: Mostrar apenas os treinos do usuário logado.
+                listaTreinos = listaTreinos.stream()
+                        .filter(treino -> treino.getUsuario() != null && treino.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
+
                 tabelaTreinosUsuario.setItems(FXCollections.observableArrayList(listaTreinos));
                 tabelaTreinosUsuario.refresh();
 
                 if (!tabelaTreinosUsuario.getItems().isEmpty()) {
-                    tabelaTreinosUsuario.getSelectionModel().select(0);
-                    exibirDetalhesTreino(tabelaTreinosUsuario.getItems().get(0));
+                    tabelaTreinosUsuario.getSelectionModel().select(0);  // Seleciona o primeiro
+                    exibirDetalhesTreino(tabelaTreinosUsuario.getItems().get(0)); // Exibe detalhes
                 } else {
-                    exibirDetalhesTreino(null);
+                    exibirDetalhesTreino(null); // Limpa os detalhes se a lista estiver vazia
                 }
             }
             else {
@@ -238,11 +240,10 @@ public class TreinoController {
                 tabelaTreinosUsuario.setItems(FXCollections.observableArrayList());
                 System.err.println("TreinoController: Nenhum usuário logado ao atualizar a tabela.");
             }
-
         }
-
         catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar treinos", e.getMessage());
+            e.printStackTrace(); // Sempre útil para debugging.
         }
     }
 
@@ -388,7 +389,7 @@ public class TreinoController {
 
             //Sugerir uma frequência de treino aleatória
             int frequencia = 2 + random.nextInt(4); //Gera números entre 2 e 5
-            sb.append("\nRecomendamos realizar este treino de ").append(frequencia).append(" vezes por semana.");
+            sb.append("\nRecomendamos realizar este treino ").append(frequencia).append(" vezes por semana.");
 
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

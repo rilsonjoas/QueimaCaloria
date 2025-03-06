@@ -33,13 +33,16 @@ public class Dieta {
     public void setNome(String nome) { this.nome.set(nome); }
     public void setObjetivo(Meta.Tipo objetivo) { this.objetivo.set(objetivo); } // Recebe Meta.Tipo
     public void setCaloriasDiarias(int caloriasDiarias) { this.caloriasDiarias.set(caloriasDiarias); }
-    public void setUsuario(Usuario usuario) { this.usuario.set(usuario); }
+    public void setUsuario(Usuario usuario) {
+        this.usuario.set(usuario);
+    }
 
     // Métodos Property
     public StringProperty nomeProperty() { return nome; }
     public ObjectProperty<Meta.Tipo> objetivoProperty() { return objetivo; } // ObjectProperty<Meta.Tipo>
     public IntegerProperty caloriasDiariasProperty() { return caloriasDiarias; }
     public ObjectProperty<Usuario> usuarioProperty() { return usuario; }
+
 
     // Método equals, para comparar objetos Dieta.
     @Override

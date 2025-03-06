@@ -205,77 +205,82 @@ public class MetaController {
     @FXML
     public void adicionarMetaPreDefinida() {
         Meta metaSelecionada = tabelaMetasPreDefinidas.getSelectionModel().getSelectedItem();
-        if (metaSelecionada != null) {
-            try {
-                Meta novaMeta = new Meta(
-                        metaSelecionada.getDescricao(),
-                        metaSelecionada.getTipo(),
-                        metaSelecionada.getValorAlvo(),
-                        0.0,
-                        metaSelecionada.getDataCriacao(),
-                        metaSelecionada.getDataConclusao() != null ? metaSelecionada.getDataConclusao() : null
-                );
-                fachada.configurarMeta(novaMeta, novaMeta.getDescricao(), novaMeta.getTipo(),
-                        novaMeta.getValorAlvo(), novaMeta.getProgressoAtual(), novaMeta.getDataConclusao());
-
-                atualizarTabelaMetasUsuario();
-                mensagemMeta.setText("Meta adicionada com sucesso!");
-
-                // Recomendação de dieta
-                Dieta dietaRecomendada = fachada.getDietaAleatoria(novaMeta.getTipo());
-                if (dietaRecomendada != null) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Recomendação de Dieta");
-                    alert.setHeaderText("Com base na sua nova meta, recomendamos a seguinte dieta:");
-                    alert.setContentText(String.format("Nome: %s\nObjetivo: %s\nCalorias: %d",
-                            dietaRecomendada.getNome(),
-                            dietaRecomendada.getObjetivo().getDescricao(),
-                            dietaRecomendada.getCaloriasDiarias()));
-                    alert.showAndWait();
-                }
-
-            } catch (MetaNaoEncontradaException e) {
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar meta", e.getMessage());
-            }
-        } else {
+        if (metaSelecionada == null) {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma meta selecionada",
                     "Por favor, selecione uma meta pré-definida para adicionar.");
+            return;
+        }
+
+        if (mainController == null || mainController.getUsuarioLogado() == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário logado", "Não foi possível adicionar a meta.");
+            return;
+        }
+
+        try {
+            // 1. Crie uma *cópia* da meta predefinida.  Isso é importante!
+            Meta novaMeta = new Meta(
+                    metaSelecionada.getDescricao(),
+                    metaSelecionada.getTipo(),
+                    metaSelecionada.getValorAlvo(),
+                    0.0, // Progresso inicial
+                    LocalDate.now(), // Data de criação
+                    null  // Sem data de conclusão (inicialmente)
+            );
+
+            // 2. **ASSOCIE O USUÁRIO LOGADO À *NOVA* META!**
+            novaMeta.setUsuario(mainController.getUsuarioLogado());
+
+            // 3. *Agora* você chama a fachada para configurar a *nova* meta.
+            fachada.configurarMeta(novaMeta, novaMeta.getDescricao(), novaMeta.getTipo(),
+                    novaMeta.getValorAlvo(), novaMeta.getProgressoAtual(), novaMeta.getDataConclusao());
+
+            atualizarTabelaMetasUsuario(); // Atualiza a tabela
+            mensagemMeta.setText("Meta adicionada com sucesso!");
+
+
+            // Recomendação de dieta (mantém como estava)
+            Dieta dietaRecomendada = fachada.getDietaAleatoria(novaMeta.getTipo());
+            if (dietaRecomendada != null) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Recomendação de Dieta");
+                alert.setHeaderText("Com base na sua nova meta, recomendamos a seguinte dieta:");
+                alert.setContentText(String.format("Nome: %s\nObjetivo: %s\nCalorias: %d",
+                        dietaRecomendada.getNome(),
+                        dietaRecomendada.getObjetivo().getDescricao(),
+                        dietaRecomendada.getCaloriasDiarias()));
+                alert.showAndWait();
+            }
+
+
+        } catch (MetaNaoEncontradaException e) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar meta", e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void atualizarTabelaMetasUsuario() {
-        System.out.println("MetaController.atualizarTabelaMetasUsuario() chamado.");
+        System.out.println("MetaController.atualizarTabelaMetasUsuario() chamado."); // Mantenha para debug
         try {
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
-                List<Meta> listaMetas = mainController.getUsuarioLogado().getMetas();
+                List<Meta> listaMetas = fachada.listarMetas(); // Obtém TODAS as metas.
 
-                // FILTRO: Mostra apenas as metas do usuário logado
+                // FILTRO: Mostra apenas as metas do usuário logado.
                 listaMetas = listaMetas.stream()
-                        .filter(meta -> meta != null && meta.getUsuario() != null && meta.getUsuario().getId().equals(usuarioLogado.getId()))
+                        .filter(meta -> meta.getUsuario() != null && meta.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
 
-                tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas));
+                tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas)); // Adiciona à tabela
+                tabelaMetasUsuario.refresh(); // Atualiza!
 
-                // Atualiza listeners (importante para reatividade, mas pode não ser a causa da duplicação)
-                for (Meta meta : tabelaMetasUsuario.getItems()) {
-                    meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
-                        System.out.println("Listener de dataConclusaoProperty disparado! Meta ID: " + meta.getId());
-                        tabelaMetasUsuario.refresh();
-                    });
-
-                    meta.progressoAtualProperty().addListener((obs, oldVal, newVal) -> {
-                        System.out.println("Listener de progressoAtualProperty disparado! Meta ID: " + meta.getId());
-                        tabelaMetasUsuario.refresh();
-                    });
-                }
             }
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar metas", e.getMessage());
-            e.printStackTrace(); // Sempre imprima stack traces para debugging!
+            e.printStackTrace();
         }
     }
+
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

@@ -81,7 +81,26 @@ public class Treino {
         return new SimpleDoubleProperty(progresso);
     }
 
-    // Adicionado: Getter e Property para Usuario
+    // Getter e Property para Usuario
     public Usuario getUsuario() { return usuario.get(); }
     public ObjectProperty<Usuario> usuarioProperty() { return usuario; }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario.set(usuario);
+    }
+
+    @Override
+    public String toString() {
+        return "Treino{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", tipoDeTreino=" + tipoDeTreino +
+                ", duracao=" + duracao +
+                ", nivelDeDificuldade=" + nivelDeDificuldade +
+                ", caloriasQueimadas=" + caloriasQueimadas +
+                ", progresso=" + progresso +
+                ", concluido=" + concluido +
+                ", usuarioId=" + (usuario.get() != null ? usuario.get().getId() : "null") +
+                '}';
+    }
 }

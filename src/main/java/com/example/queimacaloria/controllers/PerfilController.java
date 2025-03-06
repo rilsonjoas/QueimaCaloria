@@ -3,20 +3,27 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.beans.binding.Bindings;
+import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javafx.beans.value.ObservableValue; // Importante
+
 public class PerfilController {
 
+    // ... (todos os seus campos @FXML) ...
     @FXML private Label labelNomeAtual;
-    @FXML private Label labelEmailAtual;
     @FXML private Label labelPesoAtual;
     @FXML private Label labelAlturaAtual;
     @FXML private Label labelIMCatual;
@@ -35,6 +42,11 @@ public class PerfilController {
     @FXML private TextField campoCoxa;
     @FXML private TextField campoQuadril;
 
+    //Novos campos
+    @FXML private ChoiceBox<Usuario.TipoDieta> campoTipoDieta;
+    @FXML private ListView<Usuario.RestricaoAlimentar> listaRestricoes; // ListView, não mais TextField
+    @FXML private ChoiceBox<Usuario.NivelExperiencia> campoNivelExperiencia;
+
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private MainController mainController;
@@ -48,14 +60,72 @@ public class PerfilController {
     // Define o usuário logado e configura os bindings.
     public void setUsuarioLogado(Usuario usuario) {
         this.usuarioLogado = usuario;
-        bindLabels();
+        bindLabels(); // Vincular os campos
     }
+    @FXML
+    public void initialize() {
+        // Inicializa os ChoiceBox
+        campoTipoDieta.setItems(FXCollections.observableArrayList(Usuario.TipoDieta.values()));
+        campoNivelExperiencia.setItems(FXCollections.observableArrayList(Usuario.NivelExperiencia.values()));
+
+        // Configura a ListView para seleção múltipla
+        listaRestricoes.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        listaRestricoes.setItems(FXCollections.observableArrayList(Usuario.RestricaoAlimentar.values()));
+
+        // Usa CheckBoxListCell para o cellFactory
+        listaRestricoes.setCellFactory(CheckBoxListCell.forListView(new Callback<Usuario.RestricaoAlimentar, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(Usuario.RestricaoAlimentar item) {
+                BooleanProperty observable = new SimpleBooleanProperty();
+                // Define o valor inicial com base na seleção atual.
+                observable.set(usuarioLogado.getRestricoes().contains(item));
+
+                // Listener para ATUALIZAR o CONJUNTO quando a seleção mudar.
+                observable.addListener((obs, wasSelected, isNowSelected) -> {
+                    if (isNowSelected) {
+                        usuarioLogado.getRestricoes().add(item); // Adiciona ao conjunto
+                    } else {
+                        usuarioLogado.getRestricoes().remove(item); // Remove do conjunto
+                    }
+                });
+                return observable;
+            }
+        }, new StringConverter<>() {
+            //String converter para exibir os nomes das restrições
+
+            @Override
+            public String toString(Usuario.RestricaoAlimentar restricao) {
+                return restricao == null ? "" : restricao.toString();
+            }
+
+            @Override
+            public Usuario.RestricaoAlimentar fromString(String string) {
+                return null; //Não usado.
+            }
+
+        }));
+
+
+
+        // Configura um listener para mudanças na seleção do ChoiceBox de tipo de dieta.
+        campoTipoDieta.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (usuarioLogado != null && newValue != null) {
+                usuarioLogado.tipoDietaProperty().set(newValue);
+            }
+        });
+
+        campoNivelExperiencia.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
+            if(usuarioLogado != null && newValue != null){
+                usuarioLogado.nivelExperienciaProperty().set(newValue);
+            }
+        });
+    }
+
 
     // Configura os bindings dos labels e campos de texto.
     private void bindLabels() {
         if (usuarioLogado != null) {
             labelNomeAtual.textProperty().bind(usuarioLogado.nomeProperty());
-            labelEmailAtual.textProperty().bind(usuarioLogado.emailProperty());
 
             labelPesoAtual.textProperty().bind(Bindings.createStringBinding(
                     () -> String.format("%.2f", usuarioLogado.getPeso()),
@@ -83,10 +153,13 @@ public class PerfilController {
             labelBicepsAtual.textProperty().bind(Bindings.createStringBinding(() -> String.format("%.1f cm", usuarioLogado.getBiceps()), usuarioLogado.bicepsProperty()));
             labelCoxaAtual.textProperty().bind(Bindings.createStringBinding(() -> String.format("%.1f cm", usuarioLogado.getCoxa()), usuarioLogado.coxaProperty()));
             labelQuadrilAtual.textProperty().bind(Bindings.createStringBinding(() -> String.format("%.1f cm", usuarioLogado.getQuadril()), usuarioLogado.quadrilProperty()));
+
+            // Novos Bindings
+            campoTipoDieta.valueProperty().bindBidirectional(usuarioLogado.tipoDietaProperty());
+            campoNivelExperiencia.valueProperty().bindBidirectional(usuarioLogado.nivelExperienciaProperty());
         }
     }
 
-    // Atualiza os dados do perfil do usuário.
     @FXML
     public void atualizarPerfil() {
         if (usuarioLogado == null) {
@@ -104,10 +177,11 @@ public class PerfilController {
             return;
         }
 
-        try {
+        try{
             float peso = Float.parseFloat(pesoStr);
             float altura = Float.parseFloat(alturaStr);
-            //agora chamamos o metodo certo passando os 8 argumentos esperados.
+
+            //Agora chamamos o metodo certo passando os 8 argumentos esperados.
             fachada.atualizarDadosUsuario(usuarioLogado, nome, email, null, null, null, peso, altura, usuarioLogado.getTipo(),
                     Double.parseDouble(campoCintura.getText()),
                     Double.parseDouble(campoBiceps.getText()),
@@ -118,7 +192,8 @@ public class PerfilController {
                 mainController.atualizarDadosTelaPrincipal(); //Atualiza os dados.
             }
 
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Dados inválidos", "Peso, altura, e medidas devem ser números válidos.");
         }  catch (UsuarioNaoEncontradoException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado", e.getMessage());
@@ -204,6 +279,11 @@ public class PerfilController {
             return true;
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+    private void atualizarDadosPerfil() {
+        if (mainController != null) {
+            mainController.atualizarDadosTelaPrincipal();
         }
     }
 

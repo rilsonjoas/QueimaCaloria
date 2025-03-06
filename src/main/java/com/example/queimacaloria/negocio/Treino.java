@@ -28,6 +28,7 @@ public class Treino {
     @Setter private double caloriasQueimadas;
     @Setter private double progresso;
     @Setter private boolean concluido;
+    @Setter private Usuario.NivelExperiencia nivelExperiencia;
 
     // Adicionado: Campo Usuario
     @Setter private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
@@ -54,7 +55,9 @@ public class Treino {
         this.concluido = concluido;
     }
 
-
+    public Usuario.NivelExperiencia getNivelExperiencia() {
+        return nivelExperiencia;
+    }
 
     public double calcularCaloriasTotais() {
         double caloriasTotais = 0;

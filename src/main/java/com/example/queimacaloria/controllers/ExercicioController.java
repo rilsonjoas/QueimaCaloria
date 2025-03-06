@@ -193,6 +193,9 @@ public class ExercicioController {
             //REVISÃO:  Definindo o usuário LOGADO.
             novoExercicio.setUsuario(mainController.getUsuarioLogado());
 
+            // Copia o nível de experiência, se disponível.  Isso é importante!
+            novoExercicio.setNivelExperiencia(exercicioSelecionado.getNivelExperiencia());
+
             fachada.configurarExercicio(novoExercicio, novoExercicio.getNome(),
                     novoExercicio.getDescricao(), novoExercicio.getTipo(),
                     novoExercicio.getTempo(), novoExercicio.getCaloriasQueimadas(), novoExercicio.getUsuario()); //Passa o Usuario
@@ -216,10 +219,17 @@ public class ExercicioController {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 List<Exercicio> listaExercicios = fachada.listarExercicios();
 
-                // FILTRO: Mostra apenas os exercícios do usuário logado.
+                // FILTRO 1: Apenas exercícios do usuário logado
                 listaExercicios = listaExercicios.stream()
                         .filter(exercicio -> exercicio.getUsuario() != null && exercicio.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
+
+                // FILTRO 2: Aplicar filtro de nível de experiência
+                if (usuarioLogado.getNivelExperiencia() != null) {
+                    listaExercicios = listaExercicios.stream()
+                            .filter(exercicio -> exercicio.getNivelExperiencia() == null || exercicio.getNivelExperiencia() == usuarioLogado.getNivelExperiencia())
+                            .collect(Collectors.toList());
+                }
 
                 tabelaExerciciosUsuario.setItems(FXCollections.observableArrayList(listaExercicios));
                 tabelaExerciciosUsuario.refresh();
@@ -243,6 +253,7 @@ public class ExercicioController {
             e.printStackTrace(); //  Importante para debug!
         }
     }
+
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);

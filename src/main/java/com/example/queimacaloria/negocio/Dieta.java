@@ -2,6 +2,7 @@ package com.example.queimacaloria.negocio;
 
 import javafx.beans.property.*;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ public class Dieta {
     private ObjectProperty<Meta.Tipo> objetivo = new SimpleObjectProperty<>();
     private IntegerProperty caloriasDiarias = new SimpleIntegerProperty(0);
     private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
+    @Setter private Usuario.TipoDieta tipoDieta;
 
     // Construtor da classe Dieta.
     public Dieta(String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario) {
@@ -51,6 +53,10 @@ public class Dieta {
         if (o == null || getClass() != o.getClass()) return false;
         Dieta dieta = (Dieta) o;
         return id.equals(dieta.id);
+    }
+
+    public Usuario.TipoDieta getTipoDieta() {
+        return tipoDieta;
     }
 
     // Método hashCode, para gerar um código hash do objeto Dieta.

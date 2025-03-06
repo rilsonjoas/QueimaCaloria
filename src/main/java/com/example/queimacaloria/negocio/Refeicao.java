@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,6 +25,7 @@ public class Refeicao {
     private String descricao;
     private int calorias;
     private Map<String, Double> macronutrientes;
+    private Usuario.TipoDieta tipoDieta;
 
     private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
 
@@ -81,6 +84,17 @@ public class Refeicao {
 
     public void setUsuario(Usuario usuario) {
         this.usuario.set(usuario);
+    }
+
+    public Usuario.TipoDieta getTipoDieta() {
+        return tipoDieta;
+    }
+
+    @Setter
+    private List<String> ingredientes = new ArrayList<>(); // Lista de ingredientes (opcional)
+
+    public List<String> getIngredientes() {
+        return ingredientes;
     }
 
     @Override

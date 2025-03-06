@@ -169,6 +169,9 @@ public class RefeicaoController {
             //REVISÃO: Definindo o usuário LOGADO.
             novaRefeicao.setUsuario(mainController.getUsuarioLogado());
 
+            //Copia as propriedades
+            novaRefeicao.setTipoDieta(refeicaoSelecionada.getTipoDieta());
+
             fachada.configurarRefeicao(novaRefeicao, novaRefeicao.getNome(),
                     novaRefeicao.getDescricao(), novaRefeicao.getMacronutrientes(), novaRefeicao.getUsuario());//Passa o Usuario
             atualizarTabelaRefeicoesUsuario(); //Atualiza antes.
@@ -187,13 +190,42 @@ public class RefeicaoController {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 List<Refeicao> listaRefeicoes = fachada.listarRefeicoes();
 
-                // FILTRO: Mostra apenas as refeições do usuário logado
+                // FILTRO 1: Apenas refeições do usuário logado
                 listaRefeicoes = listaRefeicoes.stream()
-                        .filter(refeicao -> refeicao.getUsuario() != null && refeicao.getUsuario().getId().equals(usuarioLogado.getId()))
+                        .filter(refeicao -> refeicao.getUsuario() != null
+                                && refeicao.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
+
+                // FILTRO 2: Aplicar filtro de tipo de dieta (preferência do usuário)
+                if (usuarioLogado.getTipoDieta() != null) {
+                    listaRefeicoes = listaRefeicoes.stream()
+                            .filter(refeicao -> refeicao.getTipoDieta() == null
+                                    || refeicao.getTipoDieta() == usuarioLogado.getTipoDieta())
+                            .collect(Collectors.toList());
+                }
+
+                // FILTRO 3: Aplicar filtro de restrições alimentares
+                if (usuarioLogado.getRestricoes() != null && !usuarioLogado.getRestricoes().isEmpty()) {
+                    listaRefeicoes = listaRefeicoes.stream()
+                            .filter(refeicao -> {
+                                if (refeicao.getIngredientes() != null) {
+                                    for (Usuario.RestricaoAlimentar restricao : usuarioLogado.getRestricoes()) {
+                                        for (String ingrediente : refeicao.getIngredientes()) {
+                                            if (ingrediente.toLowerCase()
+                                                    .contains(restricao.toString().toLowerCase())) {
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                }
+                                return true;
+                            })
+                            .collect(Collectors.toList());
+                }
 
                 tabelaRefeicoesUsuario.setItems(FXCollections.observableArrayList(listaRefeicoes));
                 tabelaRefeicoesUsuario.refresh();
+
             } else {
                 // Trata caso não haja usuário logado (opcional)
                 tabelaRefeicoesUsuario.setItems(FXCollections.observableArrayList());
@@ -204,7 +236,6 @@ public class RefeicaoController {
             e.printStackTrace(); // Sempre útil para debugging
         }
     }
-
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
@@ -222,7 +253,6 @@ public class RefeicaoController {
         }
     }
 
-    @FXML
     public void compartilharLista() {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
             Usuario usuarioLogado = mainController.getUsuarioLogado();

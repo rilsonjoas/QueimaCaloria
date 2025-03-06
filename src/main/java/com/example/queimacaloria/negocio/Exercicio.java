@@ -20,6 +20,7 @@ public class Exercicio {
     @Setter private int tempo;
     private DoubleProperty caloriasQueimadas = new SimpleDoubleProperty(0.0);
     @Setter private boolean concluido;
+    @Setter private Usuario.NivelExperiencia nivelExperiencia;
 
     @Setter private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
 
@@ -63,6 +64,10 @@ public class Exercicio {
 
     public void setUsuario(Usuario usuario) {
         this.usuario.set(usuario);
+    }
+
+    public Usuario.NivelExperiencia getNivelExperiencia() {
+        return nivelExperiencia;
     }
 
     @Override

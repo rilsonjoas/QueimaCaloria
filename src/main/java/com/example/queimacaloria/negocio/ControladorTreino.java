@@ -7,6 +7,7 @@ import javafx.beans.property.ObjectProperty;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ControladorTreino {
 
@@ -17,12 +18,13 @@ public class ControladorTreino {
     }
 
     //Modificado: Recebe Usuario
-    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade, Usuario usuario) throws TreinoNaoEncontradoException { //<- Mude aqui
+    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade, Usuario usuario, Usuario.NivelExperiencia nivel) throws TreinoNaoEncontradoException { //<- Modificado
         treino.setNome(nome);
         treino.setTipoDeTreino(tipoDeTreino);
         treino.setDuracao(duracao);
         treino.setNivelDeDificuldade(nivelDeDificuldade);
         treino.setUsuario(usuario); // Define o usuário
+        treino.setNivelExperiencia(nivel); // Define o nível
 
         try {
             repositorio.salvar(treino);
@@ -71,6 +73,12 @@ public class ControladorTreino {
         List<Treino> treinos = repositorio.getAll();
         System.out.println("ControladorTreino.listarTreinos(): Treinos retornados: " + treinos); // LOG
         return treinos;
+    }
+
+    public List<Treino> listarTreinos(Usuario.NivelExperiencia nivel) {
+        return repositorio.getAll().stream()
+                .filter(treino -> treino.getNivelExperiencia() == nivel)
+                .collect(Collectors.toList());
     }
 
     public void remover(UUID id) throws TreinoNaoEncontradoException {

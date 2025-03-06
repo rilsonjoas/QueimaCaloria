@@ -238,7 +238,7 @@ public class MainController implements IBaseAdmin {
             ((PerfilController) getController(telaPerfil)).setMainController(this);
             ((AdminUsuariosController) getController(telaAdminUsuarios)).setMainController(this); //ADICIONADO
             Fachada.getInstanciaUnica().setMainController(this);
-
+            Fachada.getInstanciaUnica().registrarObservadorRefeicoes(this::atualizarDadosTelaPrincipal);
             // Carrega a folha de estilos CSS.
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-screen-content.fxml"));

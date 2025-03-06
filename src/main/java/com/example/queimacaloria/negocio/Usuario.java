@@ -3,17 +3,18 @@ package com.example.queimacaloria.negocio;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-
+import javafx.beans.property.SimpleObjectProperty;
+import java.util.HashSet;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-@Getter
+@Getter // Lombok ainda é útil para os getters "normais"
 public class Usuario {
+
+    // ... (outros campos) ...
     private final UUID id;
     private StringProperty nome = new SimpleStringProperty();
     private StringProperty email = new SimpleStringProperty();
@@ -42,12 +43,12 @@ public class Usuario {
     // Adicionando o histórico de peso
     private ListProperty<PesoRegistro> historicoPeso = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    // NOVOS CAMPOS PARA MEDIDAS CORPORAIS
     private DoubleProperty cintura = new SimpleDoubleProperty();
     private DoubleProperty biceps = new SimpleDoubleProperty();
     private DoubleProperty coxa = new SimpleDoubleProperty();
     private DoubleProperty quadril = new SimpleDoubleProperty();
     // Adicione outros campos conforme necessário (peito, panturrilha, etc.)
+
 
 
     // Enum para o sexo do usuário.
@@ -71,6 +72,48 @@ public class Usuario {
             return descricao;
         }
         //Aqui fica só a descrição do enum
+        @Override
+        public String toString() {
+            return descricao;
+        }
+    }
+
+    // NOVOS ENUMS E LISTAS
+    public enum TipoDieta {
+        ONIVORO, VEGETARIANO, VEGANO, SEM_GLUTEN, SEM_LACTOSE, LOW_CARB, CETOGENICA, PALEO
+        // Adicione outras opções conforme necessário
+    }
+
+    public enum NivelExperiencia {
+        INICIANTE, INTERMEDIARIO, AVANCADO
+    }
+
+
+    // Usar Set evita duplicatas.  ObservableSet mantém a interface reativa.
+    @Setter
+    private ObjectProperty<TipoDieta> tipoDieta = new SimpleObjectProperty<>(TipoDieta.ONIVORO); // Valor padrão
+    //@Setter  <-- REMOVA o @Setter daqui.  Você *não* quer um setter direto para o *ObservableSet*.
+    private ObjectProperty<ObservableSet<RestricaoAlimentar>> restricoes = new SimpleObjectProperty<>(FXCollections.observableSet(new HashSet<>()));  // ObjectProperty envolvendo o ObservableSet
+
+    // Enum para Restrições Alimentares (DENTRO da classe Usuario)
+    public enum RestricaoAlimentar {
+        GLUTEN("Glúten"),
+        LACTOSE("Lactose"),
+        FRUTOS_DO_MAR("Frutos do Mar"),
+        AMENDOIM("Amendoim"),
+        OVOS("Ovos"),
+        NOZES("Nozes");
+
+        private final String descricao;
+
+        RestricaoAlimentar(String descricao) {
+            this.descricao = descricao;
+        }
+
+        public String getDescricao() {
+            return descricao;
+        }
+
         @Override
         public String toString() {
             return descricao;
@@ -229,15 +272,15 @@ public class Usuario {
         this.dietaAtiva.set(dietaAtiva);
     }
 
-    public String getTipo() { //ADICIONADO
+    public String getTipo() {
         return tipo.get();
     }
 
-    public StringProperty tipoProperty() { //ADICIONADO
+    public StringProperty tipoProperty() {
         return tipo;
     }
 
-    public void setTipo(String tipo) { //ADICIONADO
+    public void setTipo(String tipo) {
         this.tipo.set(tipo);
     }
 
@@ -305,51 +348,51 @@ public class Usuario {
     }
 
     //Getters e Setters para as novas medidas (adicionado)
-    public double getCintura(){
+    public double getCintura() {
         return cintura.get();
     }
 
-    public DoubleProperty cinturaProperty(){
+    public DoubleProperty cinturaProperty() {
         return cintura;
     }
 
-    public void setCintura(double cintura){
+    public void setCintura(double cintura) {
         this.cintura.set(cintura);
     }
 
-    public double getBiceps(){
+    public double getBiceps() {
         return biceps.get();
     }
 
-    public DoubleProperty bicepsProperty(){
+    public DoubleProperty bicepsProperty() {
         return biceps;
     }
 
-    public void setBiceps(double biceps){
+    public void setBiceps(double biceps) {
         this.biceps.set(biceps);
     }
 
-    public double getCoxa(){
+    public double getCoxa() {
         return coxa.get();
     }
 
-    public DoubleProperty coxaProperty(){
+    public DoubleProperty coxaProperty() {
         return coxa;
     }
 
-    public void setCoxa(double coxa){
+    public void setCoxa(double coxa) {
         this.coxa.set(coxa);
     }
 
-    public double getQuadril(){
+    public double getQuadril() {
         return quadril.get();
     }
 
-    public DoubleProperty quadrilProperty(){
+    public DoubleProperty quadrilProperty() {
         return quadril;
     }
 
-    public void setQuadril(double quadril){
+    public void setQuadril(double quadril) {
         this.quadril.set(quadril);
     }
 
@@ -363,4 +406,42 @@ public class Usuario {
                 ", tipo=" + tipo.get() +
                 '}';
     }
+
+    //Novos Getters, Setters, Properties
+    public TipoDieta getTipoDieta() {
+        return tipoDieta.get();
+    }
+
+    public ObjectProperty<TipoDieta> tipoDietaProperty() {
+        return tipoDieta;
+    }
+    @Setter
+    private ObjectProperty<NivelExperiencia> nivelExperiencia = new SimpleObjectProperty<>(NivelExperiencia.INICIANTE);
+
+    //Getter e Setter para o conjunto de restrições
+    public ObservableSet<RestricaoAlimentar> getRestricoes() {
+        return restricoes.get();
+    }
+
+    //Adicionado o Metodo Property
+    public ObjectProperty<ObservableSet<RestricaoAlimentar>> restricoesProperty() {
+        return this.restricoes;
+    }
+
+    //Corrigido o set
+    public void setRestricoes(ObservableSet<RestricaoAlimentar> restricoes) {
+        if(restricoes == null){
+            this.restricoes.set(FXCollections.observableSet(new HashSet<>()));
+        } else {
+            this.restricoes.set(restricoes);
+        }
+    }
+    public NivelExperiencia getNivelExperiencia() {
+        return nivelExperiencia.get();
+    }
+
+    public ObjectProperty<NivelExperiencia> nivelExperienciaProperty() {
+        return nivelExperiencia;
+    }
+
 }

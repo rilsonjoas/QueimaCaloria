@@ -6,6 +6,7 @@ import javafx.beans.property.ObjectProperty;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ControladorExercicio {
 
@@ -17,13 +18,16 @@ public class ControladorExercicio {
 
     // Modificado: Recebe o Usuario
     public void inicializar(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
-                            int tempo, double caloriasQueimadas, Usuario usuario) throws ExercicioNaoEncontradoException {
+                            int tempo, double caloriasQueimadas, Usuario usuario, Usuario.NivelExperiencia nivel) //<- Modificado
+            throws ExercicioNaoEncontradoException {
         exercicio.setNome(nome);
         exercicio.setDescricao(descricao);
         exercicio.setTipo(tipo);
         exercicio.setTempo(tempo);
         exercicio.setCaloriasQueimadas(caloriasQueimadas);
         exercicio.setUsuario(usuario);
+        exercicio.setNivelExperiencia(nivel); // Define o nível de experiência
+
 
         try {
             repositorio.salvar(exercicio);
@@ -60,6 +64,11 @@ public class ControladorExercicio {
         return exercicios;
     }
 
+    public List<Exercicio> listarExercicios(Usuario.NivelExperiencia nivel) {
+        return repositorio.getAll().stream()
+                .filter(exercicio -> exercicio.getNivelExperiencia() == nivel)
+                .collect(Collectors.toList());
+    }
 
     public void remover(UUID id) throws ExercicioNaoEncontradoException {
         repositorio.remover(id);

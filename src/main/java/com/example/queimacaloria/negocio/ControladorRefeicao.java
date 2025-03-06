@@ -1,3 +1,4 @@
+
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ControladorRefeicao {
 
@@ -18,12 +20,13 @@ public class ControladorRefeicao {
     }
 
     // Modificado: recebe o Usuario
-    public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes, Usuario usuario) {
+    public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes, Usuario usuario, Usuario.TipoDieta tipoDieta) {
         refeicao.setNome(nome);
         refeicao.setDescricao(descricao);
         refeicao.setMacronutrientes(macronutrientes);
         refeicao.setCalorias(calcularCalorias(refeicao));
         refeicao.setUsuario(usuario); // Define o usuário
+        refeicao.setTipoDieta(tipoDieta); // Define o tipo de dieta
 
         try {
             repositorio.salvar(refeicao);
@@ -60,6 +63,13 @@ public class ControladorRefeicao {
         List<Refeicao> refeicoes = repositorio.getAll();
         System.out.println("ControladorRefeicao.listarRefeicoes(): Refeições retornadas: " + refeicoes); // LOG
         return refeicoes;
+    }
+
+    //Listar refeição por tipo de dieta
+    public List<Refeicao> listarRefeicoes(Usuario.TipoDieta tipo) {
+        return repositorio.getAll().stream()
+                .filter(refeicao -> refeicao.getTipoDieta() == tipo)
+                .collect(Collectors.toList());
     }
 
     public void remover(UUID id) throws RefeicaoNaoEncontradaException {

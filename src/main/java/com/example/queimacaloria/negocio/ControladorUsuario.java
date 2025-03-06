@@ -32,7 +32,7 @@ public class ControladorUsuario {
     // Atualiza os dados de um usuário existente.
     public void atualizarDados(UUID usuarioId, String nome, String email, String senha, LocalDate dataNascimento,
                                Usuario.Sexo sexo, float peso, float altura, String tipo,
-                               double cintura, double biceps, double coxa, double quadril)
+                               double cintura, double biceps, double coxa, double quadril) // Novos parâmetros
             throws UsuarioNaoEncontradoException
     {
         Usuario usuario = repositorio.buscar(usuarioId);
@@ -40,14 +40,14 @@ public class ControladorUsuario {
             throw new UsuarioNaoEncontradoException("Usuário com ID " + usuarioId + " não encontrado.");
         }
 
-        // Atualiza os campos existentes
+        // Atualiza os campos existentes, verificando nulos e vazios
         if (nome != null && !nome.isEmpty()) {
             usuario.setNome(nome);
         }
         if (email != null && !email.isEmpty()) {
             usuario.setEmail(email);
         }
-        if (senha != null && senha.isEmpty()) {
+        if (senha != null && !senha.isEmpty()) { //  Permite atualizar senha (opcional)
             usuario.setSenha(senha);
         }
         if (dataNascimento != null) {
@@ -62,13 +62,23 @@ public class ControladorUsuario {
         if (altura > 0) {
             usuario.setAltura(altura);
         }
+        if (tipo != null && !tipo.isEmpty()) {
+            usuario.setTipo(tipo);
+        }
 
-        usuario.setTipo(tipo);
-
-        usuario.setCintura(cintura);
-        usuario.setBiceps(biceps);
-        usuario.setCoxa(coxa);
-        usuario.setQuadril(quadril);
+        //Novos atributos:
+        if(cintura > 0) {
+            usuario.setCintura(cintura);
+        }
+        if(biceps > 0) {
+            usuario.setBiceps(biceps);
+        }
+        if(coxa > 0) {
+            usuario.setCoxa(coxa);
+        }
+        if(quadril > 0) {
+            usuario.setQuadril(quadril);
+        }
 
         System.out.println("Antes de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo());
         repositorio.salvar(usuario);
@@ -152,5 +162,19 @@ public class ControladorUsuario {
     // Remover o usuário
     public void remover(UUID id) throws UsuarioNaoEncontradoException {
         repositorio.remover(id);
+    }
+
+    public void atualizarTipoDieta(Usuario usuario, Usuario.TipoDieta tipoDieta) throws UsuarioNaoEncontradoException {
+        if (usuario != null && tipoDieta != null) {
+            usuario.tipoDietaProperty().set(tipoDieta);
+            repositorio.salvar(usuario);
+        }
+    }
+
+    public void atualizarNivelExperiencia(Usuario usuario, Usuario.NivelExperiencia nivel) throws UsuarioNaoEncontradoException {
+        if(usuario != null && nivel != null){
+            usuario.nivelExperienciaProperty().set(nivel);
+            repositorio.salvar(usuario);
+        }
     }
 }

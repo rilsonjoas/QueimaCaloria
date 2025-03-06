@@ -42,6 +42,10 @@ public class TreinoController {
     @FXML private Label labelDificuldadeTreino;
     @FXML private Label labelExerciciosTreino;
 
+    //Adicionado ChoiceBox para o filtro
+    @FXML
+    private ChoiceBox<Usuario.NivelExperiencia> choiceBoxFiltroNivel;
+
     private Fachada fachada = Fachada.getInstanciaUnica();
     private MainController mainController;
     private ObservableList<Treino> treinosPreDefinidos = FXCollections.observableArrayList();
@@ -70,6 +74,19 @@ public class TreinoController {
         //Verifica se o botão compartilhar está presente antes de configurar o evento.
         if(buttonCompartilhar != null){
             buttonCompartilhar.setOnAction(event -> compartilharLista());
+        }
+
+        // Inicializa o ChoiceBox de filtro de nível, se presente.
+        if (choiceBoxFiltroNivel != null) {
+            choiceBoxFiltroNivel.setItems(FXCollections.observableArrayList(Usuario.NivelExperiencia.values()));
+            // Adiciona um valor nulo para representar "Todos os níveis"
+            choiceBoxFiltroNivel.getItems().add(0, null);  // Adiciona null no início
+            choiceBoxFiltroNivel.setValue(null); // Define "Todos" como padrão
+
+            // Listener para quando o valor do filtro mudar
+            choiceBoxFiltroNivel.getSelectionModel().selectedItemProperty().addListener(
+                    (observable, oldValue, newValue) -> atualizarTabelaTreinosUsuario() //Reaplica os filtros.
+            );
         }
     }
 
@@ -224,6 +241,14 @@ public class TreinoController {
                 listaTreinos = listaTreinos.stream()
                         .filter(treino -> treino.getUsuario() != null && treino.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
+
+                // FILTRO: Aplicar filtro de nível de experiência, SE um nível for selecionado
+                if (choiceBoxFiltroNivel != null && choiceBoxFiltroNivel.getValue() != null) {
+                    Usuario.NivelExperiencia nivelSelecionado = choiceBoxFiltroNivel.getValue();
+                    listaTreinos = listaTreinos.stream()
+                            .filter(treino -> treino.getNivelDeDificuldade() <= nivelSelecionado.ordinal() + 1)
+                            .collect(Collectors.toList());
+                }
 
                 tabelaTreinosUsuario.setItems(FXCollections.observableArrayList(listaTreinos));
                 tabelaTreinosUsuario.refresh();

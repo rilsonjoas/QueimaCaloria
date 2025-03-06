@@ -1,7 +1,10 @@
 package com.example.queimacaloria.controllers;
 
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
+import javafx.animation.PauseTransition;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -9,7 +12,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
+import java.util.HashSet;
 import java.util.List;
 
 public class LoginController {
@@ -50,18 +55,40 @@ public class LoginController {
                     alert.setTitle("Bem-vindo!");
                     alert.setHeaderText("Login realizado com sucesso");
                     alert.setContentText("Olá, " + usuario.getNome() + "! Seja bem-vindo ao YouFit.");
-                    alert.showAndWait(); // Usa showAndWait() para mostrar e esperar
+                    alert.show();
 
-                    // Lembrete de água (agora ANTES de mostrar a tela principal)
-                    Alert waterAlert = new Alert(Alert.AlertType.INFORMATION);
-                    waterAlert.setTitle("Lembrete!");
-                    waterAlert.setHeaderText(null); // Sem cabeçalho
-                    waterAlert.setContentText("Lembre-se de beber água para se manter hidratado! Você pode registrar seu consumo na tela principal.");
-                    waterAlert.showAndWait(); // Mostra o alerta e espera
+                    try {
+                        Usuario usuarioCompleto = fachada.buscarUsuarioPorId(usuario.getId()); // Busca o usuário *completo* do repositório
+                        //Verifica se a lista de restrições não é nula, para evitar erros.
+                        if(usuarioCompleto.getRestricoes() == null){
+                            usuarioCompleto.setRestricoes(FXCollections.observableSet(new HashSet<>()));
+                        }
 
-                    authController.mostrarTelaPrincipal(getPrimaryStage(), usuario); // Mostra a tela principal APÓS o alerta.
+                        // Pausa ANTES de mostrar a tela principal e exibir o lembrete
+                        PauseTransition delay = new PauseTransition(Duration.seconds(0.5)); // Pequena pausa
+                        delay.setOnFinished(event -> {
+                            authController.mostrarTelaPrincipal(getPrimaryStage(), usuarioCompleto); // Passa o usuario *completo*
 
-                    return; // Importante:  Sai do método após o sucesso.
+                            // Lembrete de água (depois de mostrar a tela principal)
+                            Alert waterAlert = new Alert(Alert.AlertType.INFORMATION);
+                            waterAlert.setTitle("Lembrete!");
+                            waterAlert.setHeaderText(null); // Sem cabeçalho
+                            waterAlert.setContentText("Lembre-se de beber água para se manter hidratado!");
+
+                            // Pausa para o lembrete de água
+                            PauseTransition waterDelay = new PauseTransition(Duration.seconds(5));
+                            waterDelay.setOnFinished(e -> waterAlert.close());
+                            waterAlert.show(); // Mostra o alerta de água
+                            waterDelay.play(); // Inicia a contagem para fechar o alerta de água
+                        });
+                        delay.play(); // Inicia a primeira pausa
+
+                        return; // Importante: sai do loop após encontrar o usuário
+
+                    } catch (UsuarioNaoEncontradoException e) {
+                        mensagemLogin.setText("Erro ao carregar dados do usuário: " + e.getMessage()); //Melhorar a mensagem de erro
+                        return; // Sai do método login() se não encontrar o usuário.
+                    }
                 }
             }
 

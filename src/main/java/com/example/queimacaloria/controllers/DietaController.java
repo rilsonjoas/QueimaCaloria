@@ -189,9 +189,17 @@ public class DietaController {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 List<Dieta> listaDietas = fachada.listarDietas();
 
+                // FILTRO 1: Apenas dietas do usuário logado
                 listaDietas = listaDietas.stream()
-                        .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(usuarioLogado.getId())) // Usa getId()
+                        .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
+
+                // FILTRO 2: Aplicar filtro de tipo de dieta (preferência do usuário)
+                if (usuarioLogado.getTipoDieta() != null) {
+                    listaDietas = listaDietas.stream()
+                            .filter(dieta -> dieta.getTipoDieta() == null || dieta.getTipoDieta() == usuarioLogado.getTipoDieta())
+                            .collect(Collectors.toList());
+                }
 
                 tabelaDietasUsuario.setItems(FXCollections.observableArrayList(listaDietas));
                 tabelaDietasUsuario.refresh();

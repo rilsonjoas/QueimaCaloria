@@ -27,7 +27,7 @@ public class AdminDietasController {
     @FXML private Label mensagem;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    @Setter private IBaseAdmin mainController;
+    @Setter private IBaseAdmin mainController; //Para comunicação.
     private ObservableList<Dieta> listaDietasPreDefinidas = FXCollections.observableArrayList();
 
     @FXML
@@ -99,7 +99,7 @@ public class AdminDietasController {
         try {
             int calorias = Integer.parseInt(caloriasStr);
             Dieta novaDieta = new Dieta();
-            fachada.configurarDieta(novaDieta, nome, objetivo, calorias, null);
+            fachada.configurarDieta(novaDieta, nome, objetivo, calorias, null, null); //Usuario e tipo de dieta nulo
             atualizarTabelaDietas();
             mensagem.setText("Dieta criada com sucesso.");
         } catch (Exception e) {
@@ -117,7 +117,7 @@ public class AdminDietasController {
                 String caloriasStr = campoCalorias.getText();
                 int calorias = Integer.parseInt(caloriasStr);
 
-                fachada.configurarDieta(dietaSelecionada, nome, objetivo, calorias, null);
+                fachada.configurarDieta(dietaSelecionada, nome, objetivo, calorias, null, null);
                 atualizarTabelaDietas();
                 mensagem.setText("Dieta atualizada com sucesso.");
             } catch (Exception e) {

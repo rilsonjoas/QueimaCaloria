@@ -30,14 +30,13 @@ public class AdminTreinosController {
     @FXML private Label mensagem;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    @Setter private IBaseAdmin mainController;
+    @Setter private IBaseAdmin mainController; // Usado para comunicação.
     private ObservableList<Treino> listaTreinosPreDefinidos = FXCollections.observableArrayList();
 
 
     @FXML
     public void initialize() {
-        System.out.println("AdminTreinosController.initialize() chamado");
-
+        // Configuração da tabela
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipo.setCellValueFactory(new PropertyValueFactory<>("tipoDeTreino"));
         colunaDuracao.setCellValueFactory(new PropertyValueFactory<>("duracao"));
@@ -48,7 +47,7 @@ public class AdminTreinosController {
         carregarTreinosPreDefinidos();
         atualizarTabelaTreinos();
 
-        // Listener para a ObservableList
+        // Listener para a ObservableList (mudanças na lista da tabela)
         tabelaTreinos.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Treino> c) -> {
             System.out.println("AdminTreinosController: Mudança na lista da tabela detectada!");
             while (c.next()) {
@@ -61,7 +60,7 @@ public class AdminTreinosController {
             }
         });
 
-        // Listener de seleção e preenchimento
+        // Listener de seleção (item selecionado na tabela)
         tabelaTreinos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 System.out.println("AdminTreinosController: Item selecionado: " + newSelection);
@@ -75,12 +74,11 @@ public class AdminTreinosController {
     }
 
     private void carregarTreinosPreDefinidos() {
-        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos() chamado"); // LOG
         List<Treino> treinos = fachada.getTreinosPreDefinidos();
-        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos(): Treinos pré-definidos carregados: " + treinos); // LOG
         listaTreinosPreDefinidos.addAll(treinos);
-        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos() finalizado");
+        System.out.println("Treinos pré-definidos carregados.");
     }
+
 
     @FXML
     public void criarTreino() {
@@ -95,62 +93,79 @@ public class AdminTreinosController {
 
             Treino novoTreino = new Treino();
             novoTreino.setExercicios(new ArrayList<>());
-            fachada.configurarTreino(novoTreino, nome, tipo, duracao, nivelDificuldade, null);
-            atualizarTabelaTreinos();
+            // A criação/configuração agora é *toda* feita via Fachada. Usuário e nível são nulos (tela de admin).
+            fachada.configurarTreino(novoTreino, nome, tipo, duracao, nivelDificuldade, null, null);
+            atualizarTabelaTreinos(); // A atualização é feita *após* a operação na Fachada.
             mensagem.setText("Treino criado com sucesso.");
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
+            mensagem.setText("Erro: Duração e nível de dificuldade devem ser números inteiros.");
+        } catch (TreinoNaoEncontradoException e) { // Captura a exceção específica
             mensagem.setText("Erro ao criar treino: " + e.getMessage());
+        } catch (Exception e) { // Captura genérica para qualquer outra exceção.
+            mensagem.setText("Erro ao criar treino: " + e.getMessage());
+            e.printStackTrace(); //  Imprime o stack trace completo!  Muito importante.
         }
     }
+
 
     @FXML
     public void atualizarTreino() {
         Treino treinoSelecionado = tabelaTreinos.getSelectionModel().getSelectedItem();
-        if (treinoSelecionado != null) {
-            try {
-                String nome = campoNome.getText();
-                Exercicio.TipoExercicio tipo = campoTipo.getValue();
-                String duracaoStr = campoDuracao.getText();
-                String nivelDificuldadeStr = campoNivelDificuldade.getText();
-                int duracao = Integer.parseInt(duracaoStr);
-                int nivelDificuldade = Integer.parseInt(nivelDificuldadeStr);
-
-                fachada.configurarTreino(treinoSelecionado, nome, tipo, duracao, nivelDificuldade, null);
-                atualizarTabelaTreinos();
-                mensagem.setText("Treino atualizado com sucesso.");
-            } catch (Exception e) {
-                mensagem.setText("Erro ao atualizar treino: " + e.getMessage());
-            }
-        } else {
+        if (treinoSelecionado == null) {
             mensagem.setText("Selecione um treino para atualizar.");
+            return;
+        }
+
+        try {
+            String nome = campoNome.getText();
+            Exercicio.TipoExercicio tipo = campoTipo.getValue();
+            String duracaoStr = campoDuracao.getText();
+            String nivelDificuldadeStr = campoNivelDificuldade.getText();
+            int duracao = Integer.parseInt(duracaoStr);  // NumberFormatException
+            int nivelDificuldade = Integer.parseInt(nivelDificuldadeStr); // NumberFormatException
+
+            // Toda a lógica de negócio/atualização é feita na Fachada. Usuário e nível nulos (tela admin).
+            fachada.configurarTreino(treinoSelecionado, nome, tipo, duracao, nivelDificuldade, null, null);
+            atualizarTabelaTreinos(); // Atualiza a tabela *após* a operação na Fachada.
+            mensagem.setText("Treino atualizado com sucesso.");
+        } catch (NumberFormatException e) {
+            mensagem.setText("Erro: Duração e nível de dificuldade devem ser números inteiros.");
+        } catch (TreinoNaoEncontradoException e) {
+            mensagem.setText("Erro ao atualizar treino: " + e.getMessage());
+        }
+        catch (Exception e) { // Captura genérica, para qualquer outro erro.
+            mensagem.setText("Erro inesperado: " + e.getMessage());
+            e.printStackTrace(); // Imprime o Stack Trace
         }
     }
+
 
     @FXML
     public void removerTreino() {
         Treino treinoSelecionado = tabelaTreinos.getSelectionModel().getSelectedItem();
-        if (treinoSelecionado != null) {
-            try {
-                fachada.removerTreino(treinoSelecionado.getId());
-                atualizarTabelaTreinos();
-                mensagem.setText("Treino removido com sucesso.");
-            } catch (TreinoNaoEncontradoException e) {
-                mensagem.setText("Erro ao remover treino: " + e.getMessage());
-            }
-        } else {
+        if (treinoSelecionado == null) {
             mensagem.setText("Selecione um treino para remover.");
+            return;
+        }
+
+        try {
+            // A remoção agora é feita *inteiramente* pela Fachada.
+            fachada.removerTreino(treinoSelecionado.getId()); // Remove.
+            atualizarTabelaTreinos(); // Atualiza *após* a remoção.
+            mensagem.setText("Treino removido com sucesso.");
+        } catch (TreinoNaoEncontradoException e) {
+            mensagem.setText("Erro ao remover treino: " + e.getMessage());
+        } catch (Exception e) { //  Captura genérica, para qualquer outro erro.
+            mensagem.setText("Erro inesperado: " + e.getMessage());
+            e.printStackTrace(); //  Imprime o stack trace completo.
         }
     }
 
+
     private void atualizarTabelaTreinos() {
-        System.out.println("AdminTreinosController.atualizarTabelaTreinos() chamado");  // LOG
         List<Treino> listaDeTreinos = fachada.listarTreinos();
-        System.out.println("AdminTreinosController.atualizarTabelaTreinos(): Todos os treinos: " + listaDeTreinos); // LOG
         tabelaTreinos.setItems(FXCollections.observableArrayList(listaDeTreinos));
-        //Verifica se a lista está vazia:
-        if(listaDeTreinos.isEmpty()){
-            System.out.println("AdminTreinosController: A lista de treinos está vazia.");
-        }
+        tabelaTreinos.refresh();
     }
 
     private void preencherCampos(Treino treino){

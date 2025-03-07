@@ -76,16 +76,18 @@ public class EdicaoExercicioController {
             double caloriasQueimadas = Double.parseDouble(caloriasQueimadasStr);
 
             // Agora passamos o usuário logado
-            fachada.configurarExercicio(exercicio, nome, descricao, tipo, tempo, caloriasQueimadas, mainController.getUsuarioLogado());
+            fachada.configurarExercicio(exercicio, nome, descricao, tipo, tempo, caloriasQueimadas, mainController.getUsuarioLogado(), exercicio.getNivelExperiencia());
 
             mensagemErro.setText("Exercício atualizado com sucesso!");
 
-            if (exercicioController != null) {
+            //Não precisa mais dessas chamadas
+            /*if (exercicioController != null) {
                 exercicioController.initialize();
             }
             if(mainController != null){
                 mainController.atualizarDadosTelaPrincipal();
-            }
+            }*/
+
             fecharJanela();
 
         } catch (NumberFormatException e) {

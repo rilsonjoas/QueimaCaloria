@@ -14,16 +14,16 @@ public class InicializadorDados {
 
     public static List<Dieta> inicializarDietas() {
         List<Dieta> dietas = new ArrayList<>();
-        dietas.add(new Dieta("Dieta para Emagrecimento Rápido", Meta.Tipo.PERDA_DE_PESO, 1200,  null));
-        dietas.add(new Dieta("Dieta Low Carb Moderada", Meta.Tipo.PERDA_DE_PESO, 1600, null));
-        dietas.add(new Dieta("Dieta da Proteína", Meta.Tipo.GANHO_DE_MASSA, 2500, null));
-        dietas.add(new Dieta("Dieta Vegana para Atletas", Meta.Tipo.GANHO_DE_MASSA, 2700,  null));
-        dietas.add(new Dieta("Dieta Mediterrânea", Meta.Tipo.MANUTENCAO, 2000, null));
-        dietas.add(new Dieta("Dieta sem Glúten e Lactose", Meta.Tipo.MANUTENCAO, 2200, null));
-        dietas.add(new Dieta("Dieta para Ganho de Massa Muscular", Meta.Tipo.GANHO_DE_MASSA, 3000, null));
-        dietas.add(new Dieta("Dieta Flexível para Definição", Meta.Tipo.PERDA_DE_PESO, 1700, null));
-        dietas.add(new Dieta("Dieta para Iniciantes", Meta.Tipo.MANUTENCAO, 1900, null));
-        dietas.add(new Dieta("Dieta Personalizada do Cliente", Meta.Tipo.MANUTENCAO, 2400, null));
+        dietas.add(new Dieta("Dieta para Emagrecimento Rápido", Meta.Tipo.PERDA_DE_PESO, 1200));
+        dietas.add(new Dieta("Dieta Low Carb Moderada", Meta.Tipo.PERDA_DE_PESO, 1600));
+        dietas.add(new Dieta("Dieta da Proteína", Meta.Tipo.GANHO_DE_MASSA, 2500));
+        dietas.add(new Dieta("Dieta Vegana para Atletas", Meta.Tipo.GANHO_DE_MASSA, 2700));
+        dietas.add(new Dieta("Dieta Mediterrânea", Meta.Tipo.MANUTENCAO, 2000));
+        dietas.add(new Dieta("Dieta sem Glúten e Lactose", Meta.Tipo.MANUTENCAO, 2200));
+        dietas.add(new Dieta("Dieta para Ganho de Massa Muscular", Meta.Tipo.GANHO_DE_MASSA, 3000));
+        dietas.add(new Dieta("Dieta Flexível para Definição", Meta.Tipo.PERDA_DE_PESO, 1700));
+        dietas.add(new Dieta("Dieta para Iniciantes", Meta.Tipo.MANUTENCAO, 1900));
+        dietas.add(new Dieta("Dieta Personalizada do Cliente", Meta.Tipo.MANUTENCAO, 2400));
         return dietas;
     }
 

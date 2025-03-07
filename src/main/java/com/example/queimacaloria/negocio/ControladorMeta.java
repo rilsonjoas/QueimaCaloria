@@ -33,10 +33,18 @@ public class ControladorMeta {
 
         System.out.println("Meta após setar valores no Controlador: " + meta);
 
+        //Usa o método salvar
+        salvar(meta);
+
+    }
+
+    // Método salvar que lida tanto com adicionar quanto com atualizar.
+    public void salvar(Meta meta) throws MetaNaoEncontradaException {
         try {
-            repositorio.salvar(meta);
-        } catch (MetaNaoEncontradaException e) {
-            repositorio.adicionar(meta);
+            repositorio.buscar(meta.getId()); // Tenta buscar.
+            repositorio.salvar(meta);  //Se encontrou, atualiza.
+        } catch (MetaNaoEncontradaException e){
+            repositorio.adicionar(meta); //Se não encontrou, adiciona.
         }
     }
 

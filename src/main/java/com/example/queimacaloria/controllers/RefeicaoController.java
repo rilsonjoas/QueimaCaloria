@@ -38,7 +38,7 @@ public class RefeicaoController {
     @FXML private Label mensagemRefeicao;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    private MainController mainController;
+    private MainController mainController;  // Para comunicação.
     private ObservableList<Refeicao> refeicoesPreDefinidas = FXCollections.observableArrayList();
 
     // Botão de compartilhar
@@ -51,9 +51,9 @@ public class RefeicaoController {
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
-        atualizarTabelaRefeicoesUsuario();
         configurarTabelaPreDefinida();
         carregarRefeicoesPreDefinidas();
+        atualizarTabelaRefeicoesUsuario();
         //Verifica se o botão compartilhar está presente antes de configurar o evento.
         if(buttonCompartilhar != null){
             buttonCompartilhar.setOnAction(event -> compartilharLista());
@@ -63,12 +63,14 @@ public class RefeicaoController {
     private void configurarTabelaUsuario() {
         colunaNomeUsuario.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaCaloriasUsuario.setCellValueFactory(new PropertyValueFactory<>("calorias"));
+        // Formatação da coluna de macronutrientes (usa o método getMacronutrientesFormatados).
         colunaMacronutrientesUsuario.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMacronutrientesFormatados()));
     }
 
     private void configurarTabelaPreDefinida() {
         colunaNomePreDefinida.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaCaloriasPreDefinida.setCellValueFactory(new PropertyValueFactory<>("calorias"));
+        // Formatação da coluna de macronutrientes (usa o método getMacronutrientesFormatados).
         colunaMacronutrientesPreDefinida.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMacronutrientesFormatados()));
     }
 
@@ -78,6 +80,7 @@ public class RefeicaoController {
             refeicoesPreDefinidas.setAll(refeicoes);
             tabelaRefeicoesPreDefinidas.setItems(refeicoesPreDefinidas);
         } catch (Exception e) {
+            // Tratamento de erro aprimorado.
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar refeições pré-definidas", e.getMessage());
         }
     }
@@ -92,13 +95,15 @@ public class RefeicaoController {
             stage.setScene(scene);
 
             CriacaoRefeicaoController controller = loader.getController();
-            controller.setRefeicaoController(this);
-            controller.setMainController(mainController);
+            controller.setRefeicaoController(this);  // Define *este* RefeicaoController
+            controller.setMainController(mainController); // Define o MainController
 
-            stage.showAndWait();
-            atualizarTabelaRefeicoesUsuario();
+            stage.showAndWait(); // Importante: espera a janela fechar antes de continuar.
+            //Removido daqui. Listener já trata.
+            //atualizarTabelaRefeicoesUsuario();
+
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de criação", e.getMessage());
         }
     }
 
@@ -111,15 +116,15 @@ public class RefeicaoController {
                 Parent root = loader.load();
 
                 EdicaoRefeicaoController controller = loader.getController();
-                controller.setRefeicaoController(this);
-                controller.setMainController(mainController);
-                controller.setRefeicao(refeicaoSelecionada);
+                controller.setRefeicaoController(this);   // Define *este* RefeicaoController.
+                controller.setMainController(mainController); // Define o MainController.
+                controller.setRefeicao(refeicaoSelecionada); // Passa a refeição a ser editada.
 
                 Stage stage = new Stage();
                 stage.setTitle("Editar Refeição");
                 stage.setScene(new Scene(root));
-                stage.showAndWait();
-                atualizarTabelaRefeicoesUsuario();
+                stage.showAndWait(); // Espera a janela de edição fechar.
+                // atualizarTabelaRefeicoesUsuario(); Removido
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -135,7 +140,7 @@ public class RefeicaoController {
         if (refeicaoSelecionada != null) {
             try {
                 fachada.removerRefeicao(refeicaoSelecionada.getId());
-                atualizarTabelaRefeicoesUsuario();
+                //atualizarTabelaRefeicoesUsuario(); REMOVIDO. O Listener já trata
                 mensagemRefeicao.setText("Refeição removida.");
             } catch (RefeicaoNaoEncontradaException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover refeição", e.getMessage());
@@ -147,18 +152,18 @@ public class RefeicaoController {
     @FXML
     public void adicionarRefeicaoPreDefinida() {
         Refeicao refeicaoSelecionada = tabelaRefeicoesPreDefinidas.getSelectionModel().getSelectedItem();
-        if(refeicaoSelecionada == null){  //Verifica
+        if (refeicaoSelecionada == null) {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma refeição selecionada", "Selecione uma refeição para adicionar.");
             return;
         }
 
-
-        if (mainController == null || mainController.getUsuarioLogado() == null) { //Verifica
+        if (mainController == null || mainController.getUsuarioLogado() == null) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário logado", "Não foi possível adicionar a refeição.");
             return;
         }
 
         try {
+            // Cria uma *cópia* da refeição pré-definida.  Isso é importante!
             Refeicao novaRefeicao = new Refeicao(
                     refeicaoSelecionada.getNome(),
                     refeicaoSelecionada.getDescricao(),
@@ -166,23 +171,28 @@ public class RefeicaoController {
                     refeicaoSelecionada.getMacronutrientes()
             );
 
-            //REVISÃO: Definindo o usuário LOGADO.
+            //  Definindo o usuário LOGADO.
             novaRefeicao.setUsuario(mainController.getUsuarioLogado());
 
-            //Copia as propriedades
+            // Copia o tipo de dieta
             novaRefeicao.setTipoDieta(refeicaoSelecionada.getTipoDieta());
 
+            //Copia os ingredientes.
+            novaRefeicao.setIngredientes(refeicaoSelecionada.getIngredientes());
+
+            // Agora, você chama a fachada para configurar a *nova* refeição.
             fachada.configurarRefeicao(novaRefeicao, novaRefeicao.getNome(),
-                    novaRefeicao.getDescricao(), novaRefeicao.getMacronutrientes(), novaRefeicao.getUsuario());//Passa o Usuario
-            atualizarTabelaRefeicoesUsuario(); //Atualiza antes.
+                    novaRefeicao.getDescricao(), novaRefeicao.getMacronutrientes(), novaRefeicao.getUsuario(), novaRefeicao.getTipoDieta()); //Passa o tipo de dieta
+            //atualizarTabelaRefeicoesUsuario();  REMOVIDO.
             mensagemRefeicao.setText("Refeição adicionada com sucesso!");
 
 
-        } catch (Exception e) {
+        } catch (Exception e) { // Captura genérica, para qualquer outro erro.
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar refeição", e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(); //  Imprime o stack trace completo.  Isso é MUITO importante.
         }
     }
+
 
     public void atualizarTabelaRefeicoesUsuario() {
         try {
@@ -213,12 +223,12 @@ public class RefeicaoController {
                                         for (String ingrediente : refeicao.getIngredientes()) {
                                             if (ingrediente.toLowerCase()
                                                     .contains(restricao.toString().toLowerCase())) {
-                                                return false;
+                                                return false; // Se a refeição tiver um ingrediente restrito, não inclui.
                                             }
                                         }
                                     }
                                 }
-                                return true;
+                                return true; // Se não houver ingredientes restritos, inclui a refeição.
                             })
                             .collect(Collectors.toList());
                 }
@@ -237,6 +247,7 @@ public class RefeicaoController {
         }
     }
 
+
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -249,7 +260,7 @@ public class RefeicaoController {
         if (mainController != null) {
             mainController.mostrarTelaPrincipal();
         } else {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "MainController não foi configurado.");
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "MainController não foi configurado corretamente.");
         }
     }
 

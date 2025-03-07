@@ -1,6 +1,5 @@
 package com.example.queimacaloria.controllers;
 
-import com.example.queimacaloria.excecoes.RefeicaoNaoEncontradaException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Refeicao;
@@ -49,11 +48,14 @@ public class EdicaoRefeicaoController {
             campoNome.setText(refeicao.getNome());
             campoDescricao.setText(refeicao.getDescricao());
 
-
             if (refeicao.getMacronutrientes() != null) {
                 campoProteinas.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Proteínas", 0.0)));
                 campoCarboidratos.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Carboidratos", 0.0)));
                 campoGorduras.setText(String.valueOf(refeicao.getMacronutrientes().getOrDefault("Gorduras", 0.0)));
+            } else { //Boa prática
+                campoProteinas.clear();
+                campoCarboidratos.clear();
+                campoGorduras.clear();
             }
         }
     }
@@ -74,21 +76,15 @@ public class EdicaoRefeicaoController {
 
         try {
             Map<String, Double> novosMacronutrientes = new HashMap<>();
-            try {
-                novosMacronutrientes.put("Proteínas", Double.parseDouble(campoProteinas.getText()));
-                novosMacronutrientes.put("Carboidratos", Double.parseDouble(campoCarboidratos.getText()));
-                novosMacronutrientes.put("Gorduras", Double.parseDouble(campoGorduras.getText()));
+            novosMacronutrientes.put("Proteínas", Double.parseDouble(proteinasStr));
+            novosMacronutrientes.put("Carboidratos", Double.parseDouble(carboidratosStr));
+            novosMacronutrientes.put("Gorduras", Double.parseDouble(gordurasStr));
 
-            }catch (NumberFormatException e){
-                mensagemErro.setText("Erro: Os macronutrientes devem ser números");
-                return;
-            }
-            // Passamos o usuário logado.
-            fachada.configurarRefeicao(refeicao,nome, descricao, novosMacronutrientes, mainController.getUsuarioLogado());
+            // Passamos o usuário logado e o tipo de dieta do usuário.
+            fachada.configurarRefeicao(refeicao, nome, descricao, novosMacronutrientes, mainController.getUsuarioLogado(), mainController.getUsuarioLogado().getTipoDieta()); //Agora com o tipo de dieta
             mensagemErro.setText("Refeição atualizada com sucesso!");
 
-            // **********  MUDANÇA AQUI ***********
-            // Atualiza o usuário logado:  Isso é *crítico*.
+            // Atualiza o usuário logado:
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
@@ -100,24 +96,21 @@ public class EdicaoRefeicaoController {
                 }
             }
 
-            if (refeicaoController != null) {
-                refeicaoController.initialize(); //Remover, pois o listener ja atualiza.
-            }
-
             if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal();// Removido
                 mainController.atualizarCalorias();
-
             }
 
             fecharJanela();
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) { // Captura NumberFormatException
+            mensagemErro.setText("Erro: Valores de macronutrientes inválidos. Insira números válidos.");
+        } catch (Exception e) {  // Captura genérica (inclui RefeicaoNaoEncontradaException)
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    // ... (restante do código: validarFormulario, isNumeric, fecharJanela, showAlert) ...
     //Função auxiliar para validar o formulário.
     private boolean validarFormulario(String nome, String descricao, String proteinasStr, String carboidratosStr, String gordurasStr) {
         if (nome == null || nome.isEmpty()) {

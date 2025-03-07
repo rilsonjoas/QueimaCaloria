@@ -1,3 +1,5 @@
+// CriacaoMetaController.java
+
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
@@ -70,19 +72,15 @@ public class CriacaoMetaController {
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Meta novaMeta = new Meta();
-                // Define o usuário na nova meta
-                novaMeta.setUsuario(mainController.getUsuarioLogado());
-                fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao, mainController.getUsuarioLogado());
+                novaMeta.setUsuario(mainController.getUsuarioLogado()); // Define o usuário
+                fachada.configurarMeta(novaMeta, descricao, tipo, valorAlvo, progressoAtual, dataConclusao, mainController.getUsuarioLogado()); // Passa o usuário
 
+                // Adiciona a meta à lista de metas do usuário
                 mainController.getUsuarioLogado().getMetas().add(novaMeta);
 
                 mensagemErro.setText("Meta criada com sucesso!");
 
-                if (metaController != null) {
-                    metaController.initialize();//agora, esta linha não é mais necessária
-                }
-
-                // Recomendação de dieta (mantém como estava)
+                // Sugestão de dieta (mantém como estava)
                 Dieta dietaRecomendada = fachada.getDietaAleatoria(tipo);
                 if (dietaRecomendada != null) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -104,17 +102,17 @@ public class CriacaoMetaController {
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Valores numéricos inválidos.");
-        } catch (MetaNaoEncontradaException e) { //Adicionado o tipo da exceção
+        } catch (MetaNaoEncontradaException e) { // Captura a exceção correta
             mensagemErro.setText("Erro ao criar meta: " + e.getMessage());
         }
         catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace(); //Sempre bom ter pra debugging.
+            e.printStackTrace();
         }
     }
 
-    //Verifica se o formulário foi validado
     private boolean validarFormulario(String descricao, Meta.Tipo tipo, String valorAlvoStr, String progressoAtualStr) {
+        // validação (manter como está)
         if (descricao == null || descricao.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A descrição não pode estar vazia.");
             return false;
@@ -148,7 +146,6 @@ public class CriacaoMetaController {
         return true;
     }
 
-    //Função auxiliar para ver se é um número
     private boolean isNumeric(String str) {
         try {
             Double.parseDouble(str);
@@ -160,22 +157,9 @@ public class CriacaoMetaController {
 
     @FXML
     public void concluirMeta() {
-        // Obtém o valor alvo (para não precisar digitá-lo novamente).
-        double valorAlvo;
-        try{
-            valorAlvo = Double.parseDouble(campoValorAlvo.getText());
-        }catch (NumberFormatException e){
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Valor alvo inválido", "Digite um valor alvo válido.");
-            return;
-        }
-
-
-        campoProgressoAtual.setText(String.valueOf(valorAlvo)); // Define o progresso como 100%
-        campoProgressoAtual.setEditable(false); // Impede edição do progresso.
-        buttonConcluirMeta.setDisable(true);  // Desabilita o botão.
-        labelDataConclusao.setText("Concluída em: " + LocalDate.now().toString());
-
-        mensagemErro.setText("Meta marcada como concluída!");
+        //Essa função não faz mais sentido, uma vez que a logica foi movida para o atualizarMeta
+        //Para evitar problemas, ela foi mantida, mas agora apenas exibe um aviso.
+        showAlert(Alert.AlertType.WARNING, "Aviso", "Concluir Meta", "Para marcar a meta como concluída, por favor, edite a meta e coloque o valor do progresso atual como o valor alvo.");
     }
 
     @FXML

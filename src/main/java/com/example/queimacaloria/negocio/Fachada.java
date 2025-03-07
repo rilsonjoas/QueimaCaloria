@@ -103,17 +103,13 @@ public class Fachada {
         controladorUsuario.remover(id);
     }
 
-    // Métodos de Dieta - ATUALIZADO
-    public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario)
+    // Métodos de Dieta
+    public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario, Usuario.TipoDieta tipoDieta)
             throws DietaNaoEncontradaException {
 
-        // Definir o tipoDieta com base no objetivo
-        Usuario.TipoDieta tipoDieta = Usuario.TipoDieta.ONIVORO; // Valor padrão
-
-        if (objetivo == Meta.Tipo.PERDA_DE_PESO) {
-            tipoDieta = Usuario.TipoDieta.LOW_CARB;
-        } else if (objetivo == Meta.Tipo.GANHO_DE_MASSA) {
-            tipoDieta = Usuario.TipoDieta.ONIVORO;
+        //Validação se o usuário não está nulo.
+        if(usuario == null){
+            throw new IllegalArgumentException("A dieta deve estar associada a um usuário.");
         }
 
         dieta.setNome(nome);
@@ -147,21 +143,30 @@ public class Fachada {
     }
 
 
-    // Métodos de Exercício - ATUALIZADO
+    // Métodos de Exercício
     public void configurarExercicio(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
-                                    int tempo, double caloriasQueimadas, Usuario usuario) throws ExercicioNaoEncontradoException {
+                                    int tempo, double caloriasQueimadas, Usuario usuario, Usuario.NivelExperiencia nivel) throws ExercicioNaoEncontradoException {
 
-        // Definindo o nível de experiência
-        Usuario.NivelExperiencia nivel = Usuario.NivelExperiencia.INICIANTE; // Valor padrão
 
-        if(usuario != null) {
-            nivel = usuario.getNivelExperiencia();
+        //Validação se o usuário não está nulo.
+        if(usuario == null){
+            throw new IllegalArgumentException("O exercício deve estar associado a um usuário.");
         }
 
-        exercicio.setNivelExperiencia(nivel);
+        exercicio.setNome(nome);
+        exercicio.setDescricao(descricao);
+        exercicio.setTipo(tipo);
+        exercicio.setTempo(tempo);
+        exercicio.setCaloriasQueimadas(caloriasQueimadas);
+        exercicio.setUsuario(usuario);
+        exercicio.setNivelExperiencia(nivel); // Define o nível de experiência
 
-        // Chama o método atualizado do controlador
-        controladorExercicio.inicializar(exercicio, nome, descricao, tipo, tempo, caloriasQueimadas, usuario, nivel);
+
+        try {
+            controladorExercicio.salvar(exercicio);
+        } catch (ExercicioNaoEncontradoException e) {
+            controladorExercicio.salvar(exercicio);
+        }
     }
 
     public List<Exercicio> listarExercicios() {
@@ -194,12 +199,23 @@ public class Fachada {
                                double valorAlvo, double progressoAtual,
                                LocalDate dataConclusao, Usuario usuario) throws MetaNaoEncontradaException {
 
-        if (meta.getUsuario() == null) {
+        //Validação se o usuário não está nulo.
+        if(usuario == null){
             throw new IllegalArgumentException("A meta deve estar associada a um usuário.");
         }
 
-        controladorMeta.inicializar(meta, descricao, tipo, valorAlvo,
-                progressoAtual, dataConclusao, meta.getUsuario()); // Usar o usuário da meta
+        meta.setDescricao(descricao);
+        meta.setTipo(tipo);
+        meta.setValorAlvo(valorAlvo);
+        meta.setProgressoAtual(progressoAtual);
+        meta.setDataConclusao(dataConclusao);
+        meta.setUsuario(usuario); // Define o usuário
+
+        try {
+            controladorMeta.salvar(meta);
+        } catch (MetaNaoEncontradaException e) {
+            controladorMeta.salvar(meta);
+        }
     }
 
     public boolean verificarMetaConcluida(Meta meta) {
@@ -225,21 +241,26 @@ public class Fachada {
         controladorMeta.atualizarMeta(metaId, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
     }
 
-    // Métodos de Refeição - ATUALIZADO
+    // Métodos de Refeição
     public void configurarRefeicao(Refeicao refeicao, String nome, String descricao,
-                                   Map<String, Double> macronutrientes, Usuario usuario) {
-
-        // Definir o tipoDieta, se o usuário tiver uma preferência
-        Usuario.TipoDieta tipoDieta = Usuario.TipoDieta.ONIVORO; // Valor padrão
-
-        if (usuario != null && usuario.getTipoDieta() != null) {
-            tipoDieta = usuario.getTipoDieta();
+                                   Map<String, Double> macronutrientes, Usuario usuario, Usuario.TipoDieta tipoDieta)  {
+        //Validação se o usuário não está nulo.
+        if(usuario == null){
+            throw new IllegalArgumentException("A refeição deve estar associada a um usuário.");
         }
 
-        refeicao.setTipoDieta(tipoDieta);
+        refeicao.setNome(nome);
+        refeicao.setDescricao(descricao);
+        refeicao.setMacronutrientes(macronutrientes);
+        refeicao.setCalorias(controladorRefeicao.calcularCalorias(refeicao));
+        refeicao.setUsuario(usuario); // Define o usuário
+        refeicao.setTipoDieta(tipoDieta); // Define o tipo de dieta
 
-        // Chama o método atualizado do controlador
-        controladorRefeicao.inicializar(refeicao, nome, descricao, macronutrientes, usuario, tipoDieta);
+        try {
+            controladorRefeicao.salvar(refeicao);
+        } catch (RefeicaoNaoEncontradaException e) {
+            controladorRefeicao.salvar(refeicao);
+        }
         notificarObservadoresRefeicoes();
     }
 
@@ -263,21 +284,27 @@ public class Fachada {
         controladorRefeicao.remover(id);
     }
 
-    // Métodos de Treino - ATUALIZADO
-    public void configurarTreino(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade, Usuario usuario)
+    // Métodos de Treino
+    public void configurarTreino(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade, Usuario usuario, Usuario.NivelExperiencia nivel)
             throws TreinoNaoEncontradoException {
 
-        // Definição do Nível de Experiência
-        Usuario.NivelExperiencia nivel = Usuario.NivelExperiencia.INICIANTE; // Valor padrão
-
-        if(usuario != null) {
-            nivel = usuario.getNivelExperiencia();
+        //Validação se o usuário não está nulo.
+        if(usuario == null){
+            throw new IllegalArgumentException("O treino deve estar associado a um usuário.");
         }
 
+        treino.setNome(nome);
+        treino.setTipoDeTreino(tipoDeTreino);
+        treino.setDuracao(duracao);
+        treino.setNivelDeDificuldade(nivelDeDificuldade);
+        treino.setUsuario(usuario);
         treino.setNivelExperiencia(nivel);
 
-        // Chama o método atualizado do controlador
-        controladorTreino.inicializar(treino, nome, tipoDeTreino, duracao, nivelDeDificuldade, usuario, nivel);
+        try {
+            controladorTreino.salvar(treino);
+        } catch (TreinoNaoEncontradoException e) {
+            controladorTreino.salvar(treino);
+        }
     }
 
     public void adicionarTreinoAoUsuario(Usuario usuario, Treino treino) throws UsuarioNaoEncontradoException {
@@ -474,7 +501,7 @@ public class Fachada {
                 );
             }
 
-            
+
 
             // Adiciona os treinos diretamente, sem usuário
             for (Treino treino : InicializadorDados.inicializarTreinos()) {
@@ -492,5 +519,32 @@ public class Fachada {
             System.err.println("Erro ao inicializar os dados na Fachada: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    // Novos métodos relacionados a restrições alimentares
+    public void adicionarRestricaoAlimentar(Usuario usuario, Usuario.RestricaoAlimentar restricao) throws UsuarioNaoEncontradoException {
+        usuario.getRestricoes().add(restricao);
+        controladorUsuario.salvar(usuario); // Usando a fachada, *não* o repositório diretamente
+        if (mainController != null) {
+            mainController.atualizarDadosTelaPrincipal(); // Importante!
+        }
+    }
+
+    public void removerRestricaoAlimentar(Usuario usuario, Usuario.RestricaoAlimentar restricao) throws UsuarioNaoEncontradoException {
+        usuario.getRestricoes().remove(restricao);
+        controladorUsuario.salvar(usuario); // Usando a fachada, *não* o repositório diretamente
+        if (mainController != null) {
+            mainController.atualizarDadosTelaPrincipal(); // Importante!
+        }
+    }
+
+    //Método para atualizar tipo de dieta
+    public void atualizarTipoDieta(Usuario usuario, Usuario.TipoDieta tipoDieta) throws UsuarioNaoEncontradoException {
+        controladorUsuario.atualizarTipoDieta(usuario, tipoDieta);
+    }
+
+    //Método para atualizar nivel de experiencia
+    public void atualizarNivelExperiencia(Usuario usuario, Usuario.NivelExperiencia nivel) throws UsuarioNaoEncontradoException{
+        controladorUsuario.atualizarNivelExperiencia(usuario, nivel);
     }
 }

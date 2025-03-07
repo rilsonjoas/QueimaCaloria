@@ -64,31 +64,34 @@ public class CriacaoExercicioController {
 
             Exercicio novoExercicio = new Exercicio();
 
-            // Verifica se há um usuário logado e o associa ao exercício
+            // Verifica se há um usuário logado e o associa ao exercício.  Fundamental!
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 novoExercicio.setUsuario(mainController.getUsuarioLogado()); // Define o usuário
+            } else {
+                mensagemErro.setText("Erro: Usuário não logado."); // Adicionado tratamento de erro.
+                return;
             }
 
-
-            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, caloriasQueimadas, mainController.getUsuarioLogado()); // Passa o usuário
+            // Agora, a configuração é feita *toda* pela Fachada, e passamos o nivel do usuario.
+            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, caloriasQueimadas, mainController.getUsuarioLogado(), mainController.getUsuarioLogado().getNivelExperiencia());
 
             mensagemErro.setText("Exercício criado com sucesso!");
 
             if (exercicioController != null) {
-                exercicioController.initialize(); // Ou um método mais específico para atualizar a tabela
+                //exercicioController.atualizarTabelaExerciciosUsuario(); Removido.  O listener no MainController cuida disso.
             }
             if(mainController != null){
                 mainController.getUsuarioLogado().getExercicios().add(novoExercicio); //Adiciona aos exercícios do usuario logado
-                mainController.atualizarDadosTelaPrincipal();
+                mainController.atualizarDadosTelaPrincipal();  // O listener no MainController já cuida da atualização.
             }
 
             fecharJanela();
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Tempo e calorias devem ser números válidos.");
-        } catch (ExercicioNaoEncontradoException e) {  // Captura a exceção específica
+        } catch (ExercicioNaoEncontradoException e) {
             mensagemErro.setText("Erro ao criar exercicio: " + e.getMessage());
-        } catch (Exception e) { // Captura genérica para outros erros
+        } catch (Exception e) { // Captura genérica
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
             e.printStackTrace();
         }

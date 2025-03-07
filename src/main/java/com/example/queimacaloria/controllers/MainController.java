@@ -60,6 +60,8 @@ public class MainController implements IBaseAdmin {
     @FXML private Label labelAdmin; //ADICIONADO
     @FXML private Button buttonGerenciarUsuarios; //ADICIONADO
     @FXML private Label labelNumeroUsuarios; //ADICIONADO
+    @FXML private Label labelHistorico;
+
 
     // Adicionando as referências ao gráfico
     @FXML private LineChart<String, Number> graficoHistoricoPeso;
@@ -76,6 +78,8 @@ public class MainController implements IBaseAdmin {
     private Parent telaTreino;
     private Parent telaPerfil;
     private Parent telaAdminUsuarios; //ADICIONADO
+
+    private Parent telaHistorico; //Nova Tela
 
     private Stage primaryStage;
     private Usuario usuarioLogado;
@@ -277,6 +281,8 @@ public class MainController implements IBaseAdmin {
             telaTreino = carregarTela("/com/example/queimacaloria/views/treino-view.fxml");
             telaPerfil = carregarTela("/com/example/queimacaloria/views/perfil-view.fxml");
             telaAdminUsuarios = carregarTela("/com/example/queimacaloria/views/admin-usuarios-view.fxml"); //ADICIONADO
+            telaHistorico = carregarTela("/com/example/queimacaloria/views/historico-view.fxml");
+
 
             ((DietaController) getController(telaDieta)).setMainController(this);
             ((ExercicioController) getController(telaExercicio)).setMainController(this);
@@ -285,6 +291,7 @@ public class MainController implements IBaseAdmin {
             ((TreinoController) getController(telaTreino)).setMainController(this);
             ((PerfilController) getController(telaPerfil)).setMainController(this);
             ((AdminUsuariosController) getController(telaAdminUsuarios)).setMainController(this); //ADICIONADO
+            ((HistoricoController) getController(telaHistorico)).setUsuarioLogado(usuarioLogado);
             Fachada.getInstanciaUnica().setMainController(this);
             Fachada.getInstanciaUnica().registrarObservadorRefeicoes(this::atualizarDadosTelaPrincipal);
             // Carrega a folha de estilos CSS.
@@ -349,6 +356,12 @@ public class MainController implements IBaseAdmin {
         areaConteudo.getChildren().setAll(telaAdminUsuarios); //ADICIONADO
     }
 
+    @FXML public void mostrarTelaHistorico() {
+        HistoricoController historicoController = (HistoricoController) getController(telaHistorico);
+        historicoController.setUsuarioLogado(usuarioLogado);
+        areaConteudo.getChildren().setAll(telaHistorico);
+    }
+
     // Exibe a tela principal (conteúdo da tela principal).
     @FXML
     public void mostrarTelaPrincipal() {
@@ -379,6 +392,7 @@ public class MainController implements IBaseAdmin {
             labelAdmin = (Label) telaPrincipalContent.lookup("#labelAdmin");
             buttonGerenciarUsuarios = (Button) telaPrincipalContent.lookup("#buttonGerenciarUsuarios");
             labelNumeroUsuarios = (Label) telaPrincipalContent.lookup("#labelNumeroUsuarios");
+            labelHistorico = (Label) telaPrincipalContent.lookup("#labelHistorico");
 
             // GRÁFICO (lookup)
             graficoHistoricoPeso = (LineChart<String, Number>) telaPrincipalContent.lookup("#graficoHistoricoPeso");
@@ -391,8 +405,8 @@ public class MainController implements IBaseAdmin {
                 buttonVerMaisExercicios.setOnAction(e -> mostrarTelaExercicio());
             if (buttonVerMaisDietas != null) buttonVerMaisDietas.setOnAction(e -> mostrarTelaDieta());
             if (buttonVerMaisPerfil != null) buttonVerMaisPerfil.setOnAction(e -> mostrarTelaPerfil());
-            //ADICIONADO
             if (buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setOnAction(e -> mostrarTelaAdminUsuarios()); //ADICIONADO
+            if (labelHistorico != null) labelHistorico.setOnMouseClicked(e -> mostrarTelaHistorico());
 
             if (buttonBeberAgua != null) {
                 buttonBeberAgua.setOnAction(e -> {
@@ -590,6 +604,9 @@ public class MainController implements IBaseAdmin {
             }
             if (telaTreino != null) {
                 ((TreinoController) getController(telaTreino)).atualizarTabelaTreinosUsuario();
+            }
+            if(telaHistorico != null){
+                ((HistoricoController) getController(telaHistorico)).setUsuarioLogado(usuarioLogado);
             }
 
 

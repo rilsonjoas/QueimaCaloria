@@ -21,6 +21,7 @@
             <Label onMouseClicked="#mostrarTelaTreino" style="-fx-padding: 10; -fx-cursor: hand; -fx-text-fill: #d7d7d7; -fx-font-size: 16px; -fx-font-family: 'Gill Sans MT';" text="Treino" />
             <Label onMouseClicked="#mostrarTelaExercicio" style="-fx-padding: 10; -fx-cursor: hand; -fx-text-fill: #d7d7d7; -fx-font-size: 16px; -fx-font-family: 'Gill Sans MT';" text="Exercício" />
             <Label onMouseClicked="#mostrarTelaRefeicao" style="-fx-padding: 10; -fx-cursor: hand; -fx-text-fill: #d7d7d7; -fx-font-size: 16px; -fx-font-family: 'Gill Sans MT';" text="Refeição" />
+            <Label fx:id="labelHistorico" onMouseClicked="#mostrarTelaHistorico" style="-fx-padding: 10; -fx-cursor: hand; -fx-text-fill: #d7d7d7; -fx-font-size: 16px; -fx-font-family: 'Gill Sans MT';" text="Histórico" />
             <Label onMouseClicked="#mostrarTelaPerfil" style="-fx-padding: 10; -fx-cursor: hand; -fx-text-fill: #d7d7d7; -fx-font-size: 16px; -fx-font-family: 'Gill Sans MT';" text="Perfil" />
             <Label onMouseClicked="#logout" style="-fx-padding: 10; -fx-cursor: hand; -fx-text-fill: #d7d7d7; -fx-font-size: 16px; -fx-font-family: 'Gill Sans MT';" text="Sair" />
             <VBox.margin>

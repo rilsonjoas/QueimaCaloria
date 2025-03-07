@@ -443,5 +443,72 @@ public class Usuario {
     public ObjectProperty<NivelExperiencia> nivelExperienciaProperty() {
         return nivelExperiencia;
     }
+    //Historico de medidas novas:
+    private ListProperty<CinturaRegistro> historicoCintura = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private ListProperty<BicepsRegistro> historicoBiceps = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private ListProperty<CoxaRegistro> historicoCoxa = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private ListProperty<QuadrilRegistro> historicoQuadril = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    //Getters e Setters para os novos historicos.
+    public ObservableList<CinturaRegistro> getHistoricoCintura() {
+        return historicoCintura.get();
+    }
+    public ListProperty<CinturaRegistro> historicoCinturaProperty() {
+        return historicoCintura;
+    }
+    public void setHistoricoCintura(ObservableList<CinturaRegistro> historicoCintura) {
+        this.historicoCintura.set(historicoCintura);
+    }
+
+    public ObservableList<BicepsRegistro> getHistoricoBiceps() {
+        return historicoBiceps.get();
+    }
+
+    public ListProperty<BicepsRegistro> historicoBicepsProperty() {
+        return historicoBiceps;
+    }
+
+    public void setHistoricoBiceps(ObservableList<BicepsRegistro> historicoBiceps) {
+        this.historicoBiceps.set(historicoBiceps);
+    }
+
+    public ObservableList<CoxaRegistro> getHistoricoCoxa() {
+        return historicoCoxa.get();
+    }
+
+    public ListProperty<CoxaRegistro> historicoCoxaProperty() {
+        return historicoCoxa;
+    }
+
+    public void setHistoricoCoxa(ObservableList<CoxaRegistro> historicoCoxa) {
+        this.historicoCoxa.set(historicoCoxa);
+    }
+
+    public ObservableList<QuadrilRegistro> getHistoricoQuadril() {
+        return historicoQuadril.get();
+    }
+
+    public ListProperty<QuadrilRegistro> historicoQuadrilProperty() {
+        return historicoQuadril;
+    }
+
+    public void setHistoricoQuadril(ObservableList<QuadrilRegistro> historicoQuadril) {
+        this.historicoQuadril.set(historicoQuadril);
+    }
+
+    //Adicionando aos historicos
+    public void adicionarCinturaAoHistorico(double cintura) {
+        historicoCintura.get().add(new CinturaRegistro(cintura, LocalDate.now()));
+    }
+
+    public void adicionarBicepsAoHistorico(double biceps) {
+        historicoBiceps.get().add(new BicepsRegistro(biceps, LocalDate.now()));
+    }
+    public void adicionarCoxaAoHistorico(double coxa){
+        historicoCoxa.get().add(new CoxaRegistro(coxa, LocalDate.now()));
+    }
+    public void adicionarQuadrilAoHistorico(double quadril){
+        historicoQuadril.get().add(new QuadrilRegistro(quadril, LocalDate.now()));
+    }
 
 }

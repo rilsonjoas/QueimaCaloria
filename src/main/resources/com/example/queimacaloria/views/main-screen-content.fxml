@@ -16,7 +16,7 @@
     <children>
         <HBox alignment="TOP_LEFT" spacing="20.0">
             <children>
-                <VBox alignment="TOP_LEFT" HBox.hgrow="ALWAYS" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;">
+                <VBox alignment="TOP_LEFT" prefHeight="120.0" prefWidth="199.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;" HBox.hgrow="ALWAYS">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
@@ -29,7 +29,7 @@
                                 <Button fx:id="buttonVerMaisPerfil" style="-fx-background-color: #55c5f5;" text="Ver Mais" />
                             </children>
                         </HBox>
-                        <Label fx:id="labelNomeUsuario" text="Nome do Usuário" textFill="WHITE" >
+                        <Label fx:id="labelNomeUsuario" text="Nome do Usuário" textFill="WHITE">
                             <VBox.margin>
                                 <Insets top="10.0" />
                             </VBox.margin>
@@ -38,7 +38,7 @@
                         <Label fx:id="labelAlturaUsuario" text="Altura: --" textFill="WHITE" />
                     </children>
                 </VBox>
-                <VBox alignment="TOP_LEFT" HBox.hgrow="ALWAYS" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;">
+                <VBox alignment="TOP_LEFT" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;" HBox.hgrow="ALWAYS">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
@@ -46,11 +46,14 @@
                                     <font>
                                         <Font name="Gill Sans MT" size="20.0" />
                                     </font>
+                           <HBox.margin>
+                              <Insets bottom="10.0" />
+                           </HBox.margin>
                                 </Label>
                             </children>
                         </HBox>
                         <Label fx:id="labelIMC" text="IMC: --" textFill="WHITE" />
-                        <Label fx:id="labelIMCSituacao" text="Situação: --" textFill="WHITE" >
+                        <Label fx:id="labelIMCSituacao" text="Situação: --" textFill="WHITE">
                             <VBox.margin>
                                 <Insets top="10.0" />
                             </VBox.margin>
@@ -61,7 +64,7 @@
         </HBox>
         <HBox alignment="TOP_LEFT" spacing="20.0">
             <children>
-                <VBox alignment="TOP_LEFT" prefHeight="150.0" HBox.hgrow="ALWAYS" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;">
+                <VBox alignment="TOP_LEFT" prefHeight="117.0" prefWidth="377.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;" HBox.hgrow="ALWAYS">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
@@ -69,20 +72,23 @@
                                     <font>
                                         <Font name="Gill Sans MT" size="20.0" />
                                     </font>
+                           <HBox.margin>
+                              <Insets bottom="5.0" />
+                           </HBox.margin>
                                 </Label>
                                 <Region HBox.hgrow="ALWAYS" />
                                 <Button fx:id="buttonVerMaisMetas" style="-fx-background-color: #55c5f5;" text="Ver Mais" />
                             </children>
                         </HBox>
-                        <ProgressBar fx:id="barraProgressoMetas" prefHeight="18.0" prefWidth="170.0" progress="0.0" style="-fx-accent: #55c5f5;" />
-                        <Label fx:id="labelProgressoMetas" text="0% Completo" textFill="WHITE" >
+                        <ProgressBar fx:id="barraProgressoMetas" prefHeight="18.0" prefWidth="211.0" progress="0.0" style="-fx-accent: #55c5f5;" />
+                        <Label fx:id="labelProgressoMetas" text="0% Completo" textFill="WHITE">
                             <VBox.margin>
                                 <Insets top="10.0" />
                             </VBox.margin>
                         </Label>
                     </children>
                 </VBox>
-                <VBox alignment="TOP_LEFT" HBox.hgrow="ALWAYS" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;">
+                <VBox alignment="TOP_LEFT" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;" HBox.hgrow="ALWAYS">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
@@ -95,7 +101,7 @@
                                 <Button fx:id="buttonVerMaisExercicios" style="-fx-background-color: #55c5f5;" text="Ver Mais" />
                             </children>
                         </HBox>
-                        <Label fx:id="labelAtividadesRecentes" text="Nenhum exercício recente." textFill="WHITE" wrapText="true" >
+                        <Label fx:id="labelAtividadesRecentes" text="Nenhum exercício recente." textFill="WHITE" wrapText="true">
                             <VBox.margin>
                                 <Insets top="10.0" />
                             </VBox.margin>
@@ -106,7 +112,7 @@
         </HBox>
         <HBox alignment="TOP_LEFT" spacing="20.0">
             <children>
-                <VBox alignment="TOP_LEFT" HBox.hgrow="ALWAYS" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;">
+                <VBox alignment="TOP_LEFT" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;" HBox.hgrow="ALWAYS">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
@@ -118,14 +124,14 @@
                                 <Region HBox.hgrow="ALWAYS" />
                             </children>
                         </HBox>
-                        <Label fx:id="labelPontuacao" text="Pontuação: --" textFill="WHITE" >
+                        <Label fx:id="labelPontuacao" text="Pontuação: --" textFill="WHITE">
                             <VBox.margin>
                                 <Insets top="10.0" />
                             </VBox.margin>
                         </Label>
                     </children>
                 </VBox>
-                <VBox alignment="TOP_LEFT" HBox.hgrow="ALWAYS" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;">
+                <VBox alignment="TOP_LEFT" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;" HBox.hgrow="ALWAYS">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
@@ -138,14 +144,14 @@
                                 <Button fx:id="buttonVerMaisDietas" style="-fx-background-color: #55c5f5;" text="Ver Mais" />
                             </children>
                         </HBox>
-                        <Label fx:id="labelCaloriasDia" text="Calorias: -- / --" textFill="WHITE" >
+                        <Label fx:id="labelCaloriasDia" text="Calorias: -- / --" textFill="WHITE">
                             <VBox.margin>
                                 <Insets top="10.0" />
                             </VBox.margin>
                         </Label>
                     </children>
                 </VBox>
-                <VBox alignment="TOP_LEFT" HBox.hgrow="ALWAYS" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;">
+                <VBox alignment="TOP_LEFT" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;" HBox.hgrow="ALWAYS">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
@@ -159,7 +165,7 @@
                                 <Button fx:id="buttonZerarAgua" style="-fx-background-color: #55c5f5;" text="Zerar" />
                             </children>
                         </HBox>
-                        <Label fx:id="labelAguaConsumida" text="Água: -- ml" textFill="WHITE" >
+                        <Label fx:id="labelAguaConsumida" text="Água: -- ml" textFill="WHITE">
                             <VBox.margin>
                                 <Insets top="10.0" />
                             </VBox.margin>
@@ -170,7 +176,7 @@
         </HBox>
         <HBox alignment="TOP_LEFT" spacing="20.0">
             <children>
-                <VBox alignment="TOP_LEFT" HBox.hgrow="ALWAYS" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;">
+                <VBox alignment="TOP_LEFT" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 15.0;" HBox.hgrow="ALWAYS">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
@@ -179,7 +185,10 @@
                                         <Font name="Gill Sans MT" size="20.0" />
                                     </font>
                                 </Label>
-                                <Region HBox.hgrow="ALWAYS" />
+                                <Region HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets bottom="5.0" />
+                           </HBox.margin></Region>
                             </children>
                         </HBox>
                         <LineChart fx:id="graficoHistoricoPeso" style="-fx-background-color: #1a1922;" title="Histórico de Peso (kg)">

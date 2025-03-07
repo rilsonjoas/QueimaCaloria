@@ -28,6 +28,7 @@ public class ControladorDieta {
         } catch (DietaNaoEncontradaException e) {
             repositorio.adicionar(dieta);
         }
+        // Fachada.getInstanciaUnica().notificarObservadoresDietas(); // REMOVIDO.  Não precisa mais notificar aqui.
     }
 
     // Lista todas as dietas do repositório.

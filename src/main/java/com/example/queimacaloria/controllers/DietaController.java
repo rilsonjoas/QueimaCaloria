@@ -132,7 +132,6 @@ public class DietaController {
             try {
                 fachada.removerDieta(dietaSelecionada.getId());
 
-                // **********  MUDANÇA AQUI ***********
                 if(mainController != null && mainController.getUsuarioLogado() != null){
                     mainController.getUsuarioLogado().getDietas().remove(dietaSelecionada); // Remove DA LISTA DO USUÁRIO
                 }
@@ -156,7 +155,6 @@ public class DietaController {
             return;
         }
 
-        // REVISÃO: Simplificando a lógica de adição
         if (mainController == null || mainController.getUsuarioLogado() == null) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário logado", "Não foi possível adicionar a dieta.");
             return;
@@ -175,14 +173,19 @@ public class DietaController {
                     novaDieta.getCaloriasDiarias(), novaDieta.getUsuario(), novaDieta.getTipoDieta());
 
             mainController.getUsuarioLogado().getDietas().add(novaDieta);
+            // **********  ADICIONE ESTA LINHA  ***********
+            Fachada.getInstanciaUnica().setDietaAtiva(mainController.getUsuarioLogado(), novaDieta);
 
             mensagemDieta.setText("Dieta adicionada com sucesso!");
             atualizarTabelaDietasUsuario();
 
 
-        } catch (DietaNaoEncontradaException e) {
+        } catch (DietaNaoEncontradaException e) { //Melhor usar Exception
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", e.getMessage());
             e.printStackTrace();
+        }  catch (Exception e) { // Captura genérica
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", "Erro inesperado: " + e.getMessage());
+            e.printStackTrace(); // Stack trace
         }
     }
 
@@ -192,7 +195,6 @@ public class DietaController {
         try {
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
-                // **********  MUDANÇA AQUI ***********
                 // Obtém as dietas diretamente do usuário logado.  NÃO MAIS da fachada.
                 List<Dieta> listaDietas = usuarioLogado.getDietas();
                 System.out.println("DietaController.atualizarTabelaDietasUsuario(): Dietas do usuário " + usuarioLogado.getNome() + ": " + listaDietas);  // LOG

@@ -38,90 +38,58 @@ public class CriacaoDietaController {
     public void initialize() {
         campoObjetivo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
     }
-
-    // Cria uma nova dieta para o usuário logado.
     @FXML
-    public void criarDieta() {
-        String nome = campoNome.getText();
-        Meta.Tipo objetivo = campoObjetivo.getValue();
-        String caloriasStr = campoCalorias.getText();
-
-        if (!validarFormulario(nome, objetivo, caloriasStr)) {
-            return; // Aborta se a validação falhar
+    public void salvarDieta() {
+        //Validações
+        if (campoNome.getText() == null || campoNome.getText().trim().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Nome inválido", "O nome da dieta não pode estar vazio.");
+            return;
+        }
+        if (campoObjetivo.getValue() == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Objetivo inválido", "Selecione um objetivo.");
+            return;
+        }
+        if (campoCalorias.getText() == null || campoCalorias.getText().trim().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Calorias inválidas", "O número de calorias não pode estar vazio.");
+            return;
+        }
+        try {
+            Integer.parseInt(campoCalorias.getText());
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Calorias inválidas", "Insira um número válido para as calorias.");
+            return;
         }
 
         try {
-            int calorias = Integer.parseInt(caloriasStr);
+            Dieta novaDieta = new Dieta(
+                    campoNome.getText(),
+                    campoObjetivo.getValue(),
+                    Integer.parseInt(campoCalorias.getText()),
+                    mainController.getUsuarioLogado()
 
-            if (mainController != null && mainController.getUsuarioLogado() != null) {
-                Usuario usuarioLogado = mainController.getUsuarioLogado(); // Obtém o usuário logado
-                Dieta novaDieta = new Dieta(); // Cria uma nova dieta
-                novaDieta.setUsuario(usuarioLogado); // **IMPORTANTE:** Associa o usuário à dieta
+            );
 
-                // Usa a fachada, passando o usuário
-                fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado, null);
+            fachada.configurarDieta(novaDieta, novaDieta.getNome(), novaDieta.getObjetivo(),
+                    novaDieta.getCaloriasDiarias(), novaDieta.getUsuario(), novaDieta.getTipoDieta());
+            mainController.getUsuarioLogado().getDietas().add(novaDieta);
+            Fachada.getInstanciaUnica().setDietaAtiva(mainController.getUsuarioLogado(), novaDieta); // Define como ativa
 
-                fachada.setDietaAtiva(usuarioLogado, novaDieta); // Define a dieta como ativa (se necessário)
-
-                // *** ADICIONAR A DIETA À LISTA DO USUÁRIO ***
-                usuarioLogado.getDietas().add(novaDieta); // <-- LINHA CRUCIAL!
-
-                if (dietaController != null) {
-                    //dietaController.atualizarTabelaDietasUsuario(); // Removido, o listener já trata
-                    dietaController.showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dieta Criada", "Dieta criada com sucesso!");
-                }
-
-                // Recomendação de refeição (mantém como estava)
-                Refeicao refeicaoRecomendada = fachada.getRefeicaoAleatoria();
-                if (refeicaoRecomendada != null) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Recomendação de Refeição");
-                    alert.setHeaderText("Com base na sua nova dieta, recomendamos a seguinte refeição:");
-                    alert.setContentText(String.format("Nome: %s\nDescrição: %s\nCalorias: %d",
-                            refeicaoRecomendada.getNome(),
-                            refeicaoRecomendada.getDescricao(),
-                            refeicaoRecomendada.getCalorias()));
-                    alert.showAndWait();
-                }
-                fecharJanela();
-
-            } else {
-                mensagemErro.setText("Erro: Usuário não logado.");
+            if (dietaController != null) {
+                dietaController.atualizarTabelaDietasUsuario(); //Já atualiza.
             }
-        } catch (NumberFormatException e) {
-            mensagemErro.setText("Erro: Calorias devem ser um número inteiro válido.");
-        } catch (DietaNaoEncontradaException | UsuarioNaoEncontradoException e) { // Captura ambas as exceções
-            mensagemErro.setText("Erro: " + e.getMessage());
-        } catch (Exception e) { // Captura genérica para outros erros
-            mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace(); // Sempre importante para debugging
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal(); //Já atualiza
+            }
+
+            Stage stage = (Stage) campoNome.getScene().getWindow();
+            stage.close();
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao criar dieta", e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    //Função auxiliar para validar o formulário.
-    private boolean validarFormulario(String nome, Meta.Tipo objetivo, String caloriasStr) {
-        if (nome == null || nome.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O nome não pode estar vazio.");
-            return false;
-        }
-
-        if (objetivo == null) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O objetivo não pode ser nulo.");
-            return false;
-        }
-
-        if (caloriasStr == null || caloriasStr.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "As calorias não podem estar vazias.");
-            return false;
-        }
-
-        if (!isNumeric(caloriasStr)) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "As calorias devem ser um número.");
-            return false;
-        }
-
-        return true;
-    }
 
     //Função auxiliar para verificar se é um número.
     private boolean isNumeric(String str) {

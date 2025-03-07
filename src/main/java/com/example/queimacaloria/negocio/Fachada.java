@@ -177,6 +177,7 @@ public class Fachada {
 
     public void setDietaAtiva(Usuario usuario, Dieta dieta) throws UsuarioNaoEncontradoException{
         controladorUsuario.setDietaAtiva(usuario, dieta);
+        usuario.setDietaAtiva(dieta);
     }
 
     public Dieta getDietaAtiva(Usuario usuario) throws UsuarioNaoEncontradoException{
@@ -277,7 +278,7 @@ public class Fachada {
 
         // Chama o método atualizado do controlador
         controladorRefeicao.inicializar(refeicao, nome, descricao, macronutrientes, usuario, tipoDieta);
-        notificarObservadoresRefeicoes();
+        notificarObservadoresRefeicoes(); // <--- Notifica os observadores!
     }
 
     public int calcularCaloriasRefeicao(Refeicao refeicao) {
@@ -298,6 +299,7 @@ public class Fachada {
 
     public void removerRefeicao(UUID id) throws RefeicaoNaoEncontradaException {
         controladorRefeicao.remover(id);
+        notificarObservadoresRefeicoes();
     }
 
     // Métodos de Treino - ATUALIZADO

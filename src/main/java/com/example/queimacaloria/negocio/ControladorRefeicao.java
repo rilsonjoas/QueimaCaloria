@@ -1,4 +1,3 @@
-
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
@@ -33,6 +32,7 @@ public class ControladorRefeicao {
         } catch (RefeicaoNaoEncontradaException e) {
             repositorio.adicionar(refeicao);
         }
+        // Fachada.getInstanciaUnica().notificarObservadoresRefeicoes(); // REMOVIDO - A notificação agora está na Fachada.
     }
 
     public int calcularCalorias(Refeicao refeicao) {
@@ -74,5 +74,6 @@ public class ControladorRefeicao {
 
     public void remover(UUID id) throws RefeicaoNaoEncontradaException {
         repositorio.remover(id);
+        // Fachada.getInstanciaUnica().notificarObservadoresRefeicoes(); // REMOVIDO.  A notificação está na Fachada.
     }
 }

@@ -57,8 +57,6 @@ public class EdicaoDietaController {
             campoCalorias.setText(String.valueOf(dieta.getCaloriasDiarias()));
         }
     }
-
-    // Atualiza os dados da dieta.
     @FXML
     public void atualizarDieta() {
         String nome = campoNome.getText();
@@ -73,12 +71,9 @@ public class EdicaoDietaController {
             int calorias = Integer.parseInt(caloriasStr);
             // A principal mudança é que agora passamos o USUÁRIO LOGADO
             fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado(), null); // Usuário Logado!
+            // **********  ADICIONE ESTA LINHA  ***********
+            Fachada.getInstanciaUnica().setDietaAtiva(mainController.getUsuarioLogado(), dieta);
             mensagemErro.setText("Dieta atualizada com sucesso!");
-
-            // **********  MUDANÇA AQUI ***********
-            // Atualiza o usuário logado:  Isso é *crítico*.  A fachada atualiza
-            // o objeto no repositório, mas o objeto Usuario no MainController
-            // *não* é atualizado automaticamente!
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
@@ -90,19 +85,13 @@ public class EdicaoDietaController {
                             "O usuário logado não pôde ser encontrado.");
                 }
             }
-
-
-            //REMOVA ISSO
-            /*if(dietaController != null){
-                dietaController.atualizarTabelaDietasUsuario(); //Isso aqui pode ser removido.
-            }*/
-
-
             fecharJanela();
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Calorias devem ser um número inteiro.");
         } catch (DietaNaoEncontradaException e) {
+            mensagemErro.setText("Erro ao atualizar dieta: " + e.getMessage());
+        } catch (Exception e){
             mensagemErro.setText("Erro ao atualizar dieta: " + e.getMessage());
         }
     }

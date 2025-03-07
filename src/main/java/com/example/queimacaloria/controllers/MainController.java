@@ -168,6 +168,18 @@ public class MainController implements IBaseAdmin {
                 labelNumeroUsuarios.setVisible(isAdmin); //ADICIONADO
                 atualizarNumeroUsuarios(); //ADICIONADO
             }
+
+            // Listener para a LISTA de refeições
+            Fachada.getInstanciaUnica().registrarObservadorRefeicoes(this::atualizarCalorias);
+
+            // Listener para a Dieta Ativa (MUITO IMPORTANTE)
+            usuarioLogado.dietaAtivaProperty().addListener((obs, oldDieta, newDieta) -> {
+                System.out.println("MainController: Listener de dietaAtivaProperty disparado!"); // LOG
+                atualizarCalorias(); // Atualiza quando a dieta ativa mudar
+            });
+            // **IMPORTANTE:** Configura o estado *inicial* das calorias
+            atualizarCalorias();
+
             // Listener para a LISTA de metas (adicionar/remover metas)
             usuarioLogado.getMetas().addListener((ListChangeListener<Meta>) change -> {
                 System.out.println("MainController: Listener de LISTA de metas disparado!"); // LOG mais específico
@@ -217,7 +229,6 @@ public class MainController implements IBaseAdmin {
             atualizarDadosTelaPrincipal(); // Chama uma vez para configurar o estado inicial.
 
         } else {
-            // ... (código para caso de usuário não logado) ...
 
             if (labelNomeUsuario != null) labelNomeUsuario.setText("Nome do Usuário");
             if (labelPesoUsuario != null) labelPesoUsuario.setText("Peso: --");
@@ -441,28 +452,23 @@ public class MainController implements IBaseAdmin {
             return 0;
         }
 
+        int total = 0;
         try {
-            Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
-            if (dietaAtiva == null) {
-                return 0; // Sem dieta ativa, zero calorias consumidas.
-            }
-
-            int total = 0;
+            // Obtém *TODAS* as refeições. A Fachada é a fonte da verdade.
             List<Refeicao> todasRefeicoes = Fachada.getInstanciaUnica().listarRefeicoes();
 
-            // Filtra para pegar apenas as refeições do usuário logado.
+            // Filtra para pegar *APENAS* as refeições do usuário logado.
             for (Refeicao r : todasRefeicoes) {
                 if (r.getUsuario() != null && r.getUsuario().getId().equals(usuarioLogado.getId())) {
                     total += r.getCalorias();
                 }
             }
-            return total;
-
-
-        } catch (UsuarioNaoEncontradoException e) {
-            System.err.println("Usuário não encontrado ao calcular calorias consumidas: " + e.getMessage());
-            return 0;
+        } catch (Exception e) { // Captura exceções mais genéricas aqui
+            System.err.println("Erro ao calcular calorias consumidas: " + e.getMessage());
+            e.printStackTrace();
+            return 0; // Retorna 0 em caso de erro
         }
+        return total;
     }
 
     // Atualiza o label de calorias consumidas/diárias.  Este método é *crucial*.
@@ -471,22 +477,19 @@ public class MainController implements IBaseAdmin {
             if (labelCaloriasDia != null) {
                 labelCaloriasDia.setText("Calorias: --/--");
             }
-            return; // Se não tem usuário ou label, não faz nada.
+            return;
         }
 
         int caloriasConsumidas = calcularTotalCaloriasConsumidas();
-        int caloriasDiarias = 0; // Valor padrão, se não houver dieta ativa.
+        int caloriasDiarias = 0;
 
         try {
-            // Obtém a dieta ativa *corretamente*.  A Fachada já tem um método para isso!
-            Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado); //Usando o método da fachada
+            Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
             if (dietaAtiva != null) {
-                caloriasDiarias = dietaAtiva.getCaloriasDiarias(); // Obtém as calorias da dieta
+                caloriasDiarias = dietaAtiva.getCaloriasDiarias();
             }
         } catch (UsuarioNaoEncontradoException e) {
             System.err.println("Usuário não encontrado ao buscar dieta ativa: " + e.getMessage());
-            // Se não encontrou o usuário, não tem o que fazer.  Mantém caloriasDiarias = 0.
-            // Opcional: mostrar um alerta para o usuário, se apropriado.
         }
 
         labelCaloriasDia.setText("Calorias: " + caloriasConsumidas + " / " + caloriasDiarias);
@@ -555,7 +558,6 @@ public class MainController implements IBaseAdmin {
     public void atualizarDadosTelaPrincipal() {
         System.out.println("MainController.atualizarDadosTelaPrincipal() chamado"); // Debug
         if (usuarioLogado != null) {
-            //Verifica se o usuário tem uma dieta ativa antes de tentar acessá-la
             try {
                 Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
                 if (dietaAtiva != null) {

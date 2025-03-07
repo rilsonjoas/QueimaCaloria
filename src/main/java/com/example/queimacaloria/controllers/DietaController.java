@@ -1,7 +1,7 @@
+// DietaController.java
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
-import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -94,7 +94,7 @@ public class DietaController {
             controller.setDietaController(this);
             controller.setMainController(mainController);
             stage.showAndWait();
-            atualizarTabelaDietasUsuario(); // Atualiza a tabela após criar uma dieta
+            // Removido: atualizarTabelaDietasUsuario();  // O listener no MainController cuida disso.
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
@@ -115,7 +115,6 @@ public class DietaController {
                 stage.setTitle("Editar Dieta");
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); // Importante: Espera a janela de edição fechar
-                atualizarTabelaDietasUsuario();  // Atualiza a tabela após a edição
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -132,8 +131,14 @@ public class DietaController {
         if (dietaSelecionada != null) {
             try {
                 fachada.removerDieta(dietaSelecionada.getId());
-                atualizarTabelaDietasUsuario(); // Atualiza a tabela após remover.
+
+                // **********  MUDANÇA AQUI ***********
+                if(mainController != null && mainController.getUsuarioLogado() != null){
+                    mainController.getUsuarioLogado().getDietas().remove(dietaSelecionada); // Remove DA LISTA DO USUÁRIO
+                }
+                //atualizarTabelaDietasUsuario(); // Removido. O listener agora trata da atualização.
                 mensagemDieta.setText("Dieta removida.");
+
             } catch (DietaNaoEncontradaException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover dieta", e.getMessage());
             }
@@ -163,18 +168,17 @@ public class DietaController {
                     dietaSelecionada.getNome(),
                     dietaSelecionada.getObjetivo(),
                     dietaSelecionada.getCaloriasDiarias(),
-                    mainController.getUsuarioLogado() // Usuário definido aqui!
+                    mainController.getUsuarioLogado()
             );
 
             fachada.configurarDieta(novaDieta, novaDieta.getNome(), novaDieta.getObjetivo(),
-                    novaDieta.getCaloriasDiarias(), novaDieta.getUsuario());
+                    novaDieta.getCaloriasDiarias(), novaDieta.getUsuario(), novaDieta.getTipoDieta());
 
-            // **********  MUDANÇA AQUI ***********
-            // ADICIONA A NOVA DIETA À LISTA DO USUÁRIO
-            mainController.getUsuarioLogado().getDietas().add(novaDieta); // <-- Adiciona à lista do usuário!
+            mainController.getUsuarioLogado().getDietas().add(novaDieta);
 
-            atualizarTabelaDietasUsuario();  //REMOVA, O LISTENER JÁ ATUALIZA A UI
             mensagemDieta.setText("Dieta adicionada com sucesso!");
+            atualizarTabelaDietasUsuario();
+
 
         } catch (DietaNaoEncontradaException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", e.getMessage());
@@ -184,33 +188,27 @@ public class DietaController {
 
 
     public void atualizarTabelaDietasUsuario() {
+        System.out.println("DietaController.atualizarTabelaDietasUsuario() chamado"); // LOG
         try {
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
-                List<Dieta> listaDietas = fachada.listarDietas();
-
-                // FILTRO 1: Apenas dietas do usuário logado
-                listaDietas = listaDietas.stream()
-                        .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(usuarioLogado.getId()))
-                        .collect(Collectors.toList());
-
-                // FILTRO 2: Aplicar filtro de tipo de dieta (preferência do usuário)
-                if (usuarioLogado.getTipoDieta() != null) {
-                    listaDietas = listaDietas.stream()
-                            .filter(dieta -> dieta.getTipoDieta() == null || dieta.getTipoDieta() == usuarioLogado.getTipoDieta())
-                            .collect(Collectors.toList());
-                }
+                // **********  MUDANÇA AQUI ***********
+                // Obtém as dietas diretamente do usuário logado.  NÃO MAIS da fachada.
+                List<Dieta> listaDietas = usuarioLogado.getDietas();
+                System.out.println("DietaController.atualizarTabelaDietasUsuario(): Dietas do usuário " + usuarioLogado.getNome() + ": " + listaDietas);  // LOG
 
                 tabelaDietasUsuario.setItems(FXCollections.observableArrayList(listaDietas));
-                tabelaDietasUsuario.refresh();
+                tabelaDietasUsuario.refresh();  // Importante para casos onde itens são modificados mas a lista em si não muda.
             } else {
                 tabelaDietasUsuario.setItems(FXCollections.observableArrayList());
                 System.err.println("DietaController: Nenhum usuário logado ao atualizar a tabela.");
             }
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar dietas", e.getMessage());
+            e.printStackTrace();
         }
     }
+
 
     @FXML
     public void voltarParaTelaPrincipal() {

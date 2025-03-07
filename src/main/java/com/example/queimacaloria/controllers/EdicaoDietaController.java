@@ -1,3 +1,4 @@
+// EdicaoDietaController.java
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
@@ -71,7 +72,7 @@ public class EdicaoDietaController {
         try {
             int calorias = Integer.parseInt(caloriasStr);
             // A principal mudança é que agora passamos o USUÁRIO LOGADO
-            fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado()); // Usuário Logado!
+            fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado(), null); // Usuário Logado!
             mensagemErro.setText("Dieta atualizada com sucesso!");
 
             // **********  MUDANÇA AQUI ***********

@@ -2,9 +2,11 @@ package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.controllers.MainController;
 import com.example.queimacaloria.excecoes.*;
+import javafx.collections.FXCollections;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Fachada {
 
@@ -85,8 +87,44 @@ public class Fachada {
         return novoUsuario;
     }
 
-    public Usuario buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException{
-        return controladorUsuario.buscarPorId(id);
+    public Usuario buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
+        Usuario usuario = controladorUsuario.buscarPorId(id); // Busca o usuário (cópia básica)
+
+        if (usuario != null) {
+            // Carrega as metas do usuário
+            List<Meta> metas = controladorMeta.listarMetas().stream()
+                    .filter(meta -> meta.getUsuario() != null && meta.getUsuario().getId().equals(id))
+                    .collect(Collectors.toList());
+            usuario.setMetas(FXCollections.observableArrayList(metas));
+
+
+            // Carrega os treinos
+            List<Treino> treinos = controladorTreino.listarTreinos().stream().
+                    filter(treino -> treino.getUsuario() != null && treino.getUsuario().getId().equals(id))
+                    .collect(Collectors.toList());
+            usuario.setTreinos(FXCollections.observableArrayList(treinos));
+
+            // Carrega as Dietas
+            List<Dieta> dietas = controladorDieta.listarDietas().stream().
+                    filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(id))
+                    .collect(Collectors.toList());
+            usuario.setDietas(FXCollections.observableArrayList(dietas));
+
+            // Carrega os Exercicios
+            List<Exercicio> exercicios = controladorExercicio.listarExercicios().stream().
+                    filter(exercicio -> exercicio.getUsuario() != null && exercicio.getUsuario().getId().equals(id))
+                    .collect(Collectors.toList());
+            usuario.setExercicios(FXCollections.observableArrayList(exercicios));
+
+            //Carrega as Refeições
+            List<Refeicao> refeicoes = controladorRefeicao.listarRefeicoes().stream().
+                    filter(refeicao -> refeicao.getUsuario() != null && refeicao.getUsuario().getId().equals(id))
+                    .collect(Collectors.toList());
+
+
+        }
+
+        return usuario; // Retorna o usuário *completo*.
     }
 
     public List<Usuario> listarUsuarios() {
@@ -104,11 +142,10 @@ public class Fachada {
     }
 
     // Métodos de Dieta - ATUALIZADO
-    public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario)
+    public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario, Usuario.TipoDieta tipoDieta)
             throws DietaNaoEncontradaException {
 
-        // Definir o tipoDieta com base no objetivo
-        Usuario.TipoDieta tipoDieta = Usuario.TipoDieta.ONIVORO; // Valor padrão
+        dieta.setTipoDieta(tipoDieta);
 
         if (objetivo == Meta.Tipo.PERDA_DE_PESO) {
             tipoDieta = Usuario.TipoDieta.LOW_CARB;

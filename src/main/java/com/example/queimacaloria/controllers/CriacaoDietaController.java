@@ -1,3 +1,4 @@
+// CriacaoDietaController.java
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
@@ -58,7 +59,7 @@ public class CriacaoDietaController {
                 novaDieta.setUsuario(usuarioLogado); // **IMPORTANTE:** Associa o usuário à dieta
 
                 // Usa a fachada, passando o usuário
-                fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado);
+                fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado, null);
 
                 fachada.setDietaAtiva(usuarioLogado, novaDieta); // Define a dieta como ativa (se necessário)
 

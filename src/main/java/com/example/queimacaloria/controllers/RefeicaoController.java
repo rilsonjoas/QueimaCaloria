@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors; // Importante para o filtro!
+import java.util.stream.Collectors;
 
 public class RefeicaoController {
 

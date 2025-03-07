@@ -265,13 +265,13 @@ public class MetaController {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 List<Meta> listaMetas = fachada.listarMetas(); // Obtém TODAS as metas.
 
-                // FILTRO: Mostra apenas as metas do usuário logado.
+
                 listaMetas = listaMetas.stream()
                         .filter(meta -> meta.getUsuario() != null && meta.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
 
-                tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas)); // Adiciona à tabela
-                tabelaMetasUsuario.refresh(); // Atualiza!
+                tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas));
+                tabelaMetasUsuario.refresh();
 
             }
 

@@ -3,6 +3,7 @@ package com.example.queimacaloria.controllers;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Refeicao;
 import com.example.queimacaloria.negocio.Usuario;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -74,16 +75,16 @@ public class CriacaoRefeicaoController {
                 return;
             }
 
-            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes, mainController.getUsuarioLogado(),  mainController.getUsuarioLogado().getTipoDieta()); // Passa o usuário e o tipo de dieta
+            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes, mainController.getUsuarioLogado()); // Passa o usuário
 
             mensagemErro.setText("Refeição criada com sucesso!");
 
             if (refeicaoController != null) {
-                // Removido, não precisa mais
+                // refeicaoController.atualizarTabelaRefeicoesUsuario();  Removido. O listener no main controller cuida disso
             }
 
             if(mainController != null){
-                // Removido, não precisa mais
+                //mainController.atualizarDadosTelaPrincipal(); Removido
                 // Como estamos adicionando uma refeição, o total de calorias *pode* mudar
                 // então vamos forçar uma atualização chamando diretamente o método
                 // atualizarCalorias()

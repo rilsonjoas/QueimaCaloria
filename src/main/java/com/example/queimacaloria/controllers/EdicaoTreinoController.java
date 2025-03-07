@@ -1,10 +1,11 @@
-//Mesmas correções do AdminTreinosController, mas agora, sempre passamos o usuário logado.
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.TreinoNaoEncontradoException;
+import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Treino;
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -27,35 +28,36 @@ public class EdicaoTreinoController {
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private Treino treino;
-    private TreinoController treinoController; //Para comunicação
-    private MainController mainController;  //Para comunicação e acesso ao usuário.
+    private TreinoController treinoController;
+    private MainController mainController;
 
     public void setTreinoController(TreinoController treinoController) {
         this.treinoController = treinoController;
     }
 
-    public void setMainController(MainController mainController) {
+    public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
 
-
     public void setTreino(Treino treino) {
+        System.out.println("EdicaoTreinoController.setTreino() chamado. ID do treino: " + treino.getId());
         this.treino = treino;
         preencherCampos();
     }
 
     @FXML
     public void initialize() {
-        // Carrega os valores do enum no ChoiceBox
+        // Carrega os valores do enum no ChoiceBox.
         campoTipoTreino.setItems(FXCollections.observableArrayList(Exercicio.TipoExercicio.values()));
     }
 
     private void preencherCampos() {
         if (treino != null) {
             campoNome.setText(treino.getNome());
-            campoTipoTreino.setValue(treino.getTipoDeTreino());
+            campoTipoTreino.setValue(treino.getTipoDeTreino()); // Define o valor do ChoiceBox
             campoDuracao.setText(String.valueOf(treino.getDuracao()));
             campoNivelDificuldade.setText(String.valueOf(treino.getNivelDeDificuldade()));
+
             if (checkboxConcluido != null) {
                 checkboxConcluido.setSelected(treino.isConcluido());
             }
@@ -69,49 +71,54 @@ public class EdicaoTreinoController {
         String duracaoStr = campoDuracao.getText();
         String nivelDificuldadeStr = campoNivelDificuldade.getText();
 
-
         if (!validarFormulario(nome, tipoTreino, duracaoStr, nivelDificuldadeStr)) {
-            return;
+            return; // Aborta se a validação falhar
         }
-
         try {
             int duracao = Integer.parseInt(duracaoStr);
             int nivelDificuldade = Integer.parseInt(nivelDificuldadeStr);
 
-
             if (checkboxConcluido != null) {
-                boolean estadoAnterior = treino.isConcluido(); // Guarda o estado anterior
-                treino.setConcluido(checkboxConcluido.isSelected());  // Atualiza o estado do treino
+                System.out.println("  CheckBox existe.  Estado atual: " + treino.isConcluido());
+                System.out.println("  Checkbox selecionado? " + checkboxConcluido.isSelected());
 
-                // Verifica se o treino foi marcado como concluído *e* se não estava concluído antes
+                boolean estadoAnterior = treino.isConcluido();
+                treino.setConcluido(checkboxConcluido.isSelected());
+
+                System.out.println("  Novo estado do treino: " + treino.isConcluido());
+
                 if (treino.isConcluido() && estadoAnterior != treino.isConcluido() && mainController != null && mainController.getUsuarioLogado() != null) {
                     mainController.getUsuarioLogado().adicionarPontuacao(treino.getNivelDeDificuldade());
+                    System.out.println("  Pontuação adicionada!");
+
                     showAlert(Alert.AlertType.INFORMATION, "Parabéns!", "Treino Concluído",
                             "Você concluiu o treino \"" + treino.getNome() + "\" e ganhou " +
                                     treino.getNivelDeDificuldade() + " pontos!");
+                } else {
+                    System.out.println("  Pontuação NÃO adicionada. Condições não satisfeitas.");
                 }
             }
 
-            // Agora sempre passa o usuário logado e o nível de experiência
-            fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade, mainController.getUsuarioLogado(), mainController.getUsuarioLogado().getNivelExperiencia());
+            fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade, mainController.getUsuarioLogado()); //AGORA PASSANDO USUARIO LOGADO
+            treino.setTipoDeTreino(tipoTreino);
+
+
             mensagemErro.setText("Treino atualizado com sucesso!");
 
-            //Removido
-            /*if (treinoController != null) {
+            if (treinoController != null) {
                 treinoController.atualizarTabelaTreinosUsuario();
             }
-            if(mainController != null) {
-                mainController.atualizarDadosTelaPrincipal(); //Isso não é mais necessário, o listener no main controller já faz isso.
-            }*/
-
-
+            if(mainController != null){
+                mainController.atualizarDadosTelaPrincipal();
+            }
             fecharJanela();
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Duração e dificuldade devem ser números inteiros.");
-        } catch (TreinoNaoEncontradoException e) {
-            mensagemErro.setText("Erro ao atualizar treino: " + e.getMessage());
-        } catch (Exception e) { // Captura genérica
+        }
+        catch (TreinoNaoEncontradoException e) {
+            mensagemErro.setText("Erro: " + e.getMessage());
+        } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
             e.printStackTrace();
         }
@@ -168,9 +175,8 @@ public class EdicaoTreinoController {
         Stage stage = (Stage) campoNome.getScene().getWindow();
         stage.close();
     }
-
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
-        Alert alert = new Alert(type);
+    private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
+        Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);

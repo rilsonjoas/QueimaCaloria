@@ -1,7 +1,6 @@
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.ExercicioNaoEncontradoException;
-import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Exercicio;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.GeradorPDF;
@@ -133,7 +132,6 @@ public class ExercicioController {
                 stage.setTitle("Editar Exercício");
                 stage.setScene(new Scene(root));
                 stage.showAndWait();
-                //Removido daqui.
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -150,24 +148,11 @@ public class ExercicioController {
         if (exercicioSelecionado != null) {
             try {
                 fachada.removerExercicio(exercicioSelecionado.getId());
-                //Removido
-                /*atualizarTabelaExerciciosUsuario();
+                atualizarTabelaExerciciosUsuario();
                 mensagemExercicio.setText("Exercício removido com sucesso!");
                 if (mainController != null) {
                     mainController.atualizarDadosTelaPrincipal();
-                }*/
-
-                if (mainController != null && mainController.getUsuarioLogado() != null) {
-                    try {
-                        Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                        mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza o usuário no MainController
-
-                    }catch (UsuarioNaoEncontradoException e){
-                        showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
-                                "O usuário logado não pôde ser encontrado.");
-                    }
                 }
-
             } catch (ExercicioNaoEncontradoException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover exercício", e.getMessage());
             }
@@ -213,10 +198,10 @@ public class ExercicioController {
 
             fachada.configurarExercicio(novoExercicio, novoExercicio.getNome(),
                     novoExercicio.getDescricao(), novoExercicio.getTipo(),
-                    novoExercicio.getTempo(), novoExercicio.getCaloriasQueimadas(), novoExercicio.getUsuario(), novoExercicio.getNivelExperiencia()); //Passa o Usuario
+                    novoExercicio.getTempo(), novoExercicio.getCaloriasQueimadas(), novoExercicio.getUsuario()); //Passa o Usuario
 
 
-            //atualizarTabelaExerciciosUsuario(); REMOVIDO
+            atualizarTabelaExerciciosUsuario();
             mensagemExercicio.setText("Exercício adicionado com sucesso!");
 
             if (mainController != null) {

@@ -19,8 +19,8 @@ public class CriacaoDietaController {
     @FXML private Label mensagemErro;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    private DietaController dietaController;  // Para comunicação
-    private MainController mainController;   // Para comunicação e acesso ao usuário logado
+    private DietaController dietaController;
+    private MainController mainController;
 
     // Define o controlador da tela de dieta.
     public void setDietaController(DietaController dietaController) {
@@ -50,15 +50,15 @@ public class CriacaoDietaController {
         }
 
         try {
-            int calorias = Integer.parseInt(caloriasStr); // NumberFormatException
+            int calorias = Integer.parseInt(caloriasStr);
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado(); // Obtém o usuário logado
                 Dieta novaDieta = new Dieta(); // Cria uma nova dieta
                 novaDieta.setUsuario(usuarioLogado); // **IMPORTANTE:** Associa o usuário à dieta
 
-                // Usa a fachada, passando o usuário e o tipo de dieta do usuário.
-                fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado, usuarioLogado.getTipoDieta());
+                // Usa a fachada, passando o usuário
+                fachada.configurarDieta(novaDieta, nome, objetivo, calorias, usuarioLogado);
 
                 fachada.setDietaAtiva(usuarioLogado, novaDieta); // Define a dieta como ativa (se necessário)
 
@@ -66,7 +66,7 @@ public class CriacaoDietaController {
                 usuarioLogado.getDietas().add(novaDieta); // <-- LINHA CRUCIAL!
 
                 if (dietaController != null) {
-                    // Removido, o listener no mainController cuida disso.
+                    //dietaController.atualizarTabelaDietasUsuario(); // Removido, o listener já trata
                     dietaController.showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dieta Criada", "Dieta criada com sucesso!");
                 }
 
@@ -131,6 +131,7 @@ public class CriacaoDietaController {
             return false;
         }
     }
+
     // Fecha a janela atual.
     @FXML
     private void fecharJanela() {

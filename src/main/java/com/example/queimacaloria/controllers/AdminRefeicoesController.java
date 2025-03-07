@@ -30,12 +30,14 @@ public class AdminRefeicoesController {
     @FXML private Label mensagem;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    @Setter private IBaseAdmin mainController;  // Para comunicação.
+    @Setter private IBaseAdmin mainController;
     private ObservableList<Refeicao> listaRefeicoesPreDefinidas = FXCollections.observableArrayList();
 
 
     @FXML
     public void initialize() {
+        System.out.println("AdminRefeicoesController.initialize() chamado");
+
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaCalorias.setCellValueFactory(new PropertyValueFactory<>("calorias"));
@@ -70,9 +72,10 @@ public class AdminRefeicoesController {
     }
 
     private void carregarRefeicoesPreDefinidas(){
+        System.out.println("AdminRefeicoesController.carregarRefeicoesPreDefinidas() chamado");
         List<Refeicao> refeicoes = fachada.getRefeicoesPreDefinidas();
+        System.out.println("AdminRefeicoesController.carregarRefeicoesPreDefinidas: Refeições pré-definidas: " + refeicoes);
         listaRefeicoesPreDefinidas.addAll(refeicoes);
-        System.out.println("Refeições pré-definidas carregadas.");
     }
 
     @FXML
@@ -90,78 +93,66 @@ public class AdminRefeicoesController {
             macronutrientes.put("Gorduras", Double.parseDouble(gordurasStr));
 
             Refeicao novaRefeicao = new Refeicao();
-            // A criação/configuração agora é *toda* feita via Fachada, e o usuário é nulo.
-            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes, null, null);
-            atualizarTabelaRefeicoes(); // Atualiza a tabela *após* a operação na Fachada.
+            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes, null);
+            atualizarTabelaRefeicoes();
             mensagem.setText("Refeição criada com sucesso.");
-        } catch (NumberFormatException e) {
-            mensagem.setText("Erro: Os valores de macronutrientes devem ser números.");
-        }
-        catch (Exception e) { // Captura genérica.
+        } catch (Exception e) {
             mensagem.setText("Erro ao criar refeição: " + e.getMessage());
-            e.printStackTrace(); // Stack trace completo!
         }
     }
 
     @FXML
     public void atualizarRefeicao() {
         Refeicao refeicaoSelecionada = tabelaRefeicoes.getSelectionModel().getSelectedItem();
-        if (refeicaoSelecionada == null) {
+        if (refeicaoSelecionada != null) {
+            try {
+                String nome = campoNome.getText();
+                String descricao = campoDescricao.getText();
+                String proteinasStr = campoProteinas.getText();
+                String carboidratosStr = campoCarboidratos.getText();
+                String gordurasStr = campoGorduras.getText();
+
+                Map<String, Double> macronutrientes = new HashMap<>();
+                macronutrientes.put("Proteínas", Double.parseDouble(proteinasStr));
+                macronutrientes.put("Carboidratos", Double.parseDouble(carboidratosStr));
+                macronutrientes.put("Gorduras", Double.parseDouble(gordurasStr));
+
+                fachada.configurarRefeicao(refeicaoSelecionada, nome, descricao, macronutrientes, null);
+                atualizarTabelaRefeicoes();
+                mensagem.setText("Refeição atualizada com sucesso.");
+            } catch (Exception e) {
+                mensagem.setText("Erro ao atualizar refeição: " + e.getMessage());
+            }
+        } else {
             mensagem.setText("Selecione uma refeição para atualizar.");
-            return;
-        }
-
-        try {
-            String nome = campoNome.getText();
-            String descricao = campoDescricao.getText();
-            String proteinasStr = campoProteinas.getText();
-            String carboidratosStr = campoCarboidratos.getText();
-            String gordurasStr = campoGorduras.getText();
-
-            Map<String, Double> macronutrientes = new HashMap<>();
-            macronutrientes.put("Proteínas", Double.parseDouble(proteinasStr));  // NumberFormatException
-            macronutrientes.put("Carboidratos", Double.parseDouble(carboidratosStr)); // NumberFormatException
-            macronutrientes.put("Gorduras", Double.parseDouble(gordurasStr));  // NumberFormatException
-
-            // Toda a lógica de negócio/atualização é feita na Fachada. Usuário = null.
-            fachada.configurarRefeicao(refeicaoSelecionada, nome, descricao, macronutrientes, null, null);
-            atualizarTabelaRefeicoes(); // Atualiza a tabela *após* a operação na Fachada.
-            mensagem.setText("Refeição atualizada com sucesso.");
-
-        } catch (NumberFormatException e) {
-            mensagem.setText("Erro: Os valores de macronutrientes devem ser números.");
-        }
-        catch (Exception e) { // Captura genérica para outros erros.
-            mensagem.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace(); // Imprime o stack trace!
         }
     }
 
     @FXML
     public void removerRefeicao() {
         Refeicao refeicaoSelecionada = tabelaRefeicoes.getSelectionModel().getSelectedItem();
-        if (refeicaoSelecionada == null) {
+        if (refeicaoSelecionada != null) {
+            try {
+                fachada.removerRefeicao(refeicaoSelecionada.getId());
+                atualizarTabelaRefeicoes();
+                mensagem.setText("Refeição removida com sucesso.");
+            } catch (RefeicaoNaoEncontradaException e) {
+                mensagem.setText("Erro ao remover refeição: " + e.getMessage());
+            }
+        } else {
             mensagem.setText("Selecione uma refeição para remover.");
-            return;
-        }
-
-        try {
-            // A remoção agora é feita *inteiramente* pela Fachada.
-            fachada.removerRefeicao(refeicaoSelecionada.getId());
-            atualizarTabelaRefeicoes(); // Atualiza *após* a remoção.
-            mensagem.setText("Refeição removida com sucesso.");
-        } catch (RefeicaoNaoEncontradaException e) {
-            mensagem.setText("Erro ao remover refeição: " + e.getMessage());
-        } catch (Exception e) { // Captura genérica.
-            mensagem.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace(); // Stack trace completo!
         }
     }
 
     private void atualizarTabelaRefeicoes() {
+        System.out.println("AdminRefeicoesController.atualizarTabelaRefeicoes() chamado"); // LOG
         List<Refeicao> listaDeRefeicoes = fachada.listarRefeicoes();
+        System.out.println("AdminRefeicoesController.atualizarTabelaRefeicoes(): Todas as refeições: " + listaDeRefeicoes); // LOG
         tabelaRefeicoes.setItems(FXCollections.observableArrayList(listaDeRefeicoes));
-        tabelaRefeicoes.refresh(); // Importante!
+        //Verifica se a lista está vazia:
+        if(listaDeRefeicoes.isEmpty()){
+            System.out.println("AdminRefeicoesController: A lista de refeições está vazia.");
+        }
     }
 
     private void preencherCampos(Refeicao refeicao) {

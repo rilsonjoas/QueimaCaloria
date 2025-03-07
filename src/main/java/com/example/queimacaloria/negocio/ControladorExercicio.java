@@ -16,6 +16,7 @@ public class ControladorExercicio {
         this.repositorio = RepositorioExerciciosArray.getInstanciaUnica(); // Singleton!
     }
 
+    // Modificado: Recebe o Usuario
     public void inicializar(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
                             int tempo, double caloriasQueimadas, Usuario usuario, Usuario.NivelExperiencia nivel) //<- Modificado
             throws ExercicioNaoEncontradoException {
@@ -27,17 +28,11 @@ public class ControladorExercicio {
         exercicio.setUsuario(usuario);
         exercicio.setNivelExperiencia(nivel); // Define o nível de experiência
 
-        // Usa o método salvar, que já lida com adicionar e atualizar
-        salvar(exercicio);
-    }
 
-    // Método salvar que lida tanto com adicionar quanto com atualizar.
-    public void salvar(Exercicio exercicio) throws ExercicioNaoEncontradoException {
         try {
-            repositorio.buscar(exercicio.getId()); // Tenta buscar
-            repositorio.salvar(exercicio); // Se encontrou, atualiza
+            repositorio.salvar(exercicio);
         } catch (ExercicioNaoEncontradoException e) {
-            repositorio.adicionar(exercicio); // Se não encontrou, adiciona
+            repositorio.adicionar(exercicio);
         }
     }
 

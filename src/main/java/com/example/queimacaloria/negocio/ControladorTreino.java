@@ -14,28 +14,22 @@ public class ControladorTreino {
     private RepositorioTreinosArray repositorio;
 
     public ControladorTreino() {
-        this.repositorio = RepositorioTreinosArray.getInstanciaUnica();
+        this.repositorio = RepositorioTreinosArray.getInstanciaUnica(); // Singleton!
     }
 
+    //Modificado: Recebe Usuario
     public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade, Usuario usuario, Usuario.NivelExperiencia nivel) throws TreinoNaoEncontradoException { //<- Modificado
         treino.setNome(nome);
         treino.setTipoDeTreino(tipoDeTreino);
         treino.setDuracao(duracao);
         treino.setNivelDeDificuldade(nivelDeDificuldade);
-        treino.setUsuario(usuario);
-        treino.setNivelExperiencia(nivel);
+        treino.setUsuario(usuario); // Define o usuário
+        treino.setNivelExperiencia(nivel); // Define o nível
 
-        //Usa o método salvar
-        salvar(treino);
-    }
-
-    // Método salvar que lida tanto com adicionar quanto com atualizar
-    public void salvar(Treino treino) throws TreinoNaoEncontradoException{
         try {
-            repositorio.buscar(treino.getId()); // Tenta buscar.
-            repositorio.salvar(treino); // Se encontrou, atualiza.
-        } catch(TreinoNaoEncontradoException e){
-            repositorio.adicionar(treino);  // Se não encontrou, adiciona.
+            repositorio.salvar(treino);
+        } catch (TreinoNaoEncontradoException e) {
+            repositorio.adicionar(treino);
         }
     }
 

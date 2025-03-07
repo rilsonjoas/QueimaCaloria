@@ -94,7 +94,7 @@ public class DietaController {
             controller.setDietaController(this);
             controller.setMainController(mainController);
             stage.showAndWait();
-            //atualizarTabelaDietasUsuario(); // Atualiza a tabela após criar uma dieta // Removido
+            atualizarTabelaDietasUsuario(); // Atualiza a tabela após criar uma dieta
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
@@ -115,7 +115,7 @@ public class DietaController {
                 stage.setTitle("Editar Dieta");
                 stage.setScene(new Scene(root));
                 stage.showAndWait(); // Importante: Espera a janela de edição fechar
-                //atualizarTabelaDietasUsuario();  // Atualiza a tabela após a edição // Removido
+                atualizarTabelaDietasUsuario();  // Atualiza a tabela após a edição
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -132,7 +132,7 @@ public class DietaController {
         if (dietaSelecionada != null) {
             try {
                 fachada.removerDieta(dietaSelecionada.getId());
-                //atualizarTabelaDietasUsuario(); // Atualiza a tabela após remover. Removido
+                atualizarTabelaDietasUsuario(); // Atualiza a tabela após remover.
                 mensagemDieta.setText("Dieta removida.");
             } catch (DietaNaoEncontradaException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao remover dieta", e.getMessage());
@@ -167,13 +167,13 @@ public class DietaController {
             );
 
             fachada.configurarDieta(novaDieta, novaDieta.getNome(), novaDieta.getObjetivo(),
-                    novaDieta.getCaloriasDiarias(), novaDieta.getUsuario(), novaDieta.getTipoDieta());
+                    novaDieta.getCaloriasDiarias(), novaDieta.getUsuario());
 
             // **********  MUDANÇA AQUI ***********
             // ADICIONA A NOVA DIETA À LISTA DO USUÁRIO
             mainController.getUsuarioLogado().getDietas().add(novaDieta); // <-- Adiciona à lista do usuário!
 
-            //atualizarTabelaDietasUsuario();  //REMOVA, O LISTENER JÁ ATUALIZA A UI
+            atualizarTabelaDietasUsuario();  //REMOVA, O LISTENER JÁ ATUALIZA A UI
             mensagemDieta.setText("Dieta adicionada com sucesso!");
 
         } catch (DietaNaoEncontradaException e) {
@@ -184,29 +184,21 @@ public class DietaController {
 
 
     public void atualizarTabelaDietasUsuario() {
-        System.out.println("DietaController.atualizarTabelaDietasUsuario() chamado.");
         try {
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
-                System.out.println("Usuário Logado: " + usuarioLogado.getNome());
                 List<Dieta> listaDietas = fachada.listarDietas();
-                System.out.println("Todas as Dietas: " + listaDietas);
-
 
                 // FILTRO 1: Apenas dietas do usuário logado
                 listaDietas = listaDietas.stream()
                         .filter(dieta -> dieta.getUsuario() != null && dieta.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
 
-                System.out.println("Dietas após filtro de usuário: " + listaDietas);
-
-
                 // FILTRO 2: Aplicar filtro de tipo de dieta (preferência do usuário)
                 if (usuarioLogado.getTipoDieta() != null) {
                     listaDietas = listaDietas.stream()
                             .filter(dieta -> dieta.getTipoDieta() == null || dieta.getTipoDieta() == usuarioLogado.getTipoDieta())
                             .collect(Collectors.toList());
-                    System.out.println("Dietas após filtro de tipo de dieta: " + listaDietas);
                 }
 
                 tabelaDietasUsuario.setItems(FXCollections.observableArrayList(listaDietas));

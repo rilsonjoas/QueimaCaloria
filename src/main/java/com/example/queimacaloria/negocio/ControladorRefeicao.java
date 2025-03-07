@@ -1,3 +1,4 @@
+
 package com.example.queimacaloria.negocio;
 
 import com.example.queimacaloria.dados.RepositorioRefeicoesArray;
@@ -19,7 +20,7 @@ public class ControladorRefeicao {
     }
 
     // Modificado: recebe o Usuario
-    public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes, Usuario usuario, Usuario.TipoDieta tipoDieta) throws RefeicaoNaoEncontradaException {
+    public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes, Usuario usuario, Usuario.TipoDieta tipoDieta) {
         refeicao.setNome(nome);
         refeicao.setDescricao(descricao);
         refeicao.setMacronutrientes(macronutrientes);
@@ -27,17 +28,10 @@ public class ControladorRefeicao {
         refeicao.setUsuario(usuario); // Define o usuário
         refeicao.setTipoDieta(tipoDieta); // Define o tipo de dieta
 
-        // Usa o método salvar
-        salvar(refeicao);
-    }
-
-    // Método salvar que lida tanto com adicionar quanto com atualizar.
-    public void salvar(Refeicao refeicao) throws RefeicaoNaoEncontradaException {
         try {
-            repositorio.buscar(refeicao.getId()); // Tenta buscar
-            repositorio.salvar(refeicao);  // Se encontrou, atualiza
-        } catch (RefeicaoNaoEncontradaException e){
-            repositorio.adicionar(refeicao);  // Se não encontrou, adiciona.
+            repositorio.salvar(refeicao);
+        } catch (RefeicaoNaoEncontradaException e) {
+            repositorio.adicionar(refeicao);
         }
     }
 

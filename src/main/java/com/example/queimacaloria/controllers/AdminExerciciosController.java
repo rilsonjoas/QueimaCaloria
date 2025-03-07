@@ -97,15 +97,11 @@ public class AdminExerciciosController {
 
             Exercicio novoExercicio = new Exercicio();
             novoExercicio.setMusculosTrabalhados(new ArrayList<>());
-            // Passando null para Usuario e nível, pois este é o admin controller.
-            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, calorias, null, null);
+            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, calorias, null);
             atualizarTabelaExercicios();
             mensagem.setText("Exercício criado com sucesso.");
-        } catch (NumberFormatException e) {
-            mensagem.setText("Erro: Tempo e calorias devem ser números válidos.");
-        } catch (Exception e) { // Captura genérica.
+        } catch (Exception e) {
             mensagem.setText("Erro ao criar exercício: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -122,15 +118,11 @@ public class AdminExerciciosController {
                 int tempo = Integer.parseInt(tempoStr);
                 double calorias = Double.parseDouble(caloriasStr);
 
-                // Passando null para Usuario e nível, pois este é o admin controller.
-                fachada.configurarExercicio(exercicioSelecionado, nome, descricao, tipo, tempo, calorias, null, null);
+                fachada.configurarExercicio(exercicioSelecionado, nome, descricao, tipo, tempo, calorias, null);
                 atualizarTabelaExercicios();
                 mensagem.setText("Exercício atualizado com sucesso.");
-            } catch (NumberFormatException e) {
-                mensagem.setText("Erro: Tempo e calorias devem ser números válidos.");
-            }catch (Exception e) { // Captura genérica.
+            } catch (Exception e) {
                 mensagem.setText("Erro ao atualizar exercício: " + e.getMessage());
-                e.printStackTrace();
             }
         } else {
             mensagem.setText("Selecione um exercício para atualizar.");

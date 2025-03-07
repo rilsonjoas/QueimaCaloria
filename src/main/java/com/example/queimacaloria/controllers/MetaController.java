@@ -17,9 +17,11 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Collectors; // Importante para o filtro!
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+
+
 
 public class MetaController {
 
@@ -34,12 +36,15 @@ public class MetaController {
     @FXML private TableColumn<Meta, Meta.Tipo> colunaTipoPreDefinida;
 
     @FXML private Label mensagemMeta;
-    @FXML private Button buttonCompartilhar;
+
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private MainController mainController;
     private ObservableList<Meta> metasPreDefinidas = FXCollections.observableArrayList();
 
+    // Botão de compartilhar
+    @FXML
+    private Button buttonCompartilhar;
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
@@ -48,10 +53,11 @@ public class MetaController {
     @FXML
     public void initialize() {
         configurarTabelaUsuario();
+        atualizarTabelaMetasUsuario();
         configurarTabelaPreDefinida();
         carregarMetasPreDefinidas();
-        atualizarTabelaMetasUsuario();
 
+        //Verifica se o botão compartilhar está presente antes de configurar o evento.
         if(buttonCompartilhar != null){
             buttonCompartilhar.setOnAction(event -> compartilharLista());
         }
@@ -61,13 +67,14 @@ public class MetaController {
         colunaDescricaoUsuario.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaTipoUsuario.setCellValueFactory(new PropertyValueFactory<>("tipo"));
 
+        // Cálculo CORRETO do progresso (agora como um Double)
         colunaProgressoUsuario.setCellValueFactory(cellData -> {
             Meta meta = cellData.getValue();
             double progresso = 0.0;
-            if (meta.getValorAlvo() > 0) {
+            if (meta.getValorAlvo() > 0) { // Evita divisão por zero!
                 progresso = (meta.getProgressoAtual() / meta.getValorAlvo()) * 100.0;
             }
-            return new SimpleDoubleProperty(progresso).asObject();
+            return new SimpleDoubleProperty(progresso).asObject(); // Retorna como Double
         });
 
         colunaProgressoUsuario.setCellFactory(column -> {
@@ -78,7 +85,7 @@ public class MetaController {
                     if (empty || progresso == null) {
                         setText(null);
                     } else {
-                        setText(String.format("%.1f%%", progresso));
+                        setText(String.format("%.1f%%", progresso)); // Formata a porcentagem
                     }
                 }
             };
@@ -94,6 +101,7 @@ public class MetaController {
                 @Override
                 protected void updateItem(LocalDate date, boolean empty) {
                     super.updateItem(date, empty);
+
                     if (empty) {
                         setText(null);
                         setStyle("");
@@ -106,6 +114,7 @@ public class MetaController {
                             setText("Continue avançando!");
                             setStyle("-fx-alignment: CENTER;");
                         }
+
                     }
                 }
             };
@@ -165,6 +174,7 @@ public class MetaController {
                 stage.setScene(new Scene(root));
                 stage.showAndWait();
 
+                atualizarTabelaMetasUsuario();
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -181,7 +191,7 @@ public class MetaController {
         if (metaSelecionada != null) {
             try {
                 fachada.removerMeta(metaSelecionada.getId());
-                atualizarTabelaMetasUsuario();  //<--------  Aqui!
+                atualizarTabelaMetasUsuario();
                 mensagemMeta.setText("Meta removida com sucesso!");
 
             } catch (MetaNaoEncontradaException e) {
@@ -207,6 +217,7 @@ public class MetaController {
         }
 
         try {
+            // 1. Crie uma *cópia* da meta predefinida.  Isso é importante!
             Meta novaMeta = new Meta(
                     metaSelecionada.getDescricao(),
                     metaSelecionada.getTipo(),
@@ -216,17 +227,18 @@ public class MetaController {
                     null  // Sem data de conclusão (inicialmente)
             );
 
+            // 2. **ASSOCIE O USUÁRIO LOGADO À *NOVA* META!**
             novaMeta.setUsuario(mainController.getUsuarioLogado());
 
+            // 3. *Agora* você chama a fachada para configurar a *nova* meta.
             fachada.configurarMeta(novaMeta, novaMeta.getDescricao(), novaMeta.getTipo(),
                     novaMeta.getValorAlvo(), novaMeta.getProgressoAtual(), novaMeta.getDataConclusao(), novaMeta.getUsuario());
 
-            // Adiciona a meta *à lista do usuário*.  Isso é *crítico*.
-            mainController.getUsuarioLogado().getMetas().add(novaMeta);
-
-            atualizarTabelaMetasUsuario(); // Agora, o listener em MainController cuidará da atualização.
+            atualizarTabelaMetasUsuario(); // Atualiza a tabela
             mensagemMeta.setText("Meta adicionada com sucesso!");
 
+
+            // Recomendação de dieta (mantém como estava)
             Dieta dietaRecomendada = fachada.getDietaAleatoria(novaMeta.getTipo());
             if (dietaRecomendada != null) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -247,23 +259,27 @@ public class MetaController {
     }
 
     public void atualizarTabelaMetasUsuario() {
-        if (mainController != null && mainController.getUsuarioLogado() != null) {
-            Usuario usuarioLogado = mainController.getUsuarioLogado();
-            List<Meta> listaMetas = Fachada.getInstanciaUnica().listarMetas();
+        System.out.println("MetaController.atualizarTabelaMetasUsuario() chamado."); // Mantenha para debug
+        try {
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
+                Usuario usuarioLogado = mainController.getUsuarioLogado();
+                List<Meta> listaMetas = fachada.listarMetas(); // Obtém TODAS as metas.
 
-            listaMetas = listaMetas.stream()
-                    .filter(meta -> meta.getUsuario() != null && meta.getUsuario().getId().equals(usuarioLogado.getId()))
-                    .collect(Collectors.toList());
+                // FILTRO: Mostra apenas as metas do usuário logado.
+                listaMetas = listaMetas.stream()
+                        .filter(meta -> meta.getUsuario() != null && meta.getUsuario().getId().equals(usuarioLogado.getId()))
+                        .collect(Collectors.toList());
 
-            tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas));
-            tabelaMetasUsuario.refresh(); // Fundamental!
-        } else {
-            // Trata o caso de não haver usuário logado (opcional, mas recomendado)
-            tabelaMetasUsuario.setItems(FXCollections.observableArrayList());
-            System.err.println("MetaController: Nenhum usuário logado ao atualizar a tabela.");
+                tabelaMetasUsuario.setItems(FXCollections.observableArrayList(listaMetas)); // Adiciona à tabela
+                tabelaMetasUsuario.refresh(); // Atualiza!
+
+            }
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar metas", e.getMessage());
+            e.printStackTrace();
         }
     }
-
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
@@ -278,6 +294,7 @@ public class MetaController {
         if (mainController != null) {
             mainController.mostrarTelaPrincipal();
         } else {
+            System.err.println("Erro: MainController não foi injetado!");
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro interno", "MainController não foi configurado corretamente.");
         }
     }
@@ -286,26 +303,27 @@ public class MetaController {
     public void compartilharLista() {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
             List<Meta> metasDoUsuario = mainController.getUsuarioLogado().getMetas();
-            String nomeUsuario = mainController.getUsuarioLogado().getNome();
+            String nomeUsuario = mainController.getUsuarioLogado().getNome(); // Obtém o nome do usuário
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar Relatório de Metas em PDF");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
-            Stage stage = (Stage) tabelaMetasUsuario.getScene().getWindow(); // Usar a tabela como referência
+            Stage stage = (Stage) tabelaMetasUsuario.getScene().getWindow();
             File file = fileChooser.showSaveDialog(stage);
 
             if (file != null) {
                 try {
+                    // Passa o nome do usuário
                     GeradorPDF.gerarRelatorioMetas(metasDoUsuario, file.getAbsolutePath(), nomeUsuario);
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de metas foi gerado com sucesso em: " + file.getAbsolutePath());
 
-                } catch (IOException e) {
+                } catch (IOException e) { // Captura IOException
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
                     e.printStackTrace();
-                } catch (Exception e) { // Captura *qualquer* outra exceção
+                } catch (Exception e) {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro inesperado: " + e.getMessage());
-                    e.printStackTrace(); // *Sempre* imprima o stack trace para debugging.
+                    e.printStackTrace();
                 }
             }
         } else {

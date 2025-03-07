@@ -73,9 +73,7 @@ public class CriacaoTreinoController {
                 novoTreino.setUsuario(mainController.getUsuarioLogado());
             }
             assert mainController != null;
-
-            //Agora o nivel de dificuldade é passado via argumento e não definido diretamente.
-            fachada.configurarTreino(novoTreino, nome, tipoTreino, duracao, nivelDificuldade, mainController.getUsuarioLogado(), mainController.getUsuarioLogado().getNivelExperiencia()); // Passa o usuário e o nivel
+            fachada.configurarTreino(novoTreino, nome, tipoTreino, duracao, novoTreino.getNivelDeDificuldade(), mainController.getUsuarioLogado()); // Passa o usuário
             novoTreino.setTipoDeTreino(tipoTreino);
             novoTreino.setConcluido(concluido);
 
@@ -96,7 +94,7 @@ public class CriacaoTreinoController {
             }
 
             if (treinoController != null) {
-                treinoController.atualizarTabelaTreinosUsuario(); //Agora não é mais necessario, o listener já faz a atualização.
+                treinoController.atualizarTabelaTreinosUsuario();
             }
 
             if (mainController != null) {

@@ -80,9 +80,9 @@ public class ControladorUsuario {
             usuario.setQuadril(quadril);
         }
 
-        //System.out.println("Antes de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo()); //Removido, pois pode gerar erros caso o nome do usuário seja nulo.
+        System.out.println("Antes de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo());
         repositorio.salvar(usuario);
-        //System.out.println("Depois de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo()); //Removido, pois pode gerar erros caso o nome do usuário seja nulo.
+        System.out.println("Depois de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo());
     }
 
     // Busca um usuário pelo ID.
@@ -175,15 +175,6 @@ public class ControladorUsuario {
         if(usuario != null && nivel != null){
             usuario.nivelExperienciaProperty().set(nivel);
             repositorio.salvar(usuario);
-        }
-    }
-    // Método para lidar com adição e atualização, assim como nos outros controladores
-    public void salvar(Usuario usuario) throws UsuarioNaoEncontradoException {
-        try {
-            repositorio.buscar(usuario.getId()); // Tenta buscar
-            repositorio.salvar(usuario); // Se encontrou, atualiza
-        } catch (UsuarioNaoEncontradoException e) {
-            repositorio.adicionar(usuario); // Se não encontrou, adiciona
         }
     }
 }

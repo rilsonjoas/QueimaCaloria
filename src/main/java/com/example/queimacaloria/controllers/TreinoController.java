@@ -141,14 +141,13 @@ public class TreinoController {
                 EdicaoTreinoController controller = loader.getController();
                 controller.setTreinoController(this);
                 controller.setMainController(mainController);
-                //System.out.println("TreinoController.atualizarTreino(): Treino selecionado ID: " + treinoSelecionado.getId()); Removido
+                System.out.println("TreinoController.atualizarTreino(): Treino selecionado ID: " + treinoSelecionado.getId());
                 controller.setTreino(treinoSelecionado);
 
                 Stage stage = new Stage();
                 stage.setTitle("Editar Treino");
                 stage.setScene(new Scene(root));
                 stage.showAndWait();
-                //Removido daqui.
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -164,10 +163,8 @@ public class TreinoController {
         if (treinoSelecionado != null) {
             try {
                 fachada.removerTreino(treinoSelecionado.getId());
-                //Removido daqui
-                /*atualizarTabelaTreinosUsuario();
+                atualizarTabelaTreinosUsuario();
                 mensagemTreino.setText("Treino removido com sucesso!");
-                */
 
                 if (mainController != null && mainController.getUsuarioLogado() != null) {
                     try {
@@ -217,11 +214,11 @@ public class TreinoController {
 
             fachada.configurarTreino(novoTreino, novoTreino.getNome(),
                     novoTreino.getTipoDeTreino(), novoTreino.getDuracao(),
-                    novoTreino.getNivelDeDificuldade(), novoTreino.getUsuario(), novoTreino.getNivelExperiencia()); //Passa o Usuário
+                    novoTreino.getNivelDeDificuldade(), novoTreino.getUsuario()); //Passa o Usuário
 
             // Agora, adicionamos o treino ao usuário *através da Fachada*
             fachada.adicionarTreinoAoUsuario(mainController.getUsuarioLogado(), novoTreino); // Usa o método da fachada
-            //atualizarTabelaTreinosUsuario(); Removido.
+            atualizarTabelaTreinosUsuario();
 
             mensagemTreino.setText("Treino adicionado com sucesso!");
             // Adiciona a sugestão de exercícios *após* adicionar o treino

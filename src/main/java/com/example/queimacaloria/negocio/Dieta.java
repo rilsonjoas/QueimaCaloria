@@ -6,34 +6,22 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@NoArgsConstructor // Mantém o construtor padrão sem argumentos.
+@NoArgsConstructor
 public class Dieta {
 
-    private UUID id = UUID.randomUUID();
+    private final UUID id = UUID.randomUUID();
     private StringProperty nome = new SimpleStringProperty("");
     private ObjectProperty<Meta.Tipo> objetivo = new SimpleObjectProperty<>();
     private IntegerProperty caloriasDiarias = new SimpleIntegerProperty(0);
-    private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();  // <-- Mantenha como ObjectProperty
-    @Setter private Usuario.TipoDieta tipoDieta; //Mantenha
+    private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
+    @Setter private Usuario.TipoDieta tipoDieta;
 
-    // Construtor *SEM* usuário (para dietas pré-definidas)
-    public Dieta(String nome, Meta.Tipo objetivo, int caloriasDiarias) {
-        this.id = UUID.randomUUID();
-        this.nome.set(nome);
-        this.objetivo.set(objetivo);
-        this.caloriasDiarias.set(caloriasDiarias);
-    }
-
-
-    // Construtor *COM* usuário (para quando o usuário adicionar uma dieta)
+    // Construtor da classe Dieta.
     public Dieta(String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario) {
-        this.id = UUID.randomUUID();
         this.nome.set(nome);
         this.objetivo.set(objetivo);
         this.caloriasDiarias.set(caloriasDiarias);
-        this.usuario.set(usuario); //MUITO IMPORTANTE
-        //Você precisa saber qual o tipo da dieta, ao criar a dieta
-        this.tipoDieta = usuario.getTipoDieta(); // <- Adicionado! Pega o tipo do USUARIO.  Faz mais sentido.
+        this.usuario.set(usuario);
     }
 
     // Getters:

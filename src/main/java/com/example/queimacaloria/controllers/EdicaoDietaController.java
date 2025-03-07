@@ -5,7 +5,7 @@ import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Dieta;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Meta;
-import com.example.queimacaloria.negocio.Usuario; // Importante para ter acesso ao Usuario
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -23,8 +23,8 @@ public class EdicaoDietaController {
 
     private Fachada fachada = Fachada.getInstanciaUnica();
     private Dieta dieta;
-    private DietaController dietaController; // Para comunicação
-    private MainController mainController;   // Para comunicação e acesso ao usuário logado
+    private DietaController dietaController;
+    private MainController mainController;
 
     // Define o controlador da tela de dietas.
     public void setDietaController(DietaController dietaController) {
@@ -70,31 +70,32 @@ public class EdicaoDietaController {
 
         try {
             int calorias = Integer.parseInt(caloriasStr);
-
-            // Agora, sempre passamos o usuário logado.  A Fachada é responsável por atualizar
-            // o objeto *correto* no repositório.
-            fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado(), mainController.getUsuarioLogado().getTipoDieta()); // Usuário Logado e tipo de dieta!
+            // A principal mudança é que agora passamos o USUÁRIO LOGADO
+            fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado()); // Usuário Logado!
             mensagemErro.setText("Dieta atualizada com sucesso!");
 
+            // **********  MUDANÇA AQUI ***********
+            // Atualiza o usuário logado:  Isso é *crítico*.  A fachada atualiza
+            // o objeto no repositório, mas o objeto Usuario no MainController
+            // *não* é atualizado automaticamente!
 
-            // Atualiza o usuário logado. Isso é *crítico*.
-            // A fachada atualiza o objeto no repositório, mas o objeto Usuario
-            // no MainController *não* é atualizado automaticamente!
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza no MainController
+                    mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza o usuário no MainController
 
-                } catch(UsuarioNaoEncontradoException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado",
+                }catch (UsuarioNaoEncontradoException e){
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
                             "O usuário logado não pôde ser encontrado.");
                 }
             }
 
-            // Removida a chamada redundante.  O listener no mainController cuida da atualização.
-            // if (dietaController != null) {
-            //    dietaController.atualizarTabelaDietasUsuario();
-            //}
+
+            //REMOVA ISSO
+            /*if(dietaController != null){
+                dietaController.atualizarTabelaDietasUsuario(); //Isso aqui pode ser removido.
+            }*/
+
 
             fecharJanela();
 
@@ -102,10 +103,6 @@ public class EdicaoDietaController {
             mensagemErro.setText("Erro: Calorias devem ser um número inteiro.");
         } catch (DietaNaoEncontradaException e) {
             mensagemErro.setText("Erro ao atualizar dieta: " + e.getMessage());
-        }
-        catch (Exception e) { // Captura genérica!
-            mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

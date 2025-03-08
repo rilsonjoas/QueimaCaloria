@@ -122,7 +122,6 @@ public class AdminUsuariosController {
     private void atualizarTabelaUsuarios() {
         List<Usuario> listaDeUsuarios = fachada.listarUsuarios();
 
-        // Use a listaUsuariosComuns para inicializar o tabelaUsuarios
         tabelaUsuarios.setItems(FXCollections.observableArrayList(listaDeUsuarios));
     }
 

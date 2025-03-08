@@ -1,7 +1,7 @@
 .tabela-escura {
     -fx-background-color: #1a1922;
     -fx-text-fill: white;
-    -fx-control-inner-background: #1a1922; /* Cor de fundo das células */
+    -fx-control-inner-background: #1a1922;
 }
 
 .tabela-escura-coluna {
@@ -14,27 +14,24 @@
     -fx-alignment: CENTER;
 }
 
-/* Estilos para os campos de texto, DatePicker e ComboBox */
 .campo-escuro {
     -fx-background-color: #1a1922;
-    -fx-text-fill: white;       /* Cor do texto digitado/selecionado */
-    -fx-control-inner-background: #1a1922; /* Cor de fundo do campo */
-    -fx-prompt-text-fill: #999999; /* Cor do texto de placeholder (opcional)*/
+    -fx-text-fill: white;
+    -fx-control-inner-background: #1a1922;
+    -fx-prompt-text-fill: #999999;
 }
 
-/* Estilos adicionais para o DatePicker */
 .date-picker > .text-field {
-    -fx-text-fill: white;       /* Cor do texto no TextField do DatePicker */
+    -fx-text-fill: white;
 }
 
 .date-picker .arrow-button {
-    -fx-background-color: #55c5f5; /* Cor de fundo do botão */
+    -fx-background-color: #55c5f5;
 }
 .date-picker .arrow-button .arrow {
     -fx-background-color: white;
 }
 
-/* Estilo do ComboBox */
 .combo-box .list-cell{
     -fx-text-fill: white;
 }
@@ -60,7 +57,6 @@
     -fx-background-color: white;
 }
 
-/* Adicione estas linhas para estilizar o gráfico */
 .chart-title {
     -fx-text-fill: white;
 }

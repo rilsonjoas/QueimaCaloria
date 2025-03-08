@@ -30,7 +30,6 @@ public class Treino {
     @Setter private boolean concluido;
     @Setter private Usuario.NivelExperiencia nivelExperiencia;
 
-    // Adicionado: Campo Usuario
     @Setter private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
 
     public Treino() {
@@ -40,7 +39,6 @@ public class Treino {
         this.caloriasQueimadas = 0.0;
         this.progresso = 0.0;
     }
-
 
     public Treino(String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade,
                   ArrayList<Exercicio> exercicios, double caloriasQueimadas, double progresso, boolean concluido) {

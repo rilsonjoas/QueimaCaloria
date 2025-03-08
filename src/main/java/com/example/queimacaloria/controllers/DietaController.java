@@ -1,4 +1,3 @@
-// DietaController.java
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
@@ -37,9 +36,7 @@ public class DietaController {
     private MainController mainController;
     private ObservableList<Dieta> dietasPreDefinidas = FXCollections.observableArrayList();
 
-    // Botão de compartilhar
     @FXML private Button buttonCompartilhar;
-
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
@@ -52,7 +49,6 @@ public class DietaController {
         carregarDietasPreDefinidas();
         atualizarTabelaDietasUsuario();
 
-        //Verifica se o botão compartilhar está presente antes de configurar o evento.
         if(buttonCompartilhar != null){
             buttonCompartilhar.setOnAction(event -> compartilharLista());
         }
@@ -94,7 +90,6 @@ public class DietaController {
             controller.setDietaController(this);
             controller.setMainController(mainController);
             stage.showAndWait();
-            // Removido: atualizarTabelaDietasUsuario();  // O listener no MainController cuida disso.
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
@@ -108,13 +103,13 @@ public class DietaController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/edicao-dieta-view.fxml"));
                 Parent root = loader.load();
                 EdicaoDietaController controller = loader.getController();
-                controller.setDietaController(this);  // Define o DietaController
-                controller.setMainController(mainController);  // Define o MainController
-                controller.setDieta(dietaSelecionada); // Define a dieta a ser editada
+                controller.setDietaController(this);
+                controller.setMainController(mainController);
+                controller.setDieta(dietaSelecionada);
                 Stage stage = new Stage();
                 stage.setTitle("Editar Dieta");
                 stage.setScene(new Scene(root));
-                stage.showAndWait(); // Importante: Espera a janela de edição fechar
+                stage.showAndWait();
 
             } catch (IOException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição", e.getMessage());
@@ -133,9 +128,8 @@ public class DietaController {
                 fachada.removerDieta(dietaSelecionada.getId());
 
                 if(mainController != null && mainController.getUsuarioLogado() != null){
-                    mainController.getUsuarioLogado().getDietas().remove(dietaSelecionada); // Remove DA LISTA DO USUÁRIO
+                    mainController.getUsuarioLogado().getDietas().remove(dietaSelecionada);
                 }
-                //atualizarTabelaDietasUsuario(); // Removido. O listener agora trata da atualização.
                 mensagemDieta.setText("Dieta removida.");
 
             } catch (DietaNaoEncontradaException e) {
@@ -161,7 +155,6 @@ public class DietaController {
         }
 
         try {
-            // Cria uma *cópia* da dieta pré-definida, já com o usuário.
             Dieta novaDieta = new Dieta(
                     dietaSelecionada.getNome(),
                     dietaSelecionada.getObjetivo(),
@@ -173,34 +166,32 @@ public class DietaController {
                     novaDieta.getCaloriasDiarias(), novaDieta.getUsuario(), novaDieta.getTipoDieta());
 
             mainController.getUsuarioLogado().getDietas().add(novaDieta);
-            // **********  ADICIONE ESTA LINHA  ***********
             Fachada.getInstanciaUnica().setDietaAtiva(mainController.getUsuarioLogado(), novaDieta);
 
             mensagemDieta.setText("Dieta adicionada com sucesso!");
             atualizarTabelaDietasUsuario();
 
 
-        } catch (DietaNaoEncontradaException e) { //Melhor usar Exception
+        } catch (DietaNaoEncontradaException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", e.getMessage());
             e.printStackTrace();
-        }  catch (Exception e) { // Captura genérica
+        }  catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar dieta", "Erro inesperado: " + e.getMessage());
-            e.printStackTrace(); // Stack trace
+            e.printStackTrace();
         }
     }
 
 
     public void atualizarTabelaDietasUsuario() {
-        System.out.println("DietaController.atualizarTabelaDietasUsuario() chamado"); // LOG
+        System.out.println("DietaController.atualizarTabelaDietasUsuario() chamado");
         try {
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
-                // Obtém as dietas diretamente do usuário logado.  NÃO MAIS da fachada.
                 List<Dieta> listaDietas = usuarioLogado.getDietas();
-                System.out.println("DietaController.atualizarTabelaDietasUsuario(): Dietas do usuário " + usuarioLogado.getNome() + ": " + listaDietas);  // LOG
+                System.out.println("DietaController.atualizarTabelaDietasUsuario(): Dietas do usuário " + usuarioLogado.getNome() + ": " + listaDietas);
 
                 tabelaDietasUsuario.setItems(FXCollections.observableArrayList(listaDietas));
-                tabelaDietasUsuario.refresh();  // Importante para casos onde itens são modificados mas a lista em si não muda.
+                tabelaDietasUsuario.refresh();
             } else {
                 tabelaDietasUsuario.setItems(FXCollections.observableArrayList());
                 System.err.println("DietaController: Nenhum usuário logado ao atualizar a tabela.");
@@ -224,14 +215,13 @@ public class DietaController {
     @FXML
     public void compartilharLista() {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
-            // Obtém a lista de dietas *do usuário*.
             List<Dieta> dietasDoUsuario = mainController.getUsuarioLogado().getDietas();
             String nomeUsuario = mainController.getUsuarioLogado().getNome();
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar Relatório de Dietas em PDF");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
-            Stage stage = (Stage) tabelaDietasUsuario.getScene().getWindow();  // Usando a tabela como referência.
+            Stage stage = (Stage) tabelaDietasUsuario.getScene().getWindow();
             File file = fileChooser.showSaveDialog(stage);
 
             if (file != null) {
@@ -241,13 +231,13 @@ public class DietaController {
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de dietas foi gerado com sucesso em: " + file.getAbsolutePath());
 
-                } catch (IOException e) { // Captura IOException
+                } catch (IOException e) {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
                     e.printStackTrace();
-                } catch (Exception e) { // Apenas o catch genérico
+                } catch (Exception e) {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório",
                             "Ocorreu um erro inesperado: " + e.getMessage());
-                    e.printStackTrace(); // Stack trace completa no console
+                    e.printStackTrace();
                 }
             }
         } else {

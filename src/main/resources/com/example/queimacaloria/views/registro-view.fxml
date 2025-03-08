@@ -2,68 +2,109 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="504.0" prefWidth="500.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.RegistroController" stylesheets="@estilos.css">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.RegistroController">
     <children>
-        <VBox alignment="CENTER" prefHeight="440.0" prefWidth="400.0" spacing="10.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
-            <Label text="Cadastro" textFill="#d7d7d7">
-                <font>
-                    <Font name="Gill Sans MT" size="24.0" />
-                </font>
-                <VBox.margin>
-                    <Insets bottom="20.0" />
-                </VBox.margin>
-            </Label>
-            <TextField fx:id="campoNome" promptText="Nome" styleClass="campo-escuro">
-                <VBox.margin>
-                    <Insets left="20.0" right="20.0" />
-                </VBox.margin>
-            </TextField>
-            <TextField fx:id="campoEmail" promptText="Email" styleClass="campo-escuro">
-                <VBox.margin>
-                    <Insets left="20.0" right="20.0" />
-                </VBox.margin>
-            </TextField>
-            <PasswordField fx:id="campoSenha" promptText="Senha" styleClass="campo-escuro">
-                <VBox.margin>
-                    <Insets left="20.0" right="20.0" />
-                </VBox.margin>
-            </PasswordField>
-            <DatePicker fx:id="campoDataNascimento" prefHeight="25.0" prefWidth="210.0" promptText="Data de Nascimento" styleClass="campo-escuro" >
-                <VBox.margin>
-                    <Insets left="20.0" right="20.0" />
-                </VBox.margin>
-            </DatePicker>
-            <ComboBox fx:id="campoSexo" prefHeight="25.0" prefWidth="210.0" promptText="Sexo" styleClass="campo-escuro" />
-            <TextField fx:id="campoPeso" promptText="Peso (kg)" styleClass="campo-escuro">
-                <VBox.margin>
-                    <Insets left="20.0" right="20.0" />
-                </VBox.margin>
-            </TextField>
-            <TextField fx:id="campoAltura" promptText="Altura (em centimetros. Ex: 175 cm)" styleClass="campo-escuro">
-                <VBox.margin>
-                    <Insets left="20.0" right="20.0" />
-                </VBox.margin>
-            </TextField>
-            <Button minWidth="120.0" onAction="#registrar" prefHeight="25.0" prefWidth="210.0" style="-fx-background-color: #55c5f5;" text="Cadastrar">
-                <VBox.margin>
-                    <Insets top="20.0" />
-                </VBox.margin>
-            </Button>
-            <Button minWidth="120.0" onAction="#irParaLogin" prefHeight="25.0" prefWidth="210.0" style="-fx-background-color: #ffffff;" text="Já tenho uma conta. Quero entrar." />
-            <Label fx:id="mensagemRegistro" text="" textFill="RED" />
-            <padding>
-                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
-            </padding>
+        <VBox alignment="CENTER" prefHeight="549.0" prefWidth="700.0" spacing="10.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 20;" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
+            <children>
+                <Label text="Cadastro" textFill="#d7d7d7">
+                    <font>
+                        <Font name="Gill Sans MT" size="24.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="20.0" />
+                    </VBox.margin>
+                </Label>
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Nome:*" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <TextField fx:id="campoNome" promptText="Nome" styleClass="campo-escuro" GridPane.columnIndex="0" GridPane.rowIndex="1" />
 
+                        <Label text="Email:*" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <TextField fx:id="campoEmail" promptText="Email" styleClass="campo-escuro" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+
+                        <Label text="Senha:*" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                        <PasswordField fx:id="campoSenha" promptText="Senha" styleClass="campo-escuro" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+
+                        <Label text="Data de Nascimento:*" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                        <DatePicker fx:id="campoDataNascimento" prefHeight="25.0" prefWidth="249.0" promptText="Data de Nascimento" styleClass="campo-escuro" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+
+                        <Label text="Sexo:*" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+                        <ComboBox fx:id="campoSexo" prefHeight="25.0" prefWidth="243.0" promptText="Sexo" styleClass="campo-escuro" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+
+                        <Label text="Peso (kg):*" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <TextField fx:id="campoPeso" promptText="Peso (kg)" styleClass="campo-escuro" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label text="Altura (cm):*" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <TextField fx:id="campoAltura" promptText="Altura (cm)" styleClass="campo-escuro" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                        <Label text="Cintura (cm):" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <TextField fx:id="campoCintura" promptText="Cintura (cm)" styleClass="campo-escuro" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                        <Label text="Bíceps (cm):" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                        <TextField fx:id="campoBiceps" promptText="Bíceps (cm)" styleClass="campo-escuro" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+                        <Label text="Coxa (cm):" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                        <TextField fx:id="campoCoxa" promptText="Coxa (cm)" styleClass="campo-escuro" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+
+                        <Label text="Quadril (cm):" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                        <TextField fx:id="campoQuadril" promptText="Quadril (cm)" styleClass="campo-escuro" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+
+                        <Label text="Tipo de dieta:" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                        <ChoiceBox fx:id="campoTipoDieta" prefHeight="25.0" prefWidth="229.0" styleClass="campo-escuro" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+
+                        <Label text="Nível de experiência em treinos:" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                        <ChoiceBox fx:id="campoNivelExperiencia" prefHeight="25.0" prefWidth="226.0" styleClass="campo-escuro" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+
+                        <Label text="Restrições alimentares:" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                        <ListView fx:id="listaRestricoes" prefHeight="100.0" prefWidth="200.0" styleClass="campo-escuro" GridPane.columnIndex="2" GridPane.rowIndex="5" GridPane.rowSpan="7" />
+
+                    </children>
+                </GridPane>
+                <HBox alignment="CENTER" spacing="10.0">
+                    <children>
+                        <Button minWidth="120.0" onAction="#registrar" style="-fx-background-color: #55c5f5;" text="Cadastrar" />
+                        <Button minWidth="120.0" onAction="#irParaLogin" style="-fx-background-color: #ffffff;" text="Já tenho uma conta" />
+                    </children>
+               <VBox.margin>
+                  <Insets top="15.0" />
+               </VBox.margin>
+                </HBox>
+                <Label fx:id="mensagemRegistro" text="" textFill="RED" />
+            </children>
         </VBox>
     </children>
 </AnchorPane>

@@ -18,10 +18,9 @@ public class Fachada {
     private ControladorMeta controladorMeta;
     private ControladorRefeicao controladorRefeicao;
     private ControladorTreino controladorTreino;
-    private MainController mainController; // Para injeção de dependência
+    private MainController mainController;
     private static final Random random = new Random();
 
-    // Construtor privado (padrão Singleton).
     private Fachada() {
         this.controladorUsuario = new ControladorUsuario();
         this.controladorDieta = new ControladorDieta();
@@ -32,7 +31,6 @@ public class Fachada {
         inicializarDadosPredefinidos(); //Inicializa os dados.
     }
 
-
     public static Fachada getInstanciaUnica() {
         if (instanciaUnica == null) {
             instanciaUnica = new Fachada();
@@ -40,11 +38,9 @@ public class Fachada {
         return instanciaUnica;
     }
 
-    // Injeção de dependência do MainController
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
-
 
     // Métodos de Usuário
     public Usuario cadastrarUsuario(String nome, String email, String senha, LocalDate dataNascimento,
@@ -88,7 +84,7 @@ public class Fachada {
     }
 
     public Usuario buscarUsuarioPorId(UUID id) throws UsuarioNaoEncontradoException {
-        Usuario usuario = controladorUsuario.buscarPorId(id); // Busca o usuário (cópia básica)
+        Usuario usuario = controladorUsuario.buscarPorId(id);
 
         if (usuario != null) {
             // Carrega as metas do usuário
@@ -124,7 +120,7 @@ public class Fachada {
 
         }
 
-        return usuario; // Retorna o usuário *completo*.
+        return usuario;
     }
 
     public List<Usuario> listarUsuarios() {
@@ -141,7 +137,7 @@ public class Fachada {
         controladorUsuario.remover(id);
     }
 
-    // Métodos de Dieta - ATUALIZADO
+    // Métodos de Dieta
     public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario, Usuario.TipoDieta tipoDieta)
             throws DietaNaoEncontradaException {
 
@@ -185,7 +181,7 @@ public class Fachada {
     }
 
 
-    // Métodos de Exercício - ATUALIZADO
+    // Métodos de Exercício
     public void configurarExercicio(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
                                     int tempo, double caloriasQueimadas, Usuario usuario) throws ExercicioNaoEncontradoException {
 
@@ -263,11 +259,10 @@ public class Fachada {
         controladorMeta.atualizarMeta(metaId, descricao, tipo, valorAlvo, progressoAtual, dataConclusao);
     }
 
-    // Métodos de Refeição - ATUALIZADO
+    // Métodos de Refeição
     public void configurarRefeicao(Refeicao refeicao, String nome, String descricao,
                                    Map<String, Double> macronutrientes, Usuario usuario) {
 
-        // Definir o tipoDieta, se o usuário tiver uma preferência
         Usuario.TipoDieta tipoDieta = Usuario.TipoDieta.ONIVORO; // Valor padrão
 
         if (usuario != null && usuario.getTipoDieta() != null) {
@@ -278,7 +273,7 @@ public class Fachada {
 
         // Chama o método atualizado do controlador
         controladorRefeicao.inicializar(refeicao, nome, descricao, macronutrientes, usuario, tipoDieta);
-        notificarObservadoresRefeicoes(); // <--- Notifica os observadores!
+        notificarObservadoresRefeicoes();
     }
 
     public int calcularCaloriasRefeicao(Refeicao refeicao) {
@@ -302,7 +297,7 @@ public class Fachada {
         notificarObservadoresRefeicoes();
     }
 
-    // Métodos de Treino - ATUALIZADO
+    // Métodos de Treino
     public void configurarTreino(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade, Usuario usuario)
             throws TreinoNaoEncontradoException {
 
@@ -363,7 +358,7 @@ public class Fachada {
         List<Dieta> dietas = InicializadorDados.inicializarDietas();
         List<Dieta> dietasFiltradas = new ArrayList<>();
 
-        // Filtra as dietas pelo tipo (se o tipo for fornecido).
+        // Filtra as dietas pelo tipo
         for (Dieta dieta : dietas) {
             if (dieta.getObjetivo() == tipo) {
                 dietasFiltradas.add(dieta);
@@ -373,9 +368,8 @@ public class Fachada {
         //Se não houver dietas, ou dietas com o tipo, retorna uma dieta aleatória
         if (dietasFiltradas.isEmpty()) {
             if (dietas.isEmpty()) {
-                return null; //Se não houver nenhuma dieta, retorna null
+                return null;
             } else {
-                //Se não houver dietas filtradas, usar a lista toda.
                 dietasFiltradas = dietas;
             }
         }
@@ -402,7 +396,6 @@ public class Fachada {
         return controladorUsuario.listarUsuarios(Usuario.TipoUsuario.USUARIO_COMUM);
     }
 
-    //Sobrecarga para incluir o TipoUsuario, e também as novas medidas
     public void atualizarDadosUsuario(Usuario usuario, String nome, String email, String senha,
                                       LocalDate dataNascimento, Usuario.Sexo sexo, float peso, float altura, String tipo,
                                       double cintura, double biceps, double coxa, double quadril)
@@ -416,7 +409,7 @@ public class Fachada {
         }
         System.out.println("Atualizando usuário: " + usuario.getNome() + ", Tipo: " + usuario.getTipo() + " para tipo " + tipouser.getDescricao());
         controladorUsuario.atualizarDados(usuario.getId(), nome, email, senha, dataNascimento, sexo, peso, altura, tipo,
-                cintura, biceps, coxa, quadril); //Novos parâmetros!
+                cintura, biceps, coxa, quadril);
     }
 
     public void beberAgua(Usuario usuario, int ml) throws UsuarioNaoEncontradoException {
@@ -462,19 +455,17 @@ public class Fachada {
 
     private void inicializarDadosPredefinidos() {
         try {
-            // Adiciona as dietas diretamente, sem usuário
             for (Dieta dieta : InicializadorDados.inicializarDietas()) {
                 controladorDieta.configurarDieta(
                         dieta,
                         dieta.getNome(),
                         dieta.getObjetivo(),
                         dieta.getCaloriasDiarias(),
-                        null, // Usuário nulo
+                        null,
                         dieta.getTipoDieta() != null ? dieta.getTipoDieta() : Usuario.TipoDieta.ONIVORO
                 );
             }
 
-            // Adiciona os exercícios diretamente, sem usuário
             for (Exercicio exercicio : InicializadorDados.inicializarExercicios()) {
                 controladorExercicio.inicializar(
                         exercicio,
@@ -483,12 +474,11 @@ public class Fachada {
                         exercicio.getTipo(),
                         exercicio.getTempo(),
                         exercicio.getCaloriasQueimadas(),
-                        null, // Sem usuário
+                        null,
                         exercicio.getNivelExperiencia() != null ? exercicio.getNivelExperiencia() : Usuario.NivelExperiencia.INICIANTE
                 );
             }
 
-            // Adiciona as metas diretamente, sem usuário
             for (Meta meta : InicializadorDados.inicializarMetas()) {
                 controladorMeta.inicializar(
                         meta,
@@ -497,25 +487,21 @@ public class Fachada {
                         meta.getValorAlvo(),
                         meta.getProgressoAtual(),
                         meta.getDataCriacao(),
-                        null // Sem usuário
+                        null
                 );
             }
 
-            // Adiciona as refeições diretamente, sem usuário
             for (Refeicao refeicao : InicializadorDados.inicializarRefeicoes()) {
                 controladorRefeicao.inicializar(
                         refeicao,
                         refeicao.getNome(),
                         refeicao.getDescricao(),
                         refeicao.getMacronutrientes(),
-                        null, // Sem usuário
+                        null,
                         refeicao.getTipoDieta() != null ? refeicao.getTipoDieta() : Usuario.TipoDieta.ONIVORO
                 );
             }
 
-            
-
-            // Adiciona os treinos diretamente, sem usuário
             for (Treino treino : InicializadorDados.inicializarTreinos()) {
                 controladorTreino.inicializar(
                         treino,
@@ -523,7 +509,7 @@ public class Fachada {
                         treino.getTipoDeTreino(),
                         treino.getDuracao(),
                         treino.getNivelDeDificuldade(),
-                        null, // Sem usuário
+                        null,
                         treino.getNivelExperiencia() != null ? treino.getNivelExperiencia() : Usuario.NivelExperiencia.INICIANTE
                 );
             }

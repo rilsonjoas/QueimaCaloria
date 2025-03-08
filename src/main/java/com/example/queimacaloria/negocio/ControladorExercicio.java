@@ -13,12 +13,11 @@ public class ControladorExercicio {
     RepositorioExerciciosArray repositorio;
 
     public ControladorExercicio() {
-        this.repositorio = RepositorioExerciciosArray.getInstanciaUnica(); // Singleton!
+        this.repositorio = RepositorioExerciciosArray.getInstanciaUnica();
     }
 
-    // Modificado: Recebe o Usuario
     public void inicializar(Exercicio exercicio, String nome, String descricao, Exercicio.TipoExercicio tipo,
-                            int tempo, double caloriasQueimadas, Usuario usuario, Usuario.NivelExperiencia nivel) //<- Modificado
+                            int tempo, double caloriasQueimadas, Usuario usuario, Usuario.NivelExperiencia nivel)
             throws ExercicioNaoEncontradoException {
         exercicio.setNome(nome);
         exercicio.setDescricao(descricao);
@@ -26,7 +25,7 @@ public class ControladorExercicio {
         exercicio.setTempo(tempo);
         exercicio.setCaloriasQueimadas(caloriasQueimadas);
         exercicio.setUsuario(usuario);
-        exercicio.setNivelExperiencia(nivel); // Define o nível de experiência
+        exercicio.setNivelExperiencia(nivel);
 
 
         try {
@@ -60,7 +59,7 @@ public class ControladorExercicio {
             System.err.println("ERRO CRÍTICO: Repositório nulo em ControladorExercicio.listarExercicios()!");
         }
         List<Exercicio> exercicios = repositorio.getAll();
-        System.out.println("ControladorExercicio.listarExercicios(): Exercicios retornados: " + exercicios); // LOG
+        System.out.println("ControladorExercicio.listarExercicios(): Exercicios retornados: " + exercicios);
         return exercicios;
     }
 

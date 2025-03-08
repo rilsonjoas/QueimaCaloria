@@ -17,7 +17,7 @@ public class GeradorPDF {
     private static void adicionarCabecalho(Document document, String nomeUsuario) {
         document.add(new Paragraph("YouFit").setFontSize(24).setBold().setFontColor(ColorConstants.BLUE));
         document.add(new Paragraph("Relatório para: " + nomeUsuario).setFontSize(16).setFontColor(ColorConstants.BLACK));
-        document.add(new Paragraph("\n")); // Linha em branco para espaçamento.
+        document.add(new Paragraph("\n"));
     }
 
     // Métodos para gerar relatórios
@@ -116,14 +116,12 @@ public class GeradorPDF {
         tabela.addHeaderCell(new Paragraph("Tipo").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
         tabela.addHeaderCell(new Paragraph("Progresso").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
 
-
         for (Meta meta : metas) {
             tabela.addCell(new Paragraph(meta.getDescricao()));
             tabela.addCell(new Paragraph(meta.getTipo().toString()));
 
-            // Cálculo e formatação corretos do progresso *dentro* do addCell:
             double progresso = 0.0;
-            if (meta.getValorAlvo() > 0) { // Evita divisão por zero
+            if (meta.getValorAlvo() > 0) {
                 progresso = (meta.getProgressoAtual() / meta.getValorAlvo()) * 100.0;
             }
             tabela.addCell(new Paragraph(String.format("%.1f%%", progresso)));
@@ -131,7 +129,6 @@ public class GeradorPDF {
 
         document.add(tabela);
     }
-
 
     private static void adicionarSecaoDietas(Document document, List<Dieta> dietas) {
         document.add(new Paragraph("Dietas:").setFontSize(14));
@@ -151,6 +148,7 @@ public class GeradorPDF {
 
         document.add(tabela);
     }
+
     private static void adicionarSecaoExercicios(Document document, List<Exercicio> exercicios) {
         document.add(new Paragraph("Exercícios:").setFontSize(14));
 
@@ -175,7 +173,7 @@ public class GeradorPDF {
     private static void adicionarSecaoRefeicoes(Document document, List<Refeicao> refeicoes) {
         document.add(new Paragraph("Refeições:").setFontSize(14));
 
-        Table tabela = new Table(UnitValue.createPercentArray(new float[]{40, 40, 20})) // Ajuste as larguras conforme necessário
+        Table tabela = new Table(UnitValue.createPercentArray(new float[]{40, 40, 20}))
                 .useAllAvailableWidth();
 
         tabela.addHeaderCell(new Paragraph("Nome").setFontColor(ColorConstants.WHITE)).setBackgroundColor(ColorConstants.DARK_GRAY);
@@ -190,6 +188,7 @@ public class GeradorPDF {
 
         document.add(tabela);
     }
+
     private static void adicionarSecaoTreinos(Document document, List<Treino> treinos) {
         document.add(new Paragraph("Treinos:").setFontSize(14));
 

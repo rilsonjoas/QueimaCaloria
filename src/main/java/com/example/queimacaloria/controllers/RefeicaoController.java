@@ -41,7 +41,6 @@ public class RefeicaoController {
     private MainController mainController;
     private ObservableList<Refeicao> refeicoesPreDefinidas = FXCollections.observableArrayList();
 
-    // Botão de compartilhar
     @FXML
     private Button buttonCompartilhar;
 
@@ -54,7 +53,6 @@ public class RefeicaoController {
         atualizarTabelaRefeicoesUsuario();
         configurarTabelaPreDefinida();
         carregarRefeicoesPreDefinidas();
-        //Verifica se o botão compartilhar está presente antes de configurar o evento.
         if(buttonCompartilhar != null){
             buttonCompartilhar.setOnAction(event -> compartilharLista());
         }
@@ -147,13 +145,13 @@ public class RefeicaoController {
     @FXML
     public void adicionarRefeicaoPreDefinida() {
         Refeicao refeicaoSelecionada = tabelaRefeicoesPreDefinidas.getSelectionModel().getSelectedItem();
-        if(refeicaoSelecionada == null){  //Verifica
+        if(refeicaoSelecionada == null){
             showAlert(Alert.AlertType.WARNING, "Aviso", "Nenhuma refeição selecionada", "Selecione uma refeição para adicionar.");
             return;
         }
 
 
-        if (mainController == null || mainController.getUsuarioLogado() == null) { //Verifica
+        if (mainController == null || mainController.getUsuarioLogado() == null) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário logado", "Não foi possível adicionar a refeição.");
             return;
         }
@@ -166,10 +164,8 @@ public class RefeicaoController {
                     refeicaoSelecionada.getMacronutrientes()
             );
 
-            //REVISÃO: Definindo o usuário LOGADO.
             novaRefeicao.setUsuario(mainController.getUsuarioLogado());
 
-            //Copia as propriedades
             novaRefeicao.setTipoDieta(refeicaoSelecionada.getTipoDieta());
 
             fachada.configurarRefeicao(novaRefeicao, novaRefeicao.getNome(),
@@ -190,13 +186,11 @@ public class RefeicaoController {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 List<Refeicao> listaRefeicoes = fachada.listarRefeicoes();
 
-                // FILTRO 1: Apenas refeições do usuário logado
                 listaRefeicoes = listaRefeicoes.stream()
                         .filter(refeicao -> refeicao.getUsuario() != null
                                 && refeicao.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
 
-                // FILTRO 2: Aplicar filtro de tipo de dieta (preferência do usuário)
                 if (usuarioLogado.getTipoDieta() != null) {
                     listaRefeicoes = listaRefeicoes.stream()
                             .filter(refeicao -> refeicao.getTipoDieta() == null
@@ -204,7 +198,6 @@ public class RefeicaoController {
                             .collect(Collectors.toList());
                 }
 
-                // FILTRO 3: Aplicar filtro de restrições alimentares
                 if (usuarioLogado.getRestricoes() != null && !usuarioLogado.getRestricoes().isEmpty()) {
                     listaRefeicoes = listaRefeicoes.stream()
                             .filter(refeicao -> {
@@ -227,13 +220,12 @@ public class RefeicaoController {
                 tabelaRefeicoesUsuario.refresh();
 
             } else {
-                // Trata caso não haja usuário logado (opcional)
                 tabelaRefeicoesUsuario.setItems(FXCollections.observableArrayList());
                 System.err.println("RefeicaoController: Nenhum usuário logado ao atualizar a tabela.");
             }
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar refeições", e.getMessage());
-            e.printStackTrace(); // Sempre útil para debugging
+            e.printStackTrace();
         }
     }
 
@@ -261,19 +253,17 @@ public class RefeicaoController {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar Relatório de Refeições em PDF");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
-            Stage stage = (Stage) tabelaRefeicoesUsuario.getScene().getWindow(); // Janela correta
+            Stage stage = (Stage) tabelaRefeicoesUsuario.getScene().getWindow();
             File file = fileChooser.showSaveDialog(stage);
 
             if (file != null) {
                 try {
-                    // Obtém a lista de *todas* as refeições.
                     List<Refeicao> todasRefeicoes = fachada.listarRefeicoes();
-                    // Passa o nome do usuário
                     GeradorPDF.gerarRelatorioRefeicoes(todasRefeicoes, file.getAbsolutePath(), nomeUsuario);
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de refeições foi gerado com sucesso em: " + file.getAbsolutePath());
 
-                } catch (IOException e) { // Captura IOException
+                } catch (IOException e) {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
                     e.printStackTrace();
                 }catch (Exception e) {  //Apenas o catch genérico.

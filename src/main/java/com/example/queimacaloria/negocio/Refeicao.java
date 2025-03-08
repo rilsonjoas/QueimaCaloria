@@ -91,7 +91,7 @@ public class Refeicao {
     }
 
     @Setter
-    private List<String> ingredientes = new ArrayList<>(); // Lista de ingredientes (opcional)
+    private List<String> ingredientes = new ArrayList<>();
 
     public List<String> getIngredientes() {
         return ingredientes;

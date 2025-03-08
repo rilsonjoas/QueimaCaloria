@@ -39,6 +39,7 @@ public class CriacaoExercicioController {
     public void setMainController(MainController mainController){
         this.mainController = mainController;
     }
+
     // Inicializa o ChoiceBox com os tipos de exercício.
     @FXML
     public void initialize() {
@@ -66,11 +67,10 @@ public class CriacaoExercicioController {
 
             // Verifica se há um usuário logado e o associa ao exercício
             if (mainController != null && mainController.getUsuarioLogado() != null) {
-                novoExercicio.setUsuario(mainController.getUsuarioLogado()); // Define o usuário
+                novoExercicio.setUsuario(mainController.getUsuarioLogado());
             }
 
-
-            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, caloriasQueimadas, mainController.getUsuarioLogado()); // Passa o usuário
+            fachada.configurarExercicio(novoExercicio, nome, descricao, tipo, tempo, caloriasQueimadas, mainController.getUsuarioLogado());
 
             mensagemErro.setText("Exercício criado com sucesso!");
 

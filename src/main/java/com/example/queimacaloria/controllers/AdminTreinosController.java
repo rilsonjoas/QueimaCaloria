@@ -75,9 +75,9 @@ public class AdminTreinosController {
     }
 
     private void carregarTreinosPreDefinidos() {
-        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos() chamado"); // LOG
+        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos() chamado");
         List<Treino> treinos = fachada.getTreinosPreDefinidos();
-        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos(): Treinos pré-definidos carregados: " + treinos); // LOG
+        System.out.println("AdminTreinosController.carregarTreinosPreDefinidos(): Treinos pré-definidos carregados: " + treinos);
         listaTreinosPreDefinidos.addAll(treinos);
         System.out.println("AdminTreinosController.carregarTreinosPreDefinidos() finalizado");
     }
@@ -143,9 +143,9 @@ public class AdminTreinosController {
     }
 
     private void atualizarTabelaTreinos() {
-        System.out.println("AdminTreinosController.atualizarTabelaTreinos() chamado");  // LOG
+        System.out.println("AdminTreinosController.atualizarTabelaTreinos() chamado");
         List<Treino> listaDeTreinos = fachada.listarTreinos();
-        System.out.println("AdminTreinosController.atualizarTabelaTreinos(): Todos os treinos: " + listaDeTreinos); // LOG
+        System.out.println("AdminTreinosController.atualizarTabelaTreinos(): Todos os treinos: " + listaDeTreinos);
         tabelaTreinos.setItems(FXCollections.observableArrayList(listaDeTreinos));
         //Verifica se a lista está vazia:
         if(listaDeTreinos.isEmpty()){

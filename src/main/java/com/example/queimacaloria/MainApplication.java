@@ -22,9 +22,7 @@ public class MainApplication extends Application {
     public void start(Stage palco) throws IOException {
         this.primaryStage = palco;
 
-        //Garantir que a conta ADMIN exista
         garantirAdminExistente();
-
 
         try {
             FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/com/example/queimacaloria/views/auth-view.fxml"));

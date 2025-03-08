@@ -18,21 +18,19 @@ public class ControladorRefeicao {
         this.repositorio = RepositorioRefeicoesArray.getInstanciaUnica();
     }
 
-    // Modificado: recebe o Usuario
     public void inicializar(Refeicao refeicao, String nome, String descricao, Map<String, Double> macronutrientes, Usuario usuario, Usuario.TipoDieta tipoDieta) {
         refeicao.setNome(nome);
         refeicao.setDescricao(descricao);
         refeicao.setMacronutrientes(macronutrientes);
         refeicao.setCalorias(calcularCalorias(refeicao));
-        refeicao.setUsuario(usuario); // Define o usuário
-        refeicao.setTipoDieta(tipoDieta); // Define o tipo de dieta
+        refeicao.setUsuario(usuario);
+        refeicao.setTipoDieta(tipoDieta);
 
         try {
             repositorio.salvar(refeicao);
         } catch (RefeicaoNaoEncontradaException e) {
             repositorio.adicionar(refeicao);
         }
-        // Fachada.getInstanciaUnica().notificarObservadoresRefeicoes(); // REMOVIDO - A notificação agora está na Fachada.
     }
 
     public int calcularCalorias(Refeicao refeicao) {
@@ -61,11 +59,10 @@ public class ControladorRefeicao {
             System.err.println("ERRO CRÍTICO: Repositório nulo em ControladorRefeicao.listarRefeicoes()!");
         }
         List<Refeicao> refeicoes = repositorio.getAll();
-        System.out.println("ControladorRefeicao.listarRefeicoes(): Refeições retornadas: " + refeicoes); // LOG
+        System.out.println("ControladorRefeicao.listarRefeicoes(): Refeições retornadas: " + refeicoes);
         return refeicoes;
     }
 
-    //Listar refeição por tipo de dieta
     public List<Refeicao> listarRefeicoes(Usuario.TipoDieta tipo) {
         return repositorio.getAll().stream()
                 .filter(refeicao -> refeicao.getTipoDieta() == tipo)
@@ -74,6 +71,5 @@ public class ControladorRefeicao {
 
     public void remover(UUID id) throws RefeicaoNaoEncontradaException {
         repositorio.remover(id);
-        // Fachada.getInstanciaUnica().notificarObservadoresRefeicoes(); // REMOVIDO.  A notificação está na Fachada.
     }
 }

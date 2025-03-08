@@ -80,14 +80,14 @@ public class RepositorioTreinosArray implements IRepositorioTreinos {
 
     @Override
     public List<Treino> getAll() {
-        System.out.println("RepositorioTreinosArray.getAll() chamado"); // LOG
+        System.out.println("RepositorioTreinosArray.getAll() chamado");
         List<Treino> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {
             if (treinos[i] != null) {
                 lista.add(treinos[i]);
             }
         }
-        System.out.println("RepositorioTreinosArray.getAll(): Retornando lista: " + lista);  //LOG
+        System.out.println("RepositorioTreinosArray.getAll(): Retornando lista: " + lista);
         return lista;
     }
 }

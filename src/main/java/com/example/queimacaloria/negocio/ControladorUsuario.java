@@ -12,12 +12,10 @@ public class ControladorUsuario {
 
     private RepositorioUsuariosArray repositorio;
 
-    // Construtor, inicializa o repositório.
     public ControladorUsuario() {
         this.repositorio = RepositorioUsuariosArray.getInstanciaUnica();
     }
 
-    // Cadastra um novo usuário no repositório.
     public void cadastrarUsuario(Usuario novoUsuario) {
         List<Usuario> usuarios = repositorio.getAll();
         for (Usuario user : usuarios) {
@@ -29,10 +27,9 @@ public class ControladorUsuario {
         repositorio.adicionar(novoUsuario);
     }
 
-    // Atualiza os dados de um usuário existente.
     public void atualizarDados(UUID usuarioId, String nome, String email, String senha, LocalDate dataNascimento,
                                Usuario.Sexo sexo, float peso, float altura, String tipo,
-                               double cintura, double biceps, double coxa, double quadril) // Novos parâmetros
+                               double cintura, double biceps, double coxa, double quadril)
             throws UsuarioNaoEncontradoException
     {
         Usuario usuario = repositorio.buscar(usuarioId);
@@ -40,14 +37,13 @@ public class ControladorUsuario {
             throw new UsuarioNaoEncontradoException("Usuário com ID " + usuarioId + " não encontrado.");
         }
 
-        // Atualiza os campos existentes, verificando nulos e vazios
         if (nome != null && !nome.isEmpty()) {
             usuario.setNome(nome);
         }
         if (email != null && !email.isEmpty()) {
             usuario.setEmail(email);
         }
-        if (senha != null && !senha.isEmpty()) { //  Permite atualizar senha (opcional)
+        if (senha != null && !senha.isEmpty()) {
             usuario.setSenha(senha);
         }
         if (dataNascimento != null) {
@@ -66,7 +62,6 @@ public class ControladorUsuario {
             usuario.setTipo(tipo);
         }
 
-        //Novos atributos:
         if(cintura > 0) {
             usuario.setCintura(cintura);
         }
@@ -85,7 +80,6 @@ public class ControladorUsuario {
         System.out.println("Depois de salvar - Atualizando usuario: " + usuario.getNome() + " para tipo " + usuario.getTipo());
     }
 
-    // Busca um usuário pelo ID.
     public Usuario buscarPorId(UUID id) throws UsuarioNaoEncontradoException{
         return repositorio.buscar(id);
     }

@@ -69,7 +69,7 @@ public class EdicaoRefeicaoController {
         String gordurasStr = campoGorduras.getText();
 
         if (!validarFormulario(nome, descricao, proteinasStr, carboidratosStr, gordurasStr)) {
-            return; // Aborta se a validação falhar
+            return;
         }
 
         try {
@@ -87,12 +87,10 @@ public class EdicaoRefeicaoController {
             fachada.configurarRefeicao(refeicao,nome, descricao, novosMacronutrientes, mainController.getUsuarioLogado());
             mensagemErro.setText("Refeição atualizada com sucesso!");
 
-            // **********  MUDANÇA AQUI ***********
-            // Atualiza o usuário logado:  Isso é *crítico*.
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza o usuário no MainController
+                    mainController.setUsuarioLogado(usuarioAtualizado);
                 }
                 catch (UsuarioNaoEncontradoException e){
                     showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
@@ -101,11 +99,11 @@ public class EdicaoRefeicaoController {
             }
 
             if (refeicaoController != null) {
-                refeicaoController.initialize(); //Remover, pois o listener ja atualiza.
+                refeicaoController.initialize();
             }
 
             if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal();// Removido
+                mainController.atualizarDadosTelaPrincipal();
                 mainController.atualizarCalorias();
 
             }

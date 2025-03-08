@@ -75,7 +75,6 @@ public class EdicaoExercicioController {
             int tempo = Integer.parseInt(tempoStr);
             double caloriasQueimadas = Double.parseDouble(caloriasQueimadasStr);
 
-            // Agora passamos o usuário logado
             fachada.configurarExercicio(exercicio, nome, descricao, tipo, tempo, caloriasQueimadas, mainController.getUsuarioLogado());
 
             mensagemErro.setText("Exercício atualizado com sucesso!");

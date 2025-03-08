@@ -41,7 +41,7 @@ public class AuthController {
     private Parent carregarTela(String caminho) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(caminho));
         Parent root = loader.load();
-        root.getProperties().put("fxmlLoader", loader); // Armazena o loader.
+        root.getProperties().put("fxmlLoader", loader);
         return root;
     }
 

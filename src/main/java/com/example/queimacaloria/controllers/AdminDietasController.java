@@ -4,7 +4,7 @@ import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
 import com.example.queimacaloria.negocio.Dieta;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Meta;
-import com.example.queimacaloria.negocio.Usuario; // Importe Usuario
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -28,13 +28,12 @@ public class AdminDietasController {
     @FXML private Label mensagem;
 
     private Fachada fachada = Fachada.getInstanciaUnica();
-    @Setter private IBaseAdmin mainController; // Você provavelmente não precisa disso aqui
+    @Setter private IBaseAdmin mainController;
     private ObservableList<Dieta> listaDietasPreDefinidas = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        // ... (seu código de inicialização, sem mudanças) ...
-        System.out.println("AdminDietasController.initialize() chamado"); // LOG
+        System.out.println("AdminDietasController.initialize() chamado");
 
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaObjetivo.setCellValueFactory(new PropertyValueFactory<>("objetivo"));
@@ -42,11 +41,9 @@ public class AdminDietasController {
 
         campoObjetivo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
 
-
         carregarDietasPreDefinidas();
         atualizarTabelaDietas();
 
-        // Listener para a ObservableList
         tabelaDietas.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Dieta> c) -> {
             System.out.println("AdminDietasController: Mudança na lista da tabela detectada!");
             while (c.next()) {
@@ -56,11 +53,10 @@ public class AdminDietasController {
                 if (c.wasRemoved()) {
                     System.out.println("  Itens removidos: " + c.getRemoved());
                 }
-                // Outras verificações: wasReplaced(), wasUpdated(), etc.
             }
         });
 
-        // Listener de seleção (aqui é onde a mágica acontece!)
+        // Listener de seleção
         tabelaDietas.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 System.out.println("AdminDietasController: Item selecionado: " + newSelection);
@@ -81,12 +77,11 @@ public class AdminDietasController {
     }
 
     private void carregarDietasPreDefinidas() {
-        System.out.println("AdminDietasController.carregarDietasPreDefinidas() chamado"); // LOG
+        System.out.println("AdminDietasController.carregarDietasPreDefinidas() chamado");
         List<Dieta> dietas = fachada.getDietasPreDefinidas();
-        System.out.println("AdminDietasController.carregarDietasPreDefinidas(): Dietas pré-definidas carregadas: " + dietas); // LOG
+        System.out.println("AdminDietasController.carregarDietasPreDefinidas(): Dietas pré-definidas carregadas: " + dietas);
         listaDietasPreDefinidas.addAll(dietas);
-        // tabelaDietas.setItems(FXCollections.observableArrayList(dietas)); // REMOVA ESTA LINHA.  Você já faz isso em atualizarTabelaDietas()
-        System.out.println("AdminDietasPreDefinidas() finalizado"); // LOG
+        System.out.println("AdminDietasPreDefinidas() finalizado");
     }
 
     @FXML
@@ -99,13 +94,12 @@ public class AdminDietasController {
             int calorias = Integer.parseInt(caloriasStr);
             Dieta novaDieta = new Dieta();
             // Define o tipoDieta com base no objetivo.
-            Usuario.TipoDieta tipoDieta = Usuario.TipoDieta.ONIVORO;  // Valor padrão
+            Usuario.TipoDieta tipoDieta = Usuario.TipoDieta.ONIVORO;
             if (objetivo == Meta.Tipo.PERDA_DE_PESO) {
                 tipoDieta = Usuario.TipoDieta.LOW_CARB;
             } else if (objetivo == Meta.Tipo.GANHO_DE_MASSA) {
                 tipoDieta = Usuario.TipoDieta.ONIVORO;
             }
-            // Você pode adicionar mais lógica para outros tipos.
 
             fachada.configurarDieta(novaDieta, nome, objetivo, calorias, null, tipoDieta); // Passa null para usuário e o tipoDieta
             atualizarTabelaDietas();
@@ -126,8 +120,8 @@ public class AdminDietasController {
                 String caloriasStr = campoCalorias.getText();
                 int calorias = Integer.parseInt(caloriasStr);
 
-                // Define o tipoDieta com base no objetivo (como em criarDieta).
-                Usuario.TipoDieta tipoDieta = Usuario.TipoDieta.ONIVORO; // Valor padrão.
+                // Define o tipoDieta com base no objetivo
+                Usuario.TipoDieta tipoDieta = Usuario.TipoDieta.ONIVORO;
                 if (objetivo == Meta.Tipo.PERDA_DE_PESO) {
                     tipoDieta = Usuario.TipoDieta.LOW_CARB;
                 } else if (objetivo == Meta.Tipo.GANHO_DE_MASSA) {
@@ -161,9 +155,9 @@ public class AdminDietasController {
         }
     }
     private void atualizarTabelaDietas() {
-        System.out.println("AdminDietasController.atualizarTabelaDietas() chamado"); // LOG
+        System.out.println("AdminDietasController.atualizarTabelaDietas() chamado");
         List<Dieta> listaDeDietas = fachada.listarDietas();
-        System.out.println("AdminDietasController.atualizarTabelaDietas(): Todas as dietas: " + listaDeDietas);  // LOG
+        System.out.println("AdminDietasController.atualizarTabelaDietas(): Todas as dietas: " + listaDeDietas);
         tabelaDietas.setItems(FXCollections.observableArrayList(listaDeDietas));
 
         //Verifica se a lista está vazia:

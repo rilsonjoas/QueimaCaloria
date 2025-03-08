@@ -79,14 +79,14 @@ public class RepositorioRefeicoesArray implements IRepositorioRefeicoes {
 
     @Override
     public List<Refeicao> getAll() {
-        System.out.println("RepositorioRefeicoesArray.getAll() chamado"); // LOG
+        System.out.println("RepositorioRefeicoesArray.getAll() chamado");
         List<Refeicao> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {
             if (refeicoes[i] != null) {
                 lista.add(refeicoes[i]);
             }
         }
-        System.out.println("RepositorioRefeicoesArray.getAll(): Retornando lista: " + lista); // LOG
+        System.out.println("RepositorioRefeicoesArray.getAll(): Retornando lista: " + lista);
         return lista;
     }
 }

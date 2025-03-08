@@ -1,4 +1,3 @@
-// CriacaoDietaController.java
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
@@ -23,17 +22,14 @@ public class CriacaoDietaController {
     private DietaController dietaController;
     private MainController mainController;
 
-    // Define o controlador da tela de dieta.
     public void setDietaController(DietaController dietaController) {
         this.dietaController = dietaController;
     }
 
-    // Define o controlador principal.
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
 
-    // Inicializa o controlador, configurando o ChoiceBox de objetivo.
     @FXML
     public void initialize() {
         campoObjetivo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
@@ -72,13 +68,13 @@ public class CriacaoDietaController {
             fachada.configurarDieta(novaDieta, novaDieta.getNome(), novaDieta.getObjetivo(),
                     novaDieta.getCaloriasDiarias(), novaDieta.getUsuario(), novaDieta.getTipoDieta());
             mainController.getUsuarioLogado().getDietas().add(novaDieta);
-            Fachada.getInstanciaUnica().setDietaAtiva(mainController.getUsuarioLogado(), novaDieta); // Define como ativa
+            Fachada.getInstanciaUnica().setDietaAtiva(mainController.getUsuarioLogado(), novaDieta);
 
             if (dietaController != null) {
-                dietaController.atualizarTabelaDietasUsuario(); //Já atualiza.
+                dietaController.atualizarTabelaDietasUsuario();
             }
             if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal(); //Já atualiza
+                mainController.atualizarDadosTelaPrincipal();
             }
 
             Stage stage = (Stage) campoNome.getScene().getWindow();
@@ -89,7 +85,6 @@ public class CriacaoDietaController {
             e.printStackTrace();
         }
     }
-
 
     //Função auxiliar para verificar se é um número.
     private boolean isNumeric(String str) {

@@ -54,7 +54,7 @@ public class EdicaoTreinoController {
     private void preencherCampos() {
         if (treino != null) {
             campoNome.setText(treino.getNome());
-            campoTipoTreino.setValue(treino.getTipoDeTreino()); // Define o valor do ChoiceBox
+            campoTipoTreino.setValue(treino.getTipoDeTreino());
             campoDuracao.setText(String.valueOf(treino.getDuracao()));
             campoNivelDificuldade.setText(String.valueOf(treino.getNivelDeDificuldade()));
 
@@ -72,7 +72,7 @@ public class EdicaoTreinoController {
         String nivelDificuldadeStr = campoNivelDificuldade.getText();
 
         if (!validarFormulario(nome, tipoTreino, duracaoStr, nivelDificuldadeStr)) {
-            return; // Aborta se a validação falhar
+            return;
         }
         try {
             int duracao = Integer.parseInt(duracaoStr);
@@ -99,7 +99,7 @@ public class EdicaoTreinoController {
                 }
             }
 
-            fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade, mainController.getUsuarioLogado()); //AGORA PASSANDO USUARIO LOGADO
+            fachada.configurarTreino(treino, nome, tipoTreino, duracao, nivelDificuldade, mainController.getUsuarioLogado());
             treino.setTipoDeTreino(tipoTreino);
 
 

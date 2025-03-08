@@ -2,13 +2,23 @@ package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Usuario;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RegistroController {
 
@@ -21,6 +31,17 @@ public class RegistroController {
     @FXML private TextField campoAltura;
     @FXML private Label mensagemRegistro;
 
+    //Novos campos
+    @FXML private ChoiceBox<Usuario.TipoDieta> campoTipoDieta;
+    @FXML private ListView<Usuario.RestricaoAlimentar> listaRestricoes; // ListView, não mais TextField
+    @FXML private ChoiceBox<Usuario.NivelExperiencia> campoNivelExperiencia;
+    @FXML private TextField campoCintura;
+    @FXML private TextField campoBiceps;
+    @FXML private TextField campoCoxa;
+    @FXML private TextField campoQuadril;
+
+
+
     private final Fachada fachada = Fachada.getInstanciaUnica();
     @FXML
     @Setter
@@ -30,6 +51,44 @@ public class RegistroController {
     @FXML
     public void initialize() {
         campoSexo.setItems(FXCollections.observableArrayList(Usuario.Sexo.values()));
+
+        // Inicializa os ChoiceBox
+        campoTipoDieta.setItems(FXCollections.observableArrayList(Usuario.TipoDieta.values()));
+        campoNivelExperiencia.setItems(FXCollections.observableArrayList(Usuario.NivelExperiencia.values()));
+
+        // Configura a ListView para seleção múltipla
+        listaRestricoes.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        listaRestricoes.setItems(FXCollections.observableArrayList(Usuario.RestricaoAlimentar.values()));
+
+        // ADICIONE ESTE BLOCO DE CÓDIGO: Configura o cellFactory para usar CheckBoxListCell
+        listaRestricoes.setCellFactory(CheckBoxListCell.forListView(new Callback<Usuario.RestricaoAlimentar, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(Usuario.RestricaoAlimentar item) {
+                BooleanProperty observable = new SimpleBooleanProperty();
+                // Listener para ATUALIZAR a seleção quando o checkbox mudar.
+                observable.addListener((obs, wasSelected, isNowSelected) -> {
+                    if (isNowSelected) {
+                        listaRestricoes.getSelectionModel().select(item);
+                    } else {
+                        listaRestricoes.getSelectionModel().clearSelection(listaRestricoes.getItems().indexOf(item));
+                    }
+                });
+
+                //  É preciso setar o valor inicial do checkbox, baseado no que veio da seleção
+                observable.set(listaRestricoes.getSelectionModel().getSelectedItems().contains(item));
+                return observable;
+            }
+        }, new StringConverter<>() {
+            @Override
+            public String toString(Usuario.RestricaoAlimentar object) {
+                return object == null ? "" : object.toString();
+            }
+
+            @Override
+            public Usuario.RestricaoAlimentar fromString(String string) {
+                return null;  // Não precisamos converter de volta.
+            }
+        }));
     }
 
     @FXML
@@ -42,6 +101,8 @@ public class RegistroController {
         String pesoStr = campoPeso.getText();
         String alturaStr = campoAltura.getText();
 
+
+        //Valida os campos.
         if (!validarFormulario(nome, email, password, dataNascimento, sexo, pesoStr, alturaStr)) {
             return; // Aborta se a validação falhar
         }
@@ -50,7 +111,15 @@ public class RegistroController {
             float peso = Float.parseFloat(pesoStr);
             float altura = Float.parseFloat(alturaStr);
 
-            // Correção: Passando todos os 8 argumentos esperados.
+            // Obtém os valores dos novos campos
+            Usuario.TipoDieta tipoDieta = campoTipoDieta.getValue();
+            Usuario.NivelExperiencia nivelExperiencia = campoNivelExperiencia.getValue();
+
+            // Obtém as restrições selecionadas *ANTES* de criar o usuário
+            Set<Usuario.RestricaoAlimentar> restricoes = new HashSet<>(listaRestricoes.getSelectionModel().getSelectedItems());
+
+
+            // Correção: Passando todos os 8 argumentos esperados, incluindo tipoDieta, nivel, e restricoes
             Usuario novoUsuario = fachada.cadastrarUsuario(
                     nome,
                     email,
@@ -61,6 +130,33 @@ public class RegistroController {
                     altura,
                     Usuario.TipoUsuario.USUARIO_COMUM.getDescricao() // Tipo padrão
             );
+
+            //AGORA, COM O USUARIO CRIADO, ADICIONA AS NOVAS INFORMAÇÕES.
+            if (tipoDieta != null) {
+                novoUsuario.tipoDietaProperty().set(tipoDieta); //Usa o setter do Property
+            }
+            if (nivelExperiencia != null) {
+                novoUsuario.nivelExperienciaProperty().set(nivelExperiencia);
+            }
+
+            // Definir as restrições, mas verifique se restricoes não é nulo.
+            if (restricoes != null && !restricoes.isEmpty()) {
+                novoUsuario.setRestricoes(FXCollections.observableSet(restricoes));  // Define o ObservableSet diretamente!
+            }
+
+            //Novas métricas:
+            if (campoCintura.getText() != null && !campoCintura.getText().isEmpty()) {
+                novoUsuario.setCintura(Double.parseDouble(campoCintura.getText()));
+            }
+            if (campoBiceps.getText() != null && !campoBiceps.getText().isEmpty()) {
+                novoUsuario.setBiceps(Double.parseDouble(campoBiceps.getText()));
+            }
+            if (campoCoxa.getText() != null && !campoCoxa.getText().isEmpty()) {
+                novoUsuario.setCoxa(Double.parseDouble(campoCoxa.getText()));
+            }
+            if (campoQuadril.getText() != null && !campoQuadril.getText().isEmpty()) {
+                novoUsuario.setQuadril(Double.parseDouble(campoQuadril.getText()));
+            }
 
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
 
@@ -109,15 +205,17 @@ public class RegistroController {
             return false;
         }
 
-        if (dataNascimento == null) {
+        //Data de nascimento não é mais obrigatória
+        /*if (dataNascimento == null) {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A data de nascimento não pode ser nula.");
             return false;
-        }
+        }*/
 
-        if (sexo == null) {
+        //Sexo não é mais obrigatório
+        /*if (sexo == null) {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O sexo não pode ser nulo.");
             return false;
-        }
+        }*/
 
         if (pesoStr == null || pesoStr.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O peso não pode estar vazio.");

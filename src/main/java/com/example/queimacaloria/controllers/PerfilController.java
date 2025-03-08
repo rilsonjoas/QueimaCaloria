@@ -18,11 +18,10 @@ import javafx.util.converter.NumberStringConverter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javafx.beans.value.ObservableValue; // Importante
+import javafx.beans.value.ObservableValue;
 
 public class PerfilController {
 
-    // ... (todos os seus campos @FXML) ...
     @FXML private Label labelNomeAtual;
     @FXML private Label labelPesoAtual;
     @FXML private Label labelAlturaAtual;
@@ -42,9 +41,8 @@ public class PerfilController {
     @FXML private TextField campoCoxa;
     @FXML private TextField campoQuadril;
 
-    //Novos campos
     @FXML private ChoiceBox<Usuario.TipoDieta> campoTipoDieta;
-    @FXML private ListView<Usuario.RestricaoAlimentar> listaRestricoes; // ListView, não mais TextField
+    @FXML private ListView<Usuario.RestricaoAlimentar> listaRestricoes;
     @FXML private ChoiceBox<Usuario.NivelExperiencia> campoNivelExperiencia;
 
 
@@ -62,25 +60,21 @@ public class PerfilController {
         this.usuarioLogado = usuario;
         bindLabels(); // Vincular os campos
     }
+
     @FXML
     public void initialize() {
-        // Inicializa os ChoiceBox
         campoTipoDieta.setItems(FXCollections.observableArrayList(Usuario.TipoDieta.values()));
         campoNivelExperiencia.setItems(FXCollections.observableArrayList(Usuario.NivelExperiencia.values()));
 
-        // Configura a ListView para seleção múltipla
         listaRestricoes.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         listaRestricoes.setItems(FXCollections.observableArrayList(Usuario.RestricaoAlimentar.values()));
 
-        // Usa CheckBoxListCell para o cellFactory
         listaRestricoes.setCellFactory(CheckBoxListCell.forListView(new Callback<Usuario.RestricaoAlimentar, ObservableValue<Boolean>>() {
             @Override
             public ObservableValue<Boolean> call(Usuario.RestricaoAlimentar item) {
                 BooleanProperty observable = new SimpleBooleanProperty();
-                // Define o valor inicial com base na seleção atual.
                 observable.set(usuarioLogado.getRestricoes().contains(item));
 
-                // Listener para ATUALIZAR o CONJUNTO quando a seleção mudar.
                 observable.addListener((obs, wasSelected, isNowSelected) -> {
                     if (isNowSelected) {
                         usuarioLogado.getRestricoes().add(item); // Adiciona ao conjunto
@@ -91,7 +85,6 @@ public class PerfilController {
                 return observable;
             }
         }, new StringConverter<>() {
-            //String converter para exibir os nomes das restrições
 
             @Override
             public String toString(Usuario.RestricaoAlimentar restricao) {
@@ -105,9 +98,6 @@ public class PerfilController {
 
         }));
 
-
-
-        // Configura um listener para mudanças na seleção do ChoiceBox de tipo de dieta.
         campoTipoDieta.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (usuarioLogado != null && newValue != null) {
                 usuarioLogado.tipoDietaProperty().set(newValue);
@@ -121,8 +111,6 @@ public class PerfilController {
         });
     }
 
-
-    // Configura os bindings dos labels e campos de texto.
     private void bindLabels() {
         if (usuarioLogado != null) {
             labelNomeAtual.textProperty().bind(usuarioLogado.nomeProperty());
@@ -181,7 +169,6 @@ public class PerfilController {
             float peso = Float.parseFloat(pesoStr);
             float altura = Float.parseFloat(alturaStr);
 
-            //Agora chamamos o metodo certo passando os 8 argumentos esperados.
             fachada.atualizarDadosUsuario(usuarioLogado, nome, email, null, null, null, peso, altura, usuarioLogado.getTipo(),
                     Double.parseDouble(campoCintura.getText()),
                     Double.parseDouble(campoBiceps.getText()),
@@ -189,7 +176,7 @@ public class PerfilController {
                     Double.parseDouble(campoQuadril.getText()));
             mensagemPerfil.setText("Perfil atualizado com sucesso!");
             if(mainController != null){
-                mainController.atualizarDadosTelaPrincipal(); //Atualiza os dados.
+                mainController.atualizarDadosTelaPrincipal();
             }
 
         }

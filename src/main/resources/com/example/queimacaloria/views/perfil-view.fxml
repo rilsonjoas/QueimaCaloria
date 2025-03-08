@@ -10,10 +10,10 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.layout.RowConstraints?>
 <AnchorPane prefHeight="650.0" prefWidth="700.0" style="-fx-background-color: #1a1922;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.queimacaloria.controllers.PerfilController">
     <children>
         <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #151515; -fx-border-width: 2px; -fx-border-color: #55c5f5; -fx-border-radius: 10px; -fx-padding: 20;" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
@@ -47,26 +47,25 @@
             </HBox>
 
             <HBox alignment="CENTER" spacing="20.0">
-                    <VBox alignment="CENTER" prefHeight="56.0" style="-fx-background-color: #1a1922; -fx-border-width: 1px; -fx-border-color: #55c5f5; -fx-border-radius: 5px; -fx-padding: 10; -fx-pref-width: 150;">
-                            <Label text="Cintura" textFill="#55c5f5" />
-                            <Label fx:id="labelCinturaAtual" text="--" textFill="WHITE" />
-                    </VBox>
-                    <VBox alignment="CENTER" style="-fx-background-color: #1a1922; -fx-border-width: 1px; -fx-border-color: #55c5f5; -fx-border-radius: 5px; -fx-padding: 10; -fx-pref-width: 150;">
-                            <Label text="Bíceps" textFill="#55c5f5" />
-                            <Label fx:id="labelBicepsAtual" text="--" textFill="WHITE" />
-                    </VBox>
-                    <VBox alignment="CENTER" style="-fx-background-color: #1a1922; -fx-border-width: 1px; -fx-border-color: #55c5f5; -fx-border-radius: 5px; -fx-padding: 10; -fx-pref-width: 150;">
-                            <Label text="Coxa" textFill="#55c5f5" />
-                            <Label fx:id="labelCoxaAtual" text="--" textFill="WHITE" />
-                    </VBox>
-                    <VBox alignment="CENTER" style="-fx-background-color: #1a1922; -fx-border-width: 1px; -fx-border-color: #55c5f5; -fx-border-radius: 5px; -fx-padding: 10; -fx-pref-width: 150;">
-                            <Label text="Quadril" textFill="#55c5f5" />
-                            <Label fx:id="labelQuadrilAtual" text="--" textFill="WHITE" />
-                    </VBox>
+                <VBox alignment="CENTER" prefHeight="56.0" style="-fx-background-color: #1a1922; -fx-border-width: 1px; -fx-border-color: #55c5f5; -fx-border-radius: 5px; -fx-padding: 10; -fx-pref-width: 150;">
+                    <Label text="Cintura" textFill="#55c5f5" />
+                    <Label fx:id="labelCinturaAtual" text="--" textFill="WHITE" />
+                </VBox>
+                <VBox alignment="CENTER" style="-fx-background-color: #1a1922; -fx-border-width: 1px; -fx-border-color: #55c5f5; -fx-border-radius: 5px; -fx-padding: 10; -fx-pref-width: 150;">
+                    <Label text="Bíceps" textFill="#55c5f5" />
+                    <Label fx:id="labelBicepsAtual" text="--" textFill="WHITE" />
+                </VBox>
+                <VBox alignment="CENTER" style="-fx-background-color: #1a1922; -fx-border-width: 1px; -fx-border-color: #55c5f5; -fx-border-radius: 5px; -fx-padding: 10; -fx-pref-width: 150;">
+                    <Label text="Coxa" textFill="#55c5f5" />
+                    <Label fx:id="labelCoxaAtual" text="--" textFill="WHITE" />
+                </VBox>
+                <VBox alignment="CENTER" style="-fx-background-color: #1a1922; -fx-border-width: 1px; -fx-border-color: #55c5f5; -fx-border-radius: 5px; -fx-padding: 10; -fx-pref-width: 150;">
+                    <Label text="Quadril" textFill="#55c5f5" />
+                    <Label fx:id="labelQuadrilAtual" text="--" textFill="WHITE" />
+                </VBox>
             </HBox>
 
-            <!-- GridPane para os campos de texto (3 colunas) -->
-            <GridPane hgap="10" vgap="10">
+            <GridPane hgap="10" style="-fx-background-color: #151515;" vgap="10">
                 <columnConstraints>
                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -83,7 +82,6 @@
                     <RowConstraints />
                 </rowConstraints>
 
-                <!-- Coluna 1 -->
                 <Label text="Nome:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="0" />
                 <TextField fx:id="campoNome" prefWidth="200.0" promptText="Nome" styleClass="campo-escuro" GridPane.columnIndex="0" GridPane.rowIndex="1" />
 
@@ -96,7 +94,6 @@
                 <Label text="Tipo de Dieta:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="6" />
                 <ChoiceBox fx:id="campoTipoDieta" prefHeight="25.0" prefWidth="200.0" styleClass="campo-escuro" GridPane.columnIndex="0" GridPane.rowIndex="7" />
 
-                <!-- Coluna 2 -->
                 <Label text="Email:" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                 <TextField fx:id="campoEmail" prefWidth="200.0" promptText="Email" styleClass="campo-escuro" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
@@ -106,10 +103,9 @@
                 <Label text="Bíceps (cm):" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                 <TextField fx:id="campoBiceps" prefWidth="200.0" promptText="Bíceps" styleClass="campo-escuro" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-                <Label text="Nível de Experiência:" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                <Label text="Nível de experiência em treinos:" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                 <ChoiceBox fx:id="campoNivelExperiencia" prefHeight="25.0" prefWidth="200.0" styleClass="campo-escuro" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
-                <!-- Coluna 3 -->
                 <Label text="Coxa (cm):" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="0" />
                 <TextField fx:id="campoCoxa" prefWidth="200.0" promptText="Coxa" styleClass="campo-escuro" GridPane.columnIndex="2" GridPane.rowIndex="1" />
 
@@ -117,22 +113,20 @@
                 <TextField fx:id="campoQuadril" prefWidth="200.0" promptText="Quadril" styleClass="campo-escuro" GridPane.columnIndex="2" GridPane.rowIndex="3" />
 
                 <Label text="Restrições Alimentares:" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                
                 <ListView fx:id="listaRestricoes" prefHeight="84.0" prefWidth="200.0" styleClass="campo-escuro" GridPane.columnIndex="2" GridPane.rowIndex="5" GridPane.rowSpan="3" />
-
+                <padding>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                </padding>
 
             </GridPane>
 
-
             <HBox alignment="CENTER" spacing="10.0">
                 <Button onAction="#atualizarPerfil" style="-fx-background-color: #55c5f5;" text="Atualizar Perfil" />
-                <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: WHITE" text="Voltar para a tela inicial" />
-            <VBox.margin>
-               <Insets top="10.0" />
-            </VBox.margin>
+                <Button onAction="#voltarParaTelaPrincipal" style="-fx-background-color: #ffffff;" text="Voltar" />
+                <VBox.margin>
+                    <Insets top="10.0" />
+                </VBox.margin>
             </HBox>
-
-
 
             <Label fx:id="mensagemPerfil" text="" textFill="RED" />
         </VBox>

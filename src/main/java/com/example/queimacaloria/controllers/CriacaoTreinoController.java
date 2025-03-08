@@ -46,7 +46,6 @@ public class CriacaoTreinoController {
 
     @FXML
     public void initialize() {
-        // Carrega os valores do enum no ChoiceBox
         campoTipoTreino.setItems(FXCollections.observableArrayList(Exercicio.TipoExercicio.values()));
     }
 
@@ -59,7 +58,7 @@ public class CriacaoTreinoController {
         String nivelDificuldadeStr = campoNivelDificuldade.getText();
 
         if (!validarFormulario(nome, tipoTreino, duracaoStr, nivelDificuldadeStr)) {
-            return; // Aborta se a validação falhar
+            return;
         }
 
         try {
@@ -68,25 +67,27 @@ public class CriacaoTreinoController {
             boolean concluido = checkboxConcluido.isSelected();
 
             Treino novoTreino = new Treino();
-            // Define o usuário no novo treino, se houver um usuário logado.
-            if(mainController != null && mainController.getUsuarioLogado() != null){
+            if (mainController != null && mainController.getUsuarioLogado() != null) {
                 novoTreino.setUsuario(mainController.getUsuarioLogado());
             }
-            assert mainController != null;
-            fachada.configurarTreino(novoTreino, nome, tipoTreino, duracao, novoTreino.getNivelDeDificuldade(), mainController.getUsuarioLogado()); // Passa o usuário
+
             novoTreino.setTipoDeTreino(tipoTreino);
             novoTreino.setConcluido(concluido);
+            fachada.configurarTreino(novoTreino, nome, tipoTreino, duracao, nivelDificuldade, mainController.getUsuarioLogado());
+
+
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
+                    fachada.adicionarTreinoAoUsuario(mainController.getUsuarioLogado(), novoTreino);
+
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    fachada.adicionarTreinoAoUsuario(usuarioAtualizado, novoTreino);
                     mainController.setUsuarioLogado(usuarioAtualizado);
 
                     if (concluido) {
-                        mainController.getUsuarioLogado().adicionarPontuacao(novoTreino.getNivelDeDificuldade()); // Correto!
+                        mainController.getUsuarioLogado().adicionarPontuacao(nivelDificuldade);
                         showAlert(Alert.AlertType.INFORMATION, "Parabéns!", "Treino Concluído",
-                                "Você concluiu o treino e ganhou " + novoTreino.getNivelDeDificuldade() + " pontos!"); // Correto!
+                                "Você concluiu o treino e ganhou " + nivelDificuldade + " pontos!");
                     }
                 } catch (UsuarioNaoEncontradoException e) {
                     System.err.println("Erro ao buscar usuário: " + e.getMessage());
@@ -109,12 +110,13 @@ public class CriacaoTreinoController {
 
             fecharJanela();
 
-
-        } catch (NumberFormatException | TreinoNaoEncontradoException e) { // Captura a exceção correta
+        } catch (NumberFormatException | TreinoNaoEncontradoException e) {
             mensagemErro.setText("Erro: " + e.getMessage());
-        } catch (Exception e) { // Captura genérica para outros erros
+            e.printStackTrace();
+
+        }  catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace(); // Sempre importante para debugging!
+            e.printStackTrace();
         }
     }
 

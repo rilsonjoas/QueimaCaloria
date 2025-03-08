@@ -17,11 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors; // Importante para o filtro!
+import java.util.stream.Collectors;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-
-
 
 public class MetaController {
 
@@ -37,12 +35,10 @@ public class MetaController {
 
     @FXML private Label mensagemMeta;
 
-
     private Fachada fachada = Fachada.getInstanciaUnica();
     private MainController mainController;
     private ObservableList<Meta> metasPreDefinidas = FXCollections.observableArrayList();
 
-    // Botão de compartilhar
     @FXML
     private Button buttonCompartilhar;
 
@@ -57,7 +53,6 @@ public class MetaController {
         configurarTabelaPreDefinida();
         carregarMetasPreDefinidas();
 
-        //Verifica se o botão compartilhar está presente antes de configurar o evento.
         if(buttonCompartilhar != null){
             buttonCompartilhar.setOnAction(event -> compartilharLista());
         }
@@ -66,15 +61,13 @@ public class MetaController {
     private void configurarTabelaUsuario() {
         colunaDescricaoUsuario.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaTipoUsuario.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-
-        // Cálculo CORRETO do progresso (agora como um Double)
         colunaProgressoUsuario.setCellValueFactory(cellData -> {
             Meta meta = cellData.getValue();
             double progresso = 0.0;
-            if (meta.getValorAlvo() > 0) { // Evita divisão por zero!
+            if (meta.getValorAlvo() > 0) {
                 progresso = (meta.getProgressoAtual() / meta.getValorAlvo()) * 100.0;
             }
-            return new SimpleDoubleProperty(progresso).asObject(); // Retorna como Double
+            return new SimpleDoubleProperty(progresso).asObject();
         });
 
         colunaProgressoUsuario.setCellFactory(column -> {
@@ -85,7 +78,7 @@ public class MetaController {
                     if (empty || progresso == null) {
                         setText(null);
                     } else {
-                        setText(String.format("%.1f%%", progresso)); // Formata a porcentagem
+                        setText(String.format("%.1f%%", progresso));
                     }
                 }
             };
@@ -155,6 +148,7 @@ public class MetaController {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela", e.getMessage());
         }
     }
+
     @FXML
     public void atualizarMeta() {
         Meta metaSelecionada = tabelaMetasUsuario.getSelectionModel().getSelectedItem();
@@ -202,6 +196,7 @@ public class MetaController {
                     "Por favor, selecione uma meta para remover.");
         }
     }
+
     @FXML
     public void adicionarMetaPreDefinida() {
         Meta metaSelecionada = tabelaMetasPreDefinidas.getSelectionModel().getSelectedItem();
@@ -217,20 +212,17 @@ public class MetaController {
         }
 
         try {
-            // 1. Crie uma *cópia* da meta predefinida.  Isso é importante!
             Meta novaMeta = new Meta(
                     metaSelecionada.getDescricao(),
                     metaSelecionada.getTipo(),
                     metaSelecionada.getValorAlvo(),
-                    0.0, // Progresso inicial
-                    LocalDate.now(), // Data de criação
-                    null  // Sem data de conclusão (inicialmente)
+                    0.0,
+                    LocalDate.now(),
+                    null
             );
 
-            // 2. **ASSOCIE O USUÁRIO LOGADO À *NOVA* META!**
             novaMeta.setUsuario(mainController.getUsuarioLogado());
 
-            // 3. *Agora* você chama a fachada para configurar a *nova* meta.
             fachada.configurarMeta(novaMeta, novaMeta.getDescricao(), novaMeta.getTipo(),
                     novaMeta.getValorAlvo(), novaMeta.getProgressoAtual(), novaMeta.getDataConclusao(), novaMeta.getUsuario());
 
@@ -238,7 +230,7 @@ public class MetaController {
             mensagemMeta.setText("Meta adicionada com sucesso!");
 
 
-            // Recomendação de dieta (mantém como estava)
+            // Recomendação de dieta
             Dieta dietaRecomendada = fachada.getDietaAleatoria(novaMeta.getTipo());
             if (dietaRecomendada != null) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -303,7 +295,7 @@ public class MetaController {
     public void compartilharLista() {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
             List<Meta> metasDoUsuario = mainController.getUsuarioLogado().getMetas();
-            String nomeUsuario = mainController.getUsuarioLogado().getNome(); // Obtém o nome do usuário
+            String nomeUsuario = mainController.getUsuarioLogado().getNome();
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar Relatório de Metas em PDF");
@@ -313,12 +305,11 @@ public class MetaController {
 
             if (file != null) {
                 try {
-                    // Passa o nome do usuário
                     GeradorPDF.gerarRelatorioMetas(metasDoUsuario, file.getAbsolutePath(), nomeUsuario);
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de metas foi gerado com sucesso em: " + file.getAbsolutePath());
 
-                } catch (IOException e) { // Captura IOException
+                } catch (IOException e) {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
                     e.printStackTrace();
                 } catch (Exception e) {

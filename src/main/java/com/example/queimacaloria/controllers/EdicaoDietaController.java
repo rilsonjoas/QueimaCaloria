@@ -1,4 +1,3 @@
-// EdicaoDietaController.java
 package com.example.queimacaloria.controllers;
 
 import com.example.queimacaloria.excecoes.DietaNaoEncontradaException;
@@ -69,16 +68,14 @@ public class EdicaoDietaController {
 
         try {
             int calorias = Integer.parseInt(caloriasStr);
-            // A principal mudança é que agora passamos o USUÁRIO LOGADO
-            fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado(), null); // Usuário Logado!
-            // **********  ADICIONE ESTA LINHA  ***********
+            fachada.configurarDieta(dieta, nome, objetivo, calorias, mainController.getUsuarioLogado(), null);
             Fachada.getInstanciaUnica().setDietaAtiva(mainController.getUsuarioLogado(), dieta);
             mensagemErro.setText("Dieta atualizada com sucesso!");
 
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza o usuário no MainController
+                    mainController.setUsuarioLogado(usuarioAtualizado);
 
                 }catch (UsuarioNaoEncontradoException e){
                     showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",

@@ -22,7 +22,6 @@ public class AdminMainController implements IBaseAdmin {
     private Stage primaryStage;
     private Usuario usuarioLogado;
 
-    //Views dos botões ADM
     private Parent telaAdminUsuarios;
     private Parent telaAdminDietas;
     private Parent telaAdminRefeicoes;
@@ -144,7 +143,6 @@ public class AdminMainController implements IBaseAdmin {
 
     @Override
     public void atualizarDadosTelaPrincipal() {
-        // Implemente a lógica de atualização da tela principal do admin aqui, se necessário.
         System.out.println("Atualizando dados da tela principal do Admin...");
     }
 }

@@ -75,20 +75,12 @@ public class CriacaoRefeicaoController {
                 return;
             }
 
-            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes, mainController.getUsuarioLogado()); // Passa o usuário
+            fachada.configurarRefeicao(novaRefeicao, nome, descricao, macronutrientes, mainController.getUsuarioLogado());
 
             mensagemErro.setText("Refeição criada com sucesso!");
 
-            if (refeicaoController != null) {
-                // refeicaoController.atualizarTabelaRefeicoesUsuario();  Removido. O listener no main controller cuida disso
-            }
-
             if(mainController != null){
-                //mainController.atualizarDadosTelaPrincipal(); Removido
-                // Como estamos adicionando uma refeição, o total de calorias *pode* mudar
-                // então vamos forçar uma atualização chamando diretamente o método
-                // atualizarCalorias()
-                mainController.atualizarCalorias();  // <-- ATUALIZA AS CALORIAS!
+                mainController.atualizarCalorias();
             }
 
 
@@ -99,7 +91,7 @@ public class CriacaoRefeicaoController {
         }
         catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace(); // Sempre útil para debugging.
+            e.printStackTrace();
         }
     }
 

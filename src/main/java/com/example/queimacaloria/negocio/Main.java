@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Main {
 
-    // Método principal para testes (pode ser removido ou adaptado).
+    // Método principal para testes
     public static void main(String[] args) {
         Fachada fachada = Fachada.getInstanciaUnica();
 
@@ -30,11 +30,9 @@ public class Main {
             fachada.configurarTreino(treino, "Treino de Força", Exercicio.TipoExercicio.FORCA, 60, 3,  usuario);
             System.out.println("Treino adicionado ao usuário.");
 
-            //------------------CORREÇÃO AQUI --------------------------
             Dieta dieta = new Dieta();
             fachada.configurarDieta(dieta, "Dieta Low Carb", Meta.Tipo.PERDA_DE_PESO, 1800, usuario, Usuario.TipoDieta.LOW_CARB); // Dieta e Usuário
             System.out.println("Dieta adicionada ao usuário.");
-            //-------------------------------------------------------------
 
             int idadeUsuario = fachada.calcularIdadeUsuario(usuario);
             System.out.println("Idade do usuário: " + idadeUsuario);
@@ -43,13 +41,7 @@ public class Main {
             System.err.println("Erro no usuário: " + e.getMessage());
         }
 
-
-        // Dieta dieta2 = new Dieta();  <- REMOVIDO (Não precisa mais, pois a dieta é associada ao usuário).
-        // Usuario userDieta = new Usuario(); <- REMOVIDO (Não precisa mais)
-
         try {
-            //  fachada.configurarDieta(dieta2, "Dieta de Teste", Meta.Tipo.GANHO_DE_MASSA, 2500, userDieta); REMOVIDO
-
             Refeicao refeicao1 = new Refeicao();
             Map<String, Double> macros1 = new HashMap<>();
             macros1.put("Proteínas", 50.0);
@@ -66,8 +58,8 @@ public class Main {
             fachada.configurarRefeicao(refeicao2, "Almoço", "Frango grelhado com batata doce", macros2,  usuario);
 
 
-        }  catch (Exception e) { // Captura genérica, pois configurarRefeicao não lança exceções específicas.
-            System.err.println("Erro na refeição: " + e.getMessage()); // Mensagem genérica
+        }  catch (Exception e) {
+            System.err.println("Erro na refeição: " + e.getMessage());
         }
 
         Exercicio exercicio = new Exercicio();

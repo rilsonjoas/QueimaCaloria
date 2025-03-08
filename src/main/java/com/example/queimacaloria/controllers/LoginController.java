@@ -58,35 +58,33 @@ public class LoginController {
                     alert.show();
 
                     try {
-                        Usuario usuarioCompleto = fachada.buscarUsuarioPorId(usuario.getId()); // Busca o usuário *completo* do repositório
-                        //Verifica se a lista de restrições não é nula, para evitar erros.
+                        Usuario usuarioCompleto = fachada.buscarUsuarioPorId(usuario.getId());
                         if(usuarioCompleto.getRestricoes() == null){
                             usuarioCompleto.setRestricoes(FXCollections.observableSet(new HashSet<>()));
                         }
 
-                        // Pausa ANTES de mostrar a tela principal e exibir o lembrete
                         PauseTransition delay = new PauseTransition(Duration.seconds(0.5)); // Pequena pausa
                         delay.setOnFinished(event -> {
-                            authController.mostrarTelaPrincipal(getPrimaryStage(), usuarioCompleto); // Passa o usuario *completo*
+                            authController.mostrarTelaPrincipal(getPrimaryStage(), usuarioCompleto);
 
-                            // Lembrete de água (depois de mostrar a tela principal)
+                            // Lembrete de água
                             Alert waterAlert = new Alert(Alert.AlertType.INFORMATION);
                             waterAlert.setTitle("Lembrete!");
-                            waterAlert.setHeaderText(null); // Sem cabeçalho
+                            waterAlert.setHeaderText(null);
                             waterAlert.setContentText("Lembre-se de beber água para se manter hidratado!");
 
                             // Pausa para o lembrete de água
                             PauseTransition waterDelay = new PauseTransition(Duration.seconds(5));
                             waterDelay.setOnFinished(e -> waterAlert.close());
-                            waterAlert.show(); // Mostra o alerta de água
-                            waterDelay.play(); // Inicia a contagem para fechar o alerta de água
+                            waterAlert.show();
+                            waterDelay.play();
                         });
-                        delay.play(); // Inicia a primeira pausa
+                        delay.play();
 
-                        return; // Importante: sai do loop após encontrar o usuário
+                        return;
 
                     } catch (UsuarioNaoEncontradoException e) {
-                        mensagemLogin.setText("Erro ao carregar dados do usuário: " + e.getMessage()); //Melhorar a mensagem de erro
+                        mensagemLogin.setText("Erro ao carregar dados do usuário: " + e.getMessage());
                         return; // Sai do método login() se não encontrar o usuário.
                     }
                 }
@@ -114,7 +112,7 @@ public class LoginController {
                 admin.setTipo(String.valueOf(Usuario.TipoUsuario.ADMINISTRADOR));
 
                 mensagemLogin.setText("Login de administrador efetuado com sucesso");
-                authController.mostrarTelaAdmin(getPrimaryStage(), admin); //Novo
+                authController.mostrarTelaAdmin(getPrimaryStage(), admin);
 
             } catch (Exception e) {
                 mensagemLogin.setText("Erro ao fazer login de administrador: " + e.getMessage());

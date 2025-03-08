@@ -47,9 +47,6 @@ public class Exercicio {
         this.concluido = concluido;
     }
 
-
-
-    // Métodos Property
     public StringProperty nomeProperty() { return new SimpleStringProperty(nome); }
     public ObjectProperty<TipoExercicio> tipoProperty() { return new SimpleObjectProperty<>(tipo); }
     public IntegerProperty tempoProperty() { return new SimpleIntegerProperty(tempo); }
@@ -58,7 +55,6 @@ public class Exercicio {
     public double getCaloriasQueimadas() { return caloriasQueimadas.get(); }
     public void setCaloriasQueimadas(double caloriasQueimadas) { this.caloriasQueimadas.set(caloriasQueimadas); }
 
-    // Getter e Property para Usuario
     public Usuario getUsuario() { return usuario.get(); }
     public ObjectProperty<Usuario> usuarioProperty() { return usuario; }
 

@@ -36,7 +36,7 @@ public class AdminExerciciosController {
 
     @FXML
     public void initialize() {
-        System.out.println("AdminExerciciosController.initialize() chamado"); // LOG
+        System.out.println("AdminExerciciosController.initialize() chamado");
 
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
@@ -68,18 +68,17 @@ public class AdminExerciciosController {
                 preencherCampos(newSelection); // Chama o método para preencher
             }
         });
-        //Verifica se tabelaExercicios é nula.
         if (tabelaExercicios == null) {
             System.err.println("Erro: tabelaExercicios é nula em AdminExerciciosController.initialize()");
         }
     }
 
     private void carregarExerciciosPreDefinidos() {
-        System.out.println("AdminExerciciosController.carregarExerciciosPreDefinidos() chamado"); // LOG
+        System.out.println("AdminExerciciosController.carregarExerciciosPreDefinidos() chamado");
         List<Exercicio> exercicios = fachada.getExerciciosPreDefinidos();
-        System.out.println("AdminExerciciosController.carregarExerciciosPreDefinidos(): Exercicios pré-definidos carregados: " + exercicios); // LOG
+        System.out.println("AdminExerciciosController.carregarExerciciosPreDefinidos(): Exercicios pré-definidos carregados: " + exercicios);
         listaExerciciosPreDefinidos.addAll(exercicios);
-        System.out.println("AdminExerciciosController.carregarExerciciosPreDefinidos() finalizado"); // LOG
+        System.out.println("AdminExerciciosController.carregarExerciciosPreDefinidos() finalizado");
     }
 
 
@@ -146,9 +145,9 @@ public class AdminExerciciosController {
     }
 
     private void atualizarTabelaExercicios() {
-        System.out.println("AdminExerciciosController.atualizarTabelaExercicios() chamado"); // LOG
+        System.out.println("AdminExerciciosController.atualizarTabelaExercicios() chamado");
         List<Exercicio> listaDeExercicios = fachada.listarExercicios();
-        System.out.println("AdminExerciciosController.atualizarTabelaExercicios(): Todos os exercícios: " + listaDeExercicios); // LOG
+        System.out.println("AdminExerciciosController.atualizarTabelaExercicios(): Todos os exercícios: " + listaDeExercicios);
         tabelaExercicios.setItems(FXCollections.observableArrayList(listaDeExercicios));
         //Verifica se a lista está vazia:
         if(listaDeExercicios.isEmpty()){

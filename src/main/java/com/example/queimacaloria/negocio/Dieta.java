@@ -16,7 +16,6 @@ public class Dieta {
     private ObjectProperty<Usuario> usuario = new SimpleObjectProperty<>();
     @Setter private Usuario.TipoDieta tipoDieta;
 
-    // Construtor da classe Dieta.
     public Dieta(String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario) {
         this.nome.set(nome);
         this.objetivo.set(objetivo);
@@ -27,13 +26,13 @@ public class Dieta {
     // Getters:
     public UUID getId() { return id; }
     public String getNome() { return nome.get(); }
-    public Meta.Tipo getObjetivo() { return objetivo.get(); } // Retorna Meta.Tipo
+    public Meta.Tipo getObjetivo() { return objetivo.get(); }
     public int getCaloriasDiarias() { return caloriasDiarias.get(); }
     public Usuario getUsuario() { return usuario.get(); }
 
     // Setters
     public void setNome(String nome) { this.nome.set(nome); }
-    public void setObjetivo(Meta.Tipo objetivo) { this.objetivo.set(objetivo); } // Recebe Meta.Tipo
+    public void setObjetivo(Meta.Tipo objetivo) { this.objetivo.set(objetivo); }
     public void setCaloriasDiarias(int caloriasDiarias) { this.caloriasDiarias.set(caloriasDiarias); }
     public void setUsuario(Usuario usuario) {
         this.usuario.set(usuario);
@@ -41,12 +40,11 @@ public class Dieta {
 
     // Métodos Property
     public StringProperty nomeProperty() { return nome; }
-    public ObjectProperty<Meta.Tipo> objetivoProperty() { return objetivo; } // ObjectProperty<Meta.Tipo>
+    public ObjectProperty<Meta.Tipo> objetivoProperty() { return objetivo; }
     public IntegerProperty caloriasDiariasProperty() { return caloriasDiarias; }
     public ObjectProperty<Usuario> usuarioProperty() { return usuario; }
 
 
-    // Método equals, para comparar objetos Dieta.
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,7 +57,6 @@ public class Dieta {
         return tipoDieta;
     }
 
-    // Método hashCode, para gerar um código hash do objeto Dieta.
     @Override
     public int hashCode() {
         return id.hashCode();

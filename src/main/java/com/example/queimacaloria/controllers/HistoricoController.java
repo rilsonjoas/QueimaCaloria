@@ -39,14 +39,12 @@ public class HistoricoController {
     public void setUsuarioLogado(Usuario usuario) {
         this.usuarioLogado = usuario;
         if (usuarioLogado != null) {
-            atualizarGraficos(); // Atualiza ao setar o usuário
+            atualizarGraficos();
         }
     }
 
     @FXML
     public void initialize() {
-        // Configurações adicionais (se necessário).
-        //Você pode configurar a aparência dos eixos aqui também:
         if(xAxisPeso != null){
             xAxisPeso.setTickLabelRotation(45);
             xAxisPeso.setLabel("Data");
@@ -112,7 +110,7 @@ public class HistoricoController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Peso");
 
-        // Ordena o histórico por data (importante para o gráfico de linha)
+        // Ordena o histórico por data
         List<PesoRegistro> historicoOrdenado = new ArrayList<>(usuarioLogado.getHistoricoPeso());
         historicoOrdenado.sort((r1, r2) -> r1.getData().compareTo(r2.getData()));
 
@@ -121,9 +119,9 @@ public class HistoricoController {
             series.getData().add(new XYChart.Data<>(dataFormatada, registro.getPeso()));
         }
 
-        graficoPeso.getData().clear(); // Limpa dados antigos
+        graficoPeso.getData().clear();
         graficoPeso.getData().add(series);
-        graficoPeso.setLegendVisible(false); // Oculta a legenda (opcional)
+        graficoPeso.setLegendVisible(false);
     }
     private void atualizarGraficoIMC() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -161,10 +159,8 @@ public class HistoricoController {
 
         for (PesoRegistro registro : historicoOrdenado) {
             String dataFormatada = registro.getData().format(dateFormatter);
-            //O valor da medida você vai ter que obter de algum lugar
             double valorMedida = obterValorMedida(registro.getData(), medidaProperty);
             series.getData().add(new XYChart.Data<>(dataFormatada, valorMedida));
-
         }
 
         grafico.getData().clear();
@@ -175,11 +171,10 @@ public class HistoricoController {
     }
 
     //Método auxiliar para obter o valor da medida com base na data
-    //Você pode adaptar isso para usar um histórico separado para cada medida, se necessário
     private double obterValorMedida(LocalDate data, DoubleProperty medidaProperty) {
 
         if (data.equals(usuarioLogado.getDataNascimento())) {
-            return 0.0; //ou qualquer valor inicial que você queira usar
+            return 0.0; // Valor inicial de 0
         }
         else{
             return medidaProperty.get();

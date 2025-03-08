@@ -32,10 +32,11 @@ public class CriacaoMetaController {
     public void initialize() {
         campoTipo.setItems(FXCollections.observableArrayList(Meta.Tipo.values()));
         campoProgressoAtual.setEditable(true);
-        campoProgressoAtual.setText("0.0");  // Valor inicial
-        labelDataConclusao.setText(""); //Começa vazio.
+        campoProgressoAtual.setText("0.0");
+        labelDataConclusao.setText("");
 
     }
+
     public void setMetaController(MetaController metaController) {
         this.metaController = metaController;
     }
@@ -79,10 +80,10 @@ public class CriacaoMetaController {
                 mensagemErro.setText("Meta criada com sucesso!");
 
                 if (metaController != null) {
-                    metaController.initialize();//agora, esta linha não é mais necessária
+                    metaController.initialize();
                 }
 
-                // Recomendação de dieta (mantém como estava)
+                // Recomendação de dieta
                 Dieta dietaRecomendada = fachada.getDietaAleatoria(tipo);
                 if (dietaRecomendada != null) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -104,12 +105,12 @@ public class CriacaoMetaController {
 
         } catch (NumberFormatException e) {
             mensagemErro.setText("Erro: Valores numéricos inválidos.");
-        } catch (MetaNaoEncontradaException e) { //Adicionado o tipo da exceção
+        } catch (MetaNaoEncontradaException e) {
             mensagemErro.setText("Erro ao criar meta: " + e.getMessage());
         }
         catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            e.printStackTrace(); //Sempre bom ter pra debugging.
+            e.printStackTrace();
         }
     }
 
@@ -160,15 +161,14 @@ public class CriacaoMetaController {
 
     @FXML
     public void concluirMeta() {
-        // Obtém o valor alvo (para não precisar digitá-lo novamente).
+        // Retorna já o valor alvo.
         double valorAlvo;
         try{
             valorAlvo = Double.parseDouble(campoValorAlvo.getText());
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e){
             showAlert(Alert.AlertType.WARNING, "Aviso", "Valor alvo inválido", "Digite um valor alvo válido.");
             return;
         }
-
 
         campoProgressoAtual.setText(String.valueOf(valorAlvo)); // Define o progresso como 100%
         campoProgressoAtual.setEditable(false); // Impede edição do progresso.

@@ -56,17 +56,14 @@ public class MainController implements IBaseAdmin {
     @FXML private Button buttonBeberAgua;
     @FXML private Button buttonZerarAgua;
 
-    // Adicionando a label do Administrador e o botão de gerenciar usuários
-    @FXML private Label labelAdmin; //ADICIONADO
-    @FXML private Button buttonGerenciarUsuarios; //ADICIONADO
-    @FXML private Label labelNumeroUsuarios; //ADICIONADO
+    @FXML private Label labelAdmin;
+    @FXML private Button buttonGerenciarUsuarios;
+    @FXML private Label labelNumeroUsuarios;
     @FXML private Label labelHistorico;
 
-
-    // Adicionando as referências ao gráfico
     @FXML private LineChart<String, Number> graficoHistoricoPeso;
-    @FXML private CategoryAxis xAxis;  // Eixo X categórico (para datas)
-    @FXML private NumberAxis yAxis;    // Eixo Y numérico (para peso)
+    @FXML private CategoryAxis xAxis;
+    @FXML private NumberAxis yAxis;
 
     private static final int INCREMENTO_AGUA_ML = 200;
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Formato da data.
@@ -77,9 +74,9 @@ public class MainController implements IBaseAdmin {
     private Parent telaRefeicao;
     private Parent telaTreino;
     private Parent telaPerfil;
-    private Parent telaAdminUsuarios; //ADICIONADO
+    private Parent telaAdminUsuarios;
 
-    private Parent telaHistorico; //Nova Tela
+    private Parent telaHistorico;
 
     private Stage primaryStage;
     private Usuario usuarioLogado;
@@ -95,6 +92,7 @@ public class MainController implements IBaseAdmin {
     public Usuario getUsuarioLogado() {
         return usuarioLogado;
     }
+
     // Obtém as atividades recentes do usuário
     public ObservableList<String> getAtividadesRecentes() {
         return this.atividadesRecentes;
@@ -104,7 +102,7 @@ public class MainController implements IBaseAdmin {
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName("Peso");
 
-            // Ordena o histórico por data (importante para o gráfico de linha)
+            // Ordena o histórico por data
             List<PesoRegistro> historicoOrdenado = new ArrayList<>(usuarioLogado.getHistoricoPeso());
             historicoOrdenado.sort((r1, r2) -> r1.getData().compareTo(r2.getData()));
 
@@ -139,9 +137,9 @@ public class MainController implements IBaseAdmin {
                 labelIMCSituacao.textProperty().bind(Bindings.createStringBinding(() -> "Situação: " + getSituacaoIMC(usuarioLogado.getImc()), usuarioLogado.imcProperty()));
 
             if (barraProgressoMetas != null) {
-                barraProgressoMetas.progressProperty().unbind(); // Desvincula qualquer binding anterior.  Importante!
-                barraProgressoMetas.setProgress(0.0); //Zera.
-                barraProgressoMetas.progressProperty().bind(progressoGeral); //Vincula com progressoGeral.
+                barraProgressoMetas.progressProperty().unbind();
+                barraProgressoMetas.setProgress(0.0);
+                barraProgressoMetas.progressProperty().bind(progressoGeral);
             }
             if (labelProgressoMetas != null) {
                 labelProgressoMetas.textProperty().bind(Bindings.createStringBinding(
@@ -164,50 +162,47 @@ public class MainController implements IBaseAdmin {
                 ));
             }
 
-            //Admin View
-            boolean isAdmin = usuarioLogado.getTipo().equals(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao()); //ADICIONADO
-            if(labelAdmin != null) labelAdmin.setVisible(isAdmin); //ADICIONADO
-            if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(isAdmin); //ADICIONADO
+            //Para o Admin View
+            boolean isAdmin = usuarioLogado.getTipo().equals(Usuario.TipoUsuario.ADMINISTRADOR.getDescricao());
+            if(labelAdmin != null) labelAdmin.setVisible(isAdmin);
+            if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(isAdmin);
             if(labelNumeroUsuarios != null) {
-                labelNumeroUsuarios.setVisible(isAdmin); //ADICIONADO
-                atualizarNumeroUsuarios(); //ADICIONADO
+                labelNumeroUsuarios.setVisible(isAdmin);
+                atualizarNumeroUsuarios();
             }
 
-            // Listener para a LISTA de refeições
+            // Listener para a lista de refeições
             Fachada.getInstanciaUnica().registrarObservadorRefeicoes(this::atualizarCalorias);
 
-            // Listener para a Dieta Ativa (MUITO IMPORTANTE)
+            // Listener para a dieta ativa
             usuarioLogado.dietaAtivaProperty().addListener((obs, oldDieta, newDieta) -> {
                 System.out.println("MainController: Listener de dietaAtivaProperty disparado!"); // LOG
-                atualizarCalorias(); // Atualiza quando a dieta ativa mudar
+                atualizarCalorias();
             });
-            // **IMPORTANTE:** Configura o estado *inicial* das calorias
             atualizarCalorias();
 
-            // Listener para a LISTA de metas (adicionar/remover metas)
+            // Listener para a lista de metas
             usuarioLogado.getMetas().addListener((ListChangeListener<Meta>) change -> {
-                System.out.println("MainController: Listener de LISTA de metas disparado!"); // LOG mais específico
-                atualizarDadosTelaPrincipal();  // Atualiza se a *lista* mudar.
+                System.out.println("MainController: Listener de LISTA de metas disparado!");
+                atualizarDadosTelaPrincipal();
 
-                while (change.next()) { // Importante para processar todas as mudanças
+                while (change.next()) {
                     if (change.wasAdded()) {
                         for (Meta meta : change.getAddedSubList()) {
-                            // Listener para o progresso de CADA meta
                             meta.progressoAtualProperty().addListener((obs, oldVal, newVal) -> {
                                 System.out.println("MainController: Listener de progressoAtualProperty (Meta " + meta.getId() + ") disparado. Novo valor: " + newVal); // LOG
                                 atualizarDadosTelaPrincipal();
                             });
-                            // Listener para a data de conclusão de CADA meta
                             meta.dataConclusaoProperty().addListener((obs, oldVal, newVal) -> {
                                 System.out.println("MainController: Listener de dataConclusaoProperty (Meta " + meta.getId() + ") disparado. Novo valor: " + newVal); // LOG
                                 atualizarDadosTelaPrincipal();
                             });
                         }
                     }
-                    if (change.wasRemoved()) {  // Adicionado para tratar remoções
+                    if (change.wasRemoved()) {
                         System.out.println("MainController: Metas REMOVIDAS da lista.");
                     }
-                    if (change.wasReplaced()) { //Adicionado
+                    if (change.wasReplaced()) {
                         System.out.println("MainController: Metas SUBSTITUÍDAS na lista.");
                     }
                     if (change.wasUpdated()) {
@@ -216,8 +211,7 @@ public class MainController implements IBaseAdmin {
                 }
             });
 
-            // **IMPORTANTE:** Adiciona listeners às metas JÁ EXISTENTES.
-            for (Meta meta : usuarioLogado.getMetas()) { //Agora está certo, pois as metas foram carregadas na Fachada.
+            for (Meta meta : usuarioLogado.getMetas()) {
                 meta.progressoAtualProperty().addListener((obs, oldVal, newVal) -> {
                     System.out.println("MainController: Listener de progressoAtualProperty (Meta Existente " + meta.getId() +") disparado. Novo valor: " + newVal);  // LOG
                     atualizarDadosTelaPrincipal();
@@ -228,9 +222,8 @@ public class MainController implements IBaseAdmin {
                 });
 
             }
-            //O listener de dieta foi retirado.
 
-            atualizarDadosTelaPrincipal(); // Chama uma vez para configurar o estado inicial.
+            atualizarDadosTelaPrincipal();
 
         } else {
 
@@ -241,18 +234,17 @@ public class MainController implements IBaseAdmin {
             if (labelIMCSituacao != null) labelIMCSituacao.setText("Situação: --");
             if (labelCaloriasDia != null) labelCaloriasDia.setText("Calorias: -- / --");
 
-            //Limpa, pois não há usuário logado.
             if (barraProgressoMetas != null) {
-                barraProgressoMetas.progressProperty().unbind();  // Desvincula antes de definir.
+                barraProgressoMetas.progressProperty().unbind();
                 barraProgressoMetas.setProgress(0.0);
             }
 
             if (labelProgressoMetas != null) {
-                labelProgressoMetas.setText("0.0% Completo"); //Limpa
+                labelProgressoMetas.setText("0.0% Completo");
             }
-            if(labelAdmin != null) labelAdmin.setVisible(false); //ADICIONADO
-            if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(false); //ADICIONADO
-            if(labelNumeroUsuarios != null) labelNumeroUsuarios.setVisible(false); //ADICIONADO
+            if(labelAdmin != null) labelAdmin.setVisible(false);
+            if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(false);
+            if(labelNumeroUsuarios != null) labelNumeroUsuarios.setVisible(false);
 
             if(labelPontuacao != null){
                 labelPontuacao.setText("Pontuação: --");
@@ -270,7 +262,6 @@ public class MainController implements IBaseAdmin {
         else return "Obesidade grau III";
     }
 
-    // Inicializa o controlador, carregando as telas secundárias.
     @FXML
     public void initialize() {
         try {
@@ -280,7 +271,7 @@ public class MainController implements IBaseAdmin {
             telaRefeicao = carregarTela("/com/example/queimacaloria/views/refeicao-view.fxml");
             telaTreino = carregarTela("/com/example/queimacaloria/views/treino-view.fxml");
             telaPerfil = carregarTela("/com/example/queimacaloria/views/perfil-view.fxml");
-            telaAdminUsuarios = carregarTela("/com/example/queimacaloria/views/admin-usuarios-view.fxml"); //ADICIONADO
+            telaAdminUsuarios = carregarTela("/com/example/queimacaloria/views/admin-usuarios-view.fxml");
             telaHistorico = carregarTela("/com/example/queimacaloria/views/historico-view.fxml");
 
 
@@ -290,16 +281,15 @@ public class MainController implements IBaseAdmin {
             ((RefeicaoController) getController(telaRefeicao)).setMainController(this);
             ((TreinoController) getController(telaTreino)).setMainController(this);
             ((PerfilController) getController(telaPerfil)).setMainController(this);
-            ((AdminUsuariosController) getController(telaAdminUsuarios)).setMainController(this); //ADICIONADO
+            ((AdminUsuariosController) getController(telaAdminUsuarios)).setMainController(this);
             ((HistoricoController) getController(telaHistorico)).setUsuarioLogado(usuarioLogado);
             Fachada.getInstanciaUnica().setMainController(this);
             Fachada.getInstanciaUnica().registrarObservadorRefeicoes(this::atualizarDadosTelaPrincipal);
-            // Carrega a folha de estilos CSS.
+
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/queimacaloria/views/main-screen-content.fxml"));
                 Parent telaPrincipalContent = loader.load();
 
-                // Adicione esta linha para carregar o CSS:
                 telaPrincipalContent.getStylesheets().add(getClass().getResource("/com/example/queimacaloria/views/estilos.css").toExternalForm());
 
             } catch (IOException e) {
@@ -314,12 +304,10 @@ public class MainController implements IBaseAdmin {
         }
     }
 
-    // Obtém o controlador de uma tela FXML.
     private Object getController(Parent parent) {
         return ((FXMLLoader) parent.getProperties().get("fxmlLoader")).getController();
     }
 
-    // Carrega uma tela FXML a partir do caminho.
     private Parent carregarTela(String caminho) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(caminho));
         Parent root = loader.load();
@@ -349,20 +337,21 @@ public class MainController implements IBaseAdmin {
         areaConteudo.getChildren().setAll(telaPerfil);
     }
 
-    //Exibe tela ADM
+    //Exibe tela de Admin
     @FXML public void mostrarTelaAdminUsuarios() {
         AdminUsuariosController adminUsuariosController = (AdminUsuariosController) getController(telaAdminUsuarios); //ADICIONADO
         adminUsuariosController.setUsuarioLogado(usuarioLogado); //ADICIONADO
         areaConteudo.getChildren().setAll(telaAdminUsuarios); //ADICIONADO
     }
 
+    //Exibe a tela de histórico
     @FXML public void mostrarTelaHistorico() {
         HistoricoController historicoController = (HistoricoController) getController(telaHistorico);
         historicoController.setUsuarioLogado(usuarioLogado);
         areaConteudo.getChildren().setAll(telaHistorico);
     }
 
-    // Exibe a tela principal (conteúdo da tela principal).
+    // Exibe a tela principal
     @FXML
     public void mostrarTelaPrincipal() {
         try {
@@ -388,13 +377,11 @@ public class MainController implements IBaseAdmin {
             buttonBeberAgua = (Button) telaPrincipalContent.lookup("#buttonBeberAgua");
             buttonZerarAgua = (Button) telaPrincipalContent.lookup("#buttonZerarAgua");
 
-            //ADICIONADO
             labelAdmin = (Label) telaPrincipalContent.lookup("#labelAdmin");
             buttonGerenciarUsuarios = (Button) telaPrincipalContent.lookup("#buttonGerenciarUsuarios");
             labelNumeroUsuarios = (Label) telaPrincipalContent.lookup("#labelNumeroUsuarios");
             labelHistorico = (Label) telaPrincipalContent.lookup("#labelHistorico");
 
-            // GRÁFICO (lookup)
             graficoHistoricoPeso = (LineChart<String, Number>) telaPrincipalContent.lookup("#graficoHistoricoPeso");
             xAxis = (CategoryAxis) telaPrincipalContent.lookup("#xAxis");
             yAxis = (NumberAxis) telaPrincipalContent.lookup("#yAxis");
@@ -405,7 +392,7 @@ public class MainController implements IBaseAdmin {
                 buttonVerMaisExercicios.setOnAction(e -> mostrarTelaExercicio());
             if (buttonVerMaisDietas != null) buttonVerMaisDietas.setOnAction(e -> mostrarTelaDieta());
             if (buttonVerMaisPerfil != null) buttonVerMaisPerfil.setOnAction(e -> mostrarTelaPerfil());
-            if (buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setOnAction(e -> mostrarTelaAdminUsuarios()); //ADICIONADO
+            if (buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setOnAction(e -> mostrarTelaAdminUsuarios());
             if (labelHistorico != null) labelHistorico.setOnMouseClicked(e -> mostrarTelaHistorico());
 
             if (buttonBeberAgua != null) {
@@ -445,9 +432,9 @@ public class MainController implements IBaseAdmin {
                     barraProgressoMetas.progressProperty().unbind();
                     barraProgressoMetas.setProgress(0.0);
                 }
-                if(labelAdmin != null) labelAdmin.setVisible(false); //ADICIONADO
-                if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(false); //ADICIONADO
-                if(labelNumeroUsuarios != null) labelNumeroUsuarios.setVisible(false); //ADICIONADO
+                if(labelAdmin != null) labelAdmin.setVisible(false);
+                if(buttonGerenciarUsuarios != null) buttonGerenciarUsuarios.setVisible(false);
+                if(labelNumeroUsuarios != null) labelNumeroUsuarios.setVisible(false);
 
                 if(labelPontuacao != null){
                     labelPontuacao.setText("Pontuação: --");
@@ -468,24 +455,22 @@ public class MainController implements IBaseAdmin {
 
         int total = 0;
         try {
-            // Obtém *TODAS* as refeições. A Fachada é a fonte da verdade.
             List<Refeicao> todasRefeicoes = Fachada.getInstanciaUnica().listarRefeicoes();
 
-            // Filtra para pegar *APENAS* as refeições do usuário logado.
             for (Refeicao r : todasRefeicoes) {
                 if (r.getUsuario() != null && r.getUsuario().getId().equals(usuarioLogado.getId())) {
                     total += r.getCalorias();
                 }
             }
-        } catch (Exception e) { // Captura exceções mais genéricas aqui
+        } catch (Exception e) {
             System.err.println("Erro ao calcular calorias consumidas: " + e.getMessage());
             e.printStackTrace();
-            return 0; // Retorna 0 em caso de erro
+            return 0;
         }
         return total;
     }
 
-    // Atualiza o label de calorias consumidas/diárias.  Este método é *crucial*.
+    // Atualiza o label de calorias consumidas/diárias.
     void atualizarCalorias() {
         if (usuarioLogado == null || labelCaloriasDia == null) {
             if (labelCaloriasDia != null) {
@@ -515,30 +500,30 @@ public class MainController implements IBaseAdmin {
         double progressoTotal = 0.0;
         int contadorMetas = 0;
 
-        System.out.println("MainController.calcularProgressoGeralUsuario() chamado"); // LOG
+        System.out.println("MainController.calcularProgressoGeralUsuario() chamado");
 
         if (usuarioLogado != null && usuarioLogado.getMetas() != null) {
-            System.out.println("MainController: Usuário logado e com metas. Total de metas: " + usuarioLogado.getMetas().size()); // LOG
+            System.out.println("MainController: Usuário logado e com metas. Total de metas: " + usuarioLogado.getMetas().size());
 
             for (Meta meta : usuarioLogado.getMetas()) {
                 if (meta.getUsuario() != null && meta.getUsuario().getId().equals(usuarioLogado.getId())) {
                     if (meta.getValorAlvo() > 0) {
                         double progressoMeta = (meta.getProgressoAtual() / meta.getValorAlvo());
-                        System.out.println("  Meta: " + meta.getDescricao() + ", Progresso: " + progressoMeta); // LOG
+                        System.out.println("  Meta: " + meta.getDescricao() + ", Progresso: " + progressoMeta);
                         progressoTotal += progressoMeta;
                         contadorMetas++;
                     } else {
-                        System.out.println("  Meta: " + meta.getDescricao() + ", Valor alvo é 0. Ignorando."); // LOG
+                        System.out.println("  Meta: " + meta.getDescricao() + ", Valor alvo é 0. Ignorando.");
                     }
                 } else {
                     System.out.println("  Meta não pertence ao usuário logado. Ignorando.");
                 }
             }
         } else {
-            System.out.println("MainController: Usuário logado é nulo ou lista de metas é nula."); // LOG
+            System.out.println("MainController: Usuário logado é nulo ou lista de metas é nula.");
         }
-        System.out.println("MainController: Progresso total calculado: " + progressoTotal + ", Contador metas: " + contadorMetas); //LOG
-        return (contadorMetas > 0) ? progressoTotal / contadorMetas : 0.0; //Evitar divisão por 0
+        System.out.println("MainController: Progresso total calculado: " + progressoTotal + ", Contador metas: " + contadorMetas);
+        return (contadorMetas > 0) ? progressoTotal / contadorMetas : 0.0;
     }
 
     // Adiciona um exercício à lista de atividades recentes.
@@ -570,7 +555,7 @@ public class MainController implements IBaseAdmin {
 
     // Atualiza todos os dados da tela principal.
     public void atualizarDadosTelaPrincipal() {
-        System.out.println("MainController.atualizarDadosTelaPrincipal() chamado"); // Debug
+        System.out.println("MainController.atualizarDadosTelaPrincipal() chamado");
         if (usuarioLogado != null) {
             try {
                 Dieta dietaAtiva = Fachada.getInstanciaUnica().getDietaAtiva(usuarioLogado);
@@ -582,14 +567,13 @@ public class MainController implements IBaseAdmin {
                 System.err.println("Usuário não encontrado ao buscar dieta ativa: " + e.getMessage());
             }
 
-            atualizarCalorias(); // Atualiza a exibição das calorias
+            atualizarCalorias();
             atualizarGraficoPeso();
 
-            System.out.println("MainController: Antes de calcular progresso geral."); // LOG
-            progressoGeral.set(calcularProgressoGeralUsuario()); // Calcula e define o progresso
-            System.out.println("MainController: Progresso geral calculado: " + progressoGeral.get()); // LOG - Verifica o valor!
+            System.out.println("MainController: Antes de calcular progresso geral.");
+            progressoGeral.set(calcularProgressoGeralUsuario());
+            System.out.println("MainController: Progresso geral calculado: " + progressoGeral.get());
 
-            // Atualiza as tabelas nas outras telas *através dos controllers delas*.  Isso é MUITO importante.
             if (telaDieta != null) {
                 ((DietaController) getController(telaDieta)).atualizarTabelaDietasUsuario();
             }
@@ -625,7 +609,7 @@ public class MainController implements IBaseAdmin {
             });
 
             usuarioLogado.getHistoricoPeso().addListener((ListChangeListener<PesoRegistro>) change -> {
-                atualizarGraficoPeso(); // Atualiza o gráfico se o histórico mudar.
+                atualizarGraficoPeso();
             });
         }
         else {
@@ -633,7 +617,7 @@ public class MainController implements IBaseAdmin {
         }
     }
 
-    // Adicionado: Atualiza o número de usuários.
+    // Atualiza o número de usuários.
     private void atualizarNumeroUsuarios() {
         if (labelNumeroUsuarios != null) {
             int totalUsuarios = Fachada.getInstanciaUnica().listarUsuarios().size();

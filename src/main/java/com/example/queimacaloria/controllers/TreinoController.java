@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors; // Importante para o filtro!
+import java.util.stream.Collectors;
 
 public class TreinoController {
 
@@ -42,7 +42,6 @@ public class TreinoController {
     @FXML private Label labelDificuldadeTreino;
     @FXML private Label labelExerciciosTreino;
 
-    //Adicionado ChoiceBox para o filtro
     @FXML
     private ChoiceBox<Usuario.NivelExperiencia> choiceBoxFiltroNivel;
 
@@ -50,7 +49,6 @@ public class TreinoController {
     private MainController mainController;
     private ObservableList<Treino> treinosPreDefinidos = FXCollections.observableArrayList();
 
-    // Botão de compartilhar
     @FXML private Button buttonCompartilhar;
 
 
@@ -71,19 +69,15 @@ public class TreinoController {
                 }
         );
 
-        //Verifica se o botão compartilhar está presente antes de configurar o evento.
         if(buttonCompartilhar != null){
             buttonCompartilhar.setOnAction(event -> compartilharLista());
         }
 
-        // Inicializa o ChoiceBox de filtro de nível, se presente.
         if (choiceBoxFiltroNivel != null) {
             choiceBoxFiltroNivel.setItems(FXCollections.observableArrayList(Usuario.NivelExperiencia.values()));
-            // Adiciona um valor nulo para representar "Todos os níveis"
-            choiceBoxFiltroNivel.getItems().add(0, null);  // Adiciona null no início
-            choiceBoxFiltroNivel.setValue(null); // Define "Todos" como padrão
+            choiceBoxFiltroNivel.getItems().add(0, null);
+            choiceBoxFiltroNivel.setValue(null);
 
-            // Listener para quando o valor do filtro mudar
             choiceBoxFiltroNivel.getSelectionModel().selectedItemProperty().addListener(
                     (observable, oldValue, newValue) -> atualizarTabelaTreinosUsuario() //Reaplica os filtros.
             );
@@ -105,7 +99,6 @@ public class TreinoController {
     }
 
     private void carregarTreinosPreDefinidos() {
-        // Agora carrega diretamente de InicializadorDados, SEM Fachada.
         treinosPreDefinidos.setAll(InicializadorDados.inicializarTreinos());
         tabelaTreinosPreDefinidos.setItems(treinosPreDefinidos);
     }
@@ -204,28 +197,25 @@ public class TreinoController {
                     treinoSelecionado.getTipoDeTreino(),
                     treinoSelecionado.getDuracao(),
                     treinoSelecionado.getNivelDeDificuldade(),
-                    new ArrayList<>(treinoSelecionado.getExercicios()), // Copia a lista
+                    new ArrayList<>(treinoSelecionado.getExercicios()),
                     treinoSelecionado.getCaloriasQueimadas(),
                     treinoSelecionado.getProgresso(),
                     treinoSelecionado.isConcluido()
             );
-            // REVISÃO: Definindo o usuário *antes* de chamar configurarTreino.
             novoTreino.setUsuario(mainController.getUsuarioLogado());
 
             fachada.configurarTreino(novoTreino, novoTreino.getNome(),
                     novoTreino.getTipoDeTreino(), novoTreino.getDuracao(),
-                    novoTreino.getNivelDeDificuldade(), novoTreino.getUsuario()); //Passa o Usuário
+                    novoTreino.getNivelDeDificuldade(), novoTreino.getUsuario());
 
-            // Agora, adicionamos o treino ao usuário *através da Fachada*
-            fachada.adicionarTreinoAoUsuario(mainController.getUsuarioLogado(), novoTreino); // Usa o método da fachada
+            fachada.adicionarTreinoAoUsuario(mainController.getUsuarioLogado(), novoTreino);
             atualizarTabelaTreinosUsuario();
 
             mensagemTreino.setText("Treino adicionado com sucesso!");
-            // Adiciona a sugestão de exercícios *após* adicionar o treino
             sugerirExercicios(novoTreino);
 
 
-        } catch (TreinoNaoEncontradoException | UsuarioNaoEncontradoException e) { // Captura UsuarioNaoEncontradoException
+        } catch (TreinoNaoEncontradoException | UsuarioNaoEncontradoException e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao adicionar treino", e.getMessage());
         }
     }
@@ -237,12 +227,10 @@ public class TreinoController {
                 Usuario usuarioLogado = mainController.getUsuarioLogado();
                 List<Treino> listaTreinos = fachada.listarTreinos();
 
-                //FILTRO: Mostrar apenas os treinos do usuário logado.
                 listaTreinos = listaTreinos.stream()
                         .filter(treino -> treino.getUsuario() != null && treino.getUsuario().getId().equals(usuarioLogado.getId()))
                         .collect(Collectors.toList());
 
-                // FILTRO: Aplicar filtro de nível de experiência, SE um nível for selecionado
                 if (choiceBoxFiltroNivel != null && choiceBoxFiltroNivel.getValue() != null) {
                     Usuario.NivelExperiencia nivelSelecionado = choiceBoxFiltroNivel.getValue();
                     listaTreinos = listaTreinos.stream()
@@ -254,21 +242,20 @@ public class TreinoController {
                 tabelaTreinosUsuario.refresh();
 
                 if (!tabelaTreinosUsuario.getItems().isEmpty()) {
-                    tabelaTreinosUsuario.getSelectionModel().select(0);  // Seleciona o primeiro
-                    exibirDetalhesTreino(tabelaTreinosUsuario.getItems().get(0)); // Exibe detalhes
+                    tabelaTreinosUsuario.getSelectionModel().select(0);
+                    exibirDetalhesTreino(tabelaTreinosUsuario.getItems().get(0));
                 } else {
-                    exibirDetalhesTreino(null); // Limpa os detalhes se a lista estiver vazia
+                    exibirDetalhesTreino(null);
                 }
             }
             else {
-                // Trata caso não haja usuário logado (opcional).
                 tabelaTreinosUsuario.setItems(FXCollections.observableArrayList());
                 System.err.println("TreinoController: Nenhum usuário logado ao atualizar a tabela.");
             }
         }
         catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao carregar treinos", e.getMessage());
-            e.printStackTrace(); // Sempre útil para debugging.
+            e.printStackTrace();
         }
     }
 
@@ -314,14 +301,13 @@ public class TreinoController {
     @FXML
     public void compartilharLista() {
         if (mainController != null && mainController.getUsuarioLogado() != null) {
-            //Obtém a lista de treinos do usuário.
             List<Treino> treinosDoUsuario = mainController.getUsuarioLogado().getTreinos();
-            String nomeUsuario = mainController.getUsuarioLogado().getNome(); // Obtém o nome do usuário
+            String nomeUsuario = mainController.getUsuarioLogado().getNome();
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar Relatório de Treinos em PDF");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf"));
-            Stage stage = (Stage) tabelaTreinosUsuario.getScene().getWindow(); // Usando a tabela
+            Stage stage = (Stage) tabelaTreinosUsuario.getScene().getWindow();
             File file = fileChooser.showSaveDialog(stage);
 
             if (file != null) {
@@ -331,10 +317,10 @@ public class TreinoController {
                     showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Relatório Gerado",
                             "O relatório de treinos foi gerado com sucesso em: " + file.getAbsolutePath());
 
-                } catch (IOException e) { // Captura IOException
+                } catch (IOException e) {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro de I/O: " + e.getMessage());
                     e.printStackTrace();
-                } catch (Exception e) { //Apenas o catch genérico.
+                } catch (Exception e) {
                     showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao gerar relatório", "Erro inesperado: " + e.getMessage());
                     e.printStackTrace();
                 }
@@ -344,7 +330,7 @@ public class TreinoController {
         }
     }
 
-    // Método para sugerir exercícios (NOVO)
+    // Método para sugerir exercícios
     protected void sugerirExercicios(Treino treino) {
         List<Exercicio> todosExercicios = InicializadorDados.inicializarExercicios();
         List<Exercicio> exerciciosSugeridos = new ArrayList<>();
@@ -403,7 +389,6 @@ public class TreinoController {
                 exerciciosSugeridos.addAll(todosExercicios);
             }
         }
-
 
         if (!exerciciosSugeridos.isEmpty()) {
             StringBuilder sb = new StringBuilder();

@@ -84,14 +84,14 @@ public class RepositorioMetasArray implements IRepositorioMetas {
 
     @Override
     public List<Meta> getAll() {
-        System.out.println("RepositorioMetasArray.getAll() chamado"); // LOG
+        System.out.println("RepositorioMetasArray.getAll() chamado");
         List<Meta> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {
             if (metas[i] != null) {
                 lista.add(metas[i]);
             }
         }
-        System.out.println("RepositorioMetasArray.getAll(): Retornando lista: " + lista); // LOG
+        System.out.println("RepositorioMetasArray.getAll(): Retornando lista: " + lista);
         return lista;
     }
 }

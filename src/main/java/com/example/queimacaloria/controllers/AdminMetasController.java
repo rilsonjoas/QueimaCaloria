@@ -32,7 +32,7 @@ public class AdminMetasController {
 
     @FXML
     public void initialize() {
-        System.out.println("AdminMetasController.initialize() chamado"); // LOG
+        System.out.println("AdminMetasController.initialize() chamado");
 
         colunaDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
@@ -70,11 +70,11 @@ public class AdminMetasController {
     }
 
     private void carregarMetasPreDefinidas(){
-        System.out.println("AdminMetasController.carregarMetasPreDefinidas() chamado"); // LOG
+        System.out.println("AdminMetasController.carregarMetasPreDefinidas() chamado");
         List<Meta> metas = fachada.getMetasPreDefinidas();
-        System.out.println("AdminMetasController.carregarMetasPreDefinidas(): Metas pré-definidas carregadas: " + metas); // LOG
+        System.out.println("AdminMetasController.carregarMetasPreDefinidas(): Metas pré-definidas carregadas: " + metas);
         listaMetasPreDefinidas.addAll(metas);
-        System.out.println("AdminMetasController.carregarMetasPreDefinidas() finalizado"); // LOG
+        System.out.println("AdminMetasController.carregarMetasPreDefinidas() finalizado");
     }
 
     @FXML
@@ -134,9 +134,9 @@ public class AdminMetasController {
     }
 
     private void atualizarTabelaMetas() {
-        System.out.println("AdminMetasController.atualizarTabelaMetas() chamado");  // LOG
+        System.out.println("AdminMetasController.atualizarTabelaMetas() chamado");
         List<Meta> listaDeMetas = fachada.listarMetas();
-        System.out.println("AdminMetasController.atualizarTabelaMetas(): Todas as metas: " + listaDeMetas); // LOG
+        System.out.println("AdminMetasController.atualizarTabelaMetas(): Todas as metas: " + listaDeMetas);
         tabelaMetas.setItems(FXCollections.observableArrayList(listaDeMetas));
         //Verifica se a lista está vazia:
         if(listaDeMetas.isEmpty()){

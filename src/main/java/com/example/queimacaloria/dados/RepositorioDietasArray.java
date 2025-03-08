@@ -13,13 +13,11 @@ public class RepositorioDietasArray implements IRepositorioDietas {
     private int proximoIndice;
     private static RepositorioDietasArray instanciaUnica;
 
-    // Construtor privado para o padrão Singleton.
     private RepositorioDietasArray() {
         dietas = new Dieta[10];  // Inicializa com um tamanho inicial
         proximoIndice = 0;
     }
 
-    // Retorna a instância única do repositório (Singleton).
     public static RepositorioDietasArray getInstanciaUnica() {
         if (instanciaUnica == null) {
             instanciaUnica = new RepositorioDietasArray();
@@ -27,7 +25,6 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         return instanciaUnica;
     }
 
-    // Procura o índice de uma dieta pelo ID.
     private int procurarIndice(UUID id) {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         for (int i = 0; i < proximoIndice; i++) {
@@ -35,28 +32,25 @@ public class RepositorioDietasArray implements IRepositorioDietas {
                 return i;
             }
         }
-        return -1; // Retorna -1 se não encontrar (melhor que retornar proximoIndice)
+        return -1;
     }
 
-    // Adiciona uma dieta ao repositório.
     @Override
     public void adicionar(Dieta dieta) throws DietaNaoEncontradaException {
         if (dieta == null) throw new IllegalArgumentException("Dieta não pode ser nula.");
         if (proximoIndice >= dietas.length) {
-            // Redimensiona o array (crescimento dinâmico)
-            Dieta[] temp = new Dieta[dietas.length + 10]; // Aumenta o tamanho
+            Dieta[] temp = new Dieta[dietas.length + 10];
             System.arraycopy(dietas, 0, temp, 0, dietas.length);
             dietas = temp;
         }
         dietas[proximoIndice++] = dieta;
     }
 
-    // Salva (atualiza) uma dieta no repositório.
     @Override
     public void salvar(Dieta dieta) throws DietaNaoEncontradaException {
         if (dieta == null) throw new IllegalArgumentException("Dieta não pode ser nula.");
         int indice = procurarIndice(dieta.getId());
-        if (indice != -1) { // Usa -1 para verificar se encontrou
+        if (indice != -1) {
             dietas[indice] = dieta;
 
         } else {
@@ -64,37 +58,33 @@ public class RepositorioDietasArray implements IRepositorioDietas {
         }
     }
 
-    // Remove uma dieta do repositório pelo ID.
     @Override
     public void remover(UUID id) throws DietaNaoEncontradaException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         int indice = procurarIndice(id);
-        if (indice != -1) { // Usa -1 para verificar se encontrou
-            // Move o último elemento para a posição do elemento removido
+        if (indice != -1) {
             dietas[indice] = dietas[proximoIndice - 1];
-            dietas[proximoIndice - 1] = null; // Limpa a última posição
-            proximoIndice--; // Decrementa o índice
+            dietas[proximoIndice - 1] = null;
+            proximoIndice--;
         } else {
             throw new DietaNaoEncontradaException("Dieta não encontrada.");
         }
     }
 
-    // Busca uma dieta pelo ID.
     @Override
     public Dieta buscar(UUID id) throws DietaNaoEncontradaException {
         if (id == null) throw new IllegalArgumentException("ID não pode ser nulo.");
         int indice = procurarIndice(id);
-        if (indice != -1) { // Usa -1 para verificar se encontrou
+        if (indice != -1) {
             return dietas[indice];
         } else {
             throw new DietaNaoEncontradaException("Dieta não encontrada.");
         }
     }
 
-    // Retorna todas as dietas do repositório.
     @Override
     public List<Dieta> getAll() {
-        System.out.println("RepositorioDietasArray.getAll() chamado"); // LOG
+        System.out.println("RepositorioDietasArray.getAll() chamado");
         List<Dieta> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {
             if (dietas[i] != null) {

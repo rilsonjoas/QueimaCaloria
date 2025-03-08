@@ -13,12 +13,12 @@ public class ControladorMeta {
     private RepositorioMetasArray repositorio;
 
     public ControladorMeta() {
-        this.repositorio = RepositorioMetasArray.getInstanciaUnica(); // Singleton!
+        this.repositorio = RepositorioMetasArray.getInstanciaUnica();
     }
 
     // Modificado: Recebe o Usuario
     public void inicializar(Meta meta, String descricao, Meta.Tipo tipo, double valorAlvo, double progressoAtual,
-                            LocalDate dataConclusao, Usuario usuario) throws MetaNaoEncontradaException { // Usuario adicionado
+                            LocalDate dataConclusao, Usuario usuario) throws MetaNaoEncontradaException {
 
         System.out.println("ControladorMeta.inicializar: ");
         System.out.println("Meta ID " + meta.getId());
@@ -29,7 +29,7 @@ public class ControladorMeta {
         meta.setValorAlvo(valorAlvo);
         meta.setProgressoAtual(progressoAtual);
         meta.setDataConclusao(dataConclusao);
-        meta.setUsuario(usuario); // Define o usuário
+        meta.setUsuario(usuario);
 
         System.out.println("Meta após setar valores no Controlador: " + meta);
 

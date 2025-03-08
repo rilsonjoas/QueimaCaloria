@@ -4,7 +4,7 @@ import com.example.queimacaloria.excecoes.MetaNaoEncontradaException;
 import com.example.queimacaloria.excecoes.UsuarioNaoEncontradoException;
 import com.example.queimacaloria.negocio.Fachada;
 import com.example.queimacaloria.negocio.Meta;
-import com.example.queimacaloria.negocio.Usuario; // Importante
+import com.example.queimacaloria.negocio.Usuario;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -65,8 +65,8 @@ public class EdicaoMetaController {
                 // Impede edição do progresso se a meta já foi concluída
                 campoProgressoAtual.setEditable(false);
             } else {
-                buttonConcluirMeta.setDisable(false); // Habilita o botão
-                campoProgressoAtual.setEditable(true); // Permite a edição do progresso
+                buttonConcluirMeta.setDisable(false);
+                campoProgressoAtual.setEditable(true);
 
             }
         }
@@ -87,19 +87,12 @@ public class EdicaoMetaController {
             double valorAlvo = Double.parseDouble(valorAlvoStr);
             double progressoAtual = Double.parseDouble(progressoAtualStr);
 
-            //DEBUG - REMOVA ESTAS LINHAS DEPOIS
-            //System.out.println("EdicaoMetaController.atualizarMeta() - Antes da fachada: Meta ID: " + meta.getId() + ", Progresso: " + meta.getProgressoAtual() + ", Usuario: " + (meta.getUsuario() != null ? meta.getUsuario().getEmail() : "null"));
-
             fachada.atualizarMeta(meta.getId(), descricao, tipo, valorAlvo, progressoAtual, meta.getDataConclusao());
 
-            // **********  MUDANÇA AQUI ***********
-            // Atualiza o usuário logado:  Isso é *crítico*.  A fachada atualiza
-            // o objeto no repositório, mas o objeto Usuario no MainController
-            // *não* é atualizado automaticamente!
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado); // Atualiza o usuário no MainController
+                    mainController.setUsuarioLogado(usuarioAtualizado);
 
                 }catch (UsuarioNaoEncontradoException e){
                     showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
@@ -107,28 +100,16 @@ public class EdicaoMetaController {
                 }
             }
 
-
-            //System.out.println("EdicaoMetaController.atualizarMeta() - Após a fachada: Meta ID: " + meta.getId()  + ", Progresso: " + meta.getProgressoAtual());  //DEBUG
-
             mensagemErro.setText("Meta atualizada com sucesso!");
-
-            //REMOVA ESSAS CHAMADAS. O LISTENER JÁ FAZ ISSO.
-            /*if (mainController != null) {
-                mainController.atualizarDadosTelaPrincipal(); // Mantém apenas UMA chamada.
-                System.out.println("MainController.atualizarDadosTelaPrincipal chamado de EdicaoMetaController.atualizarMeta()");
-            }*/
-
 
             fecharJanela();
 
         }  catch (NumberFormatException | MetaNaoEncontradaException e) {
             mensagemErro.setText("Erro: " + e.getMessage());
-            // System.out.println("Exceção em atualizarMeta: " + e.getMessage());
             e.printStackTrace();
 
-        } catch (Exception e) { // <-- Apenas o catch genérico.
+        } catch (Exception e) {
             mensagemErro.setText("Erro inesperado: " + e.getMessage());
-            //System.out.println("Exceção inesperada em atualizarMeta: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -182,30 +163,25 @@ public class EdicaoMetaController {
     @FXML
     public void concluirMeta() {
         try {
-            // Obtém o valor alvo (para não precisar digitá-lo novamente).
-            double valorAlvo = meta.getValorAlvo(); // Já é double, não precisa de parse.
+            double valorAlvo = meta.getValorAlvo();
 
-            // Atualiza o progresso e a data *na instância local* da meta
             meta.setProgressoAtual(valorAlvo);  // Define o progresso como 100%
             meta.setDataConclusao(LocalDate.now());
 
             // Usa o método *atualizarMeta* da Fachada, passando o ID
             fachada.atualizarMeta(meta.getId(), meta.getDescricao(), meta.getTipo(), valorAlvo, meta.getProgressoAtual(), meta.getDataConclusao());
-            System.out.println("Meta CONCLUÍDA: Progresso Atual = " + meta.getProgressoAtual()); // Debug
+            System.out.println("Meta CONCLUÍDA: Progresso Atual = " + meta.getProgressoAtual());
 
             labelDataConclusao.setText("Concluída em: " + meta.getDataConclusao().toString());
             buttonConcluirMeta.setDisable(true); // Desabilita o botão após a conclusão
             campoProgressoAtual.setEditable(false); // Impede a edição após a conclusão.
             campoProgressoAtual.setText(String.valueOf(meta.getProgressoAtual()));
 
-
-            // **********  MUDANÇA AQUI ***********
-            // Atualiza o usuário no MainController *após* a atualização
+            // Atualiza o usuário no MainController após a atualização
             if (mainController != null && mainController.getUsuarioLogado() != null) {
                 try {
                     Usuario usuarioAtualizado = fachada.buscarUsuarioPorId(mainController.getUsuarioLogado().getId());
-                    mainController.setUsuarioLogado(usuarioAtualizado);  // Atualiza a tela *principal*
-                    // System.out.println("MainController.atualizarDadosTelaPrincipal chamado de EdicaoMetaController.concluirMeta()");
+                    mainController.setUsuarioLogado(usuarioAtualizado);  // Atualiza a tela principal
 
                 }catch (UsuarioNaoEncontradoException e){
                     showAlert(Alert.AlertType.ERROR, "Erro", "Usuário não encontrado.",
@@ -213,17 +189,12 @@ public class EdicaoMetaController {
                 }
             }
 
-        /*if (metaController != null) {  //REMOVIDO
-            metaController.atualizarTabelaMetasUsuario(); // Atualiza a tabela *na tela de metas*
-        }*/
-
-
             mensagemErro.setText("Meta concluída com sucesso!");
 
 
         } catch (MetaNaoEncontradaException e) {
             mensagemErro.setText("Erro ao concluir meta: " + e.getMessage());
-            e.printStackTrace();  // Importante para debugging!
+            e.printStackTrace();
 
         }
     }

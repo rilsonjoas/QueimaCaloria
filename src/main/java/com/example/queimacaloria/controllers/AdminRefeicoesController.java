@@ -145,9 +145,9 @@ public class AdminRefeicoesController {
     }
 
     private void atualizarTabelaRefeicoes() {
-        System.out.println("AdminRefeicoesController.atualizarTabelaRefeicoes() chamado"); // LOG
+        System.out.println("AdminRefeicoesController.atualizarTabelaRefeicoes() chamado");
         List<Refeicao> listaDeRefeicoes = fachada.listarRefeicoes();
-        System.out.println("AdminRefeicoesController.atualizarTabelaRefeicoes(): Todas as refeições: " + listaDeRefeicoes); // LOG
+        System.out.println("AdminRefeicoesController.atualizarTabelaRefeicoes(): Todas as refeições: " + listaDeRefeicoes);
         tabelaRefeicoes.setItems(FXCollections.observableArrayList(listaDeRefeicoes));
         //Verifica se a lista está vazia:
         if(listaDeRefeicoes.isEmpty()){

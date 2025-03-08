@@ -80,14 +80,14 @@ public class RepositorioExerciciosArray implements IRepositorioExercicios {
 
     @Override
     public List<Exercicio> getAll() {
-        System.out.println("RepositorioExerciciosArray.getAll() chamado"); // LOG
+        System.out.println("RepositorioExerciciosArray.getAll() chamado");
         List<Exercicio> lista = new ArrayList<>();
         for (int i = 0; i < proximoIndice; i++) {
             if (exercicios[i] != null) {
                 lista.add(exercicios[i]);
             }
         }
-        System.out.println("RepositorioExerciciosArray.getAll(): Retornando lista: " + lista);  //LOG
+        System.out.println("RepositorioExerciciosArray.getAll(): Retornando lista: " + lista);
         return lista;
     }
 }

@@ -17,14 +17,13 @@ public class ControladorTreino {
         this.repositorio = RepositorioTreinosArray.getInstanciaUnica(); // Singleton!
     }
 
-    //Modificado: Recebe Usuario
-    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade, Usuario usuario, Usuario.NivelExperiencia nivel) throws TreinoNaoEncontradoException { //<- Modificado
+    public void inicializar(Treino treino, String nome, Exercicio.TipoExercicio tipoDeTreino, int duracao, int nivelDeDificuldade, Usuario usuario, Usuario.NivelExperiencia nivel) throws TreinoNaoEncontradoException {
         treino.setNome(nome);
         treino.setTipoDeTreino(tipoDeTreino);
         treino.setDuracao(duracao);
         treino.setNivelDeDificuldade(nivelDeDificuldade);
-        treino.setUsuario(usuario); // Define o usuário
-        treino.setNivelExperiencia(nivel); // Define o nível
+        treino.setUsuario(usuario);
+        treino.setNivelExperiencia(nivel);
 
         try {
             repositorio.salvar(treino);
@@ -71,7 +70,7 @@ public class ControladorTreino {
             System.err.println("ERRO CRÍTICO: Repositório nulo em ControladorTreino.listarTreinos()!");
         }
         List<Treino> treinos = repositorio.getAll();
-        System.out.println("ControladorTreino.listarTreinos(): Treinos retornados: " + treinos); // LOG
+        System.out.println("ControladorTreino.listarTreinos(): Treinos retornados: " + treinos);
         return treinos;
     }
 

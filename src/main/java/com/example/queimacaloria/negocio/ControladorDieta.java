@@ -11,12 +11,11 @@ public class ControladorDieta {
 
     private RepositorioDietasArray repositorio;
 
-    // Construtor, inicializa o repositório.
     public ControladorDieta() {
         this.repositorio = RepositorioDietasArray.getInstanciaUnica();
     }
 
-    public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario, Usuario.TipoDieta tipoDieta) throws DietaNaoEncontradaException { // Usuario adicionado
+    public void configurarDieta(Dieta dieta, String nome, Meta.Tipo objetivo, int caloriasDiarias, Usuario usuario, Usuario.TipoDieta tipoDieta) throws DietaNaoEncontradaException {
         dieta.setNome(nome);
         dieta.setObjetivo(objetivo);
         dieta.setCaloriasDiarias(caloriasDiarias);
@@ -28,7 +27,6 @@ public class ControladorDieta {
         } catch (DietaNaoEncontradaException e) {
             repositorio.adicionar(dieta);
         }
-        // Fachada.getInstanciaUnica().notificarObservadoresDietas(); // REMOVIDO.  Não precisa mais notificar aqui.
     }
 
     // Lista todas as dietas do repositório.

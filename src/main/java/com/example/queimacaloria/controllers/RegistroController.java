@@ -33,7 +33,7 @@ public class RegistroController {
 
     //Novos campos
     @FXML private ChoiceBox<Usuario.TipoDieta> campoTipoDieta;
-    @FXML private ListView<Usuario.RestricaoAlimentar> listaRestricoes; // ListView, não mais TextField
+    @FXML private ListView<Usuario.RestricaoAlimentar> listaRestricoes;
     @FXML private ChoiceBox<Usuario.NivelExperiencia> campoNivelExperiencia;
     @FXML private TextField campoCintura;
     @FXML private TextField campoBiceps;
@@ -52,20 +52,16 @@ public class RegistroController {
     public void initialize() {
         campoSexo.setItems(FXCollections.observableArrayList(Usuario.Sexo.values()));
 
-        // Inicializa os ChoiceBox
         campoTipoDieta.setItems(FXCollections.observableArrayList(Usuario.TipoDieta.values()));
         campoNivelExperiencia.setItems(FXCollections.observableArrayList(Usuario.NivelExperiencia.values()));
 
-        // Configura a ListView para seleção múltipla
         listaRestricoes.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         listaRestricoes.setItems(FXCollections.observableArrayList(Usuario.RestricaoAlimentar.values()));
 
-        // ADICIONE ESTE BLOCO DE CÓDIGO: Configura o cellFactory para usar CheckBoxListCell
         listaRestricoes.setCellFactory(CheckBoxListCell.forListView(new Callback<Usuario.RestricaoAlimentar, ObservableValue<Boolean>>() {
             @Override
             public ObservableValue<Boolean> call(Usuario.RestricaoAlimentar item) {
                 BooleanProperty observable = new SimpleBooleanProperty();
-                // Listener para ATUALIZAR a seleção quando o checkbox mudar.
                 observable.addListener((obs, wasSelected, isNowSelected) -> {
                     if (isNowSelected) {
                         listaRestricoes.getSelectionModel().select(item);
@@ -74,7 +70,6 @@ public class RegistroController {
                     }
                 });
 
-                //  É preciso setar o valor inicial do checkbox, baseado no que veio da seleção
                 observable.set(listaRestricoes.getSelectionModel().getSelectedItems().contains(item));
                 return observable;
             }
@@ -86,7 +81,7 @@ public class RegistroController {
 
             @Override
             public Usuario.RestricaoAlimentar fromString(String string) {
-                return null;  // Não precisamos converter de volta.
+                return null;
             }
         }));
     }
@@ -115,11 +110,8 @@ public class RegistroController {
             Usuario.TipoDieta tipoDieta = campoTipoDieta.getValue();
             Usuario.NivelExperiencia nivelExperiencia = campoNivelExperiencia.getValue();
 
-            // Obtém as restrições selecionadas *ANTES* de criar o usuário
             Set<Usuario.RestricaoAlimentar> restricoes = new HashSet<>(listaRestricoes.getSelectionModel().getSelectedItems());
 
-
-            // Correção: Passando todos os 8 argumentos esperados, incluindo tipoDieta, nivel, e restricoes
             Usuario novoUsuario = fachada.cadastrarUsuario(
                     nome,
                     email,
@@ -131,7 +123,6 @@ public class RegistroController {
                     Usuario.TipoUsuario.USUARIO_COMUM.getDescricao() // Tipo padrão
             );
 
-            //AGORA, COM O USUARIO CRIADO, ADICIONA AS NOVAS INFORMAÇÕES.
             if (tipoDieta != null) {
                 novoUsuario.tipoDietaProperty().set(tipoDieta); //Usa o setter do Property
             }
@@ -139,12 +130,10 @@ public class RegistroController {
                 novoUsuario.nivelExperienciaProperty().set(nivelExperiencia);
             }
 
-            // Definir as restrições, mas verifique se restricoes não é nulo.
             if (restricoes != null && !restricoes.isEmpty()) {
-                novoUsuario.setRestricoes(FXCollections.observableSet(restricoes));  // Define o ObservableSet diretamente!
+                novoUsuario.setRestricoes(FXCollections.observableSet(restricoes));  // Define o ObservableSet diretamente
             }
 
-            //Novas métricas:
             if (campoCintura.getText() != null && !campoCintura.getText().isEmpty()) {
                 novoUsuario.setCintura(Double.parseDouble(campoCintura.getText()));
             }
@@ -160,13 +149,11 @@ public class RegistroController {
 
             mensagemRegistro.setText("Usuário cadastrado com sucesso!");
 
-            // ----  ALERTA AQUI -----
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Bem-vindo!");
             alert.setHeaderText("Cadastro realizado com sucesso!");
             alert.setContentText("Olá, " + novoUsuario.getNome() + "! Seja bem-vindo ao YouFit. Lembre-se de beber água para se manter hidratado! Você pode registrar seu consumo na tela principal.");
-            alert.showAndWait(); // Mostra e espera
-            // ------------------------
+            alert.showAndWait();
 
             if (authController != null) {
                 authController.mostrarTelaPrincipal(getPrimaryStage(), novoUsuario);
@@ -204,18 +191,6 @@ public class RegistroController {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A senha não pode estar vazia.");
             return false;
         }
-
-        //Data de nascimento não é mais obrigatória
-        /*if (dataNascimento == null) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "A data de nascimento não pode ser nula.");
-            return false;
-        }*/
-
-        //Sexo não é mais obrigatório
-        /*if (sexo == null) {
-            showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O sexo não pode ser nulo.");
-            return false;
-        }*/
 
         if (pesoStr == null || pesoStr.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Aviso", "Campo inválido", "O peso não pode estar vazio.");
